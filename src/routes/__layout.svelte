@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Sidemenu from '$lib/sidemenu/Sidemenu.svelte';
+	import Header from '$lib/header/Header.svelte';
 	import '../app.css';
 </script>
 
-<Sidemenu />
+<Header />
 
 <main>
 	<slot />
@@ -19,5 +19,6 @@
 		max-width: 1024px;
 		margin: 0 auto;
 		box-sizing: border-box;
+		color: var(--text-color);
 	}
 </style>

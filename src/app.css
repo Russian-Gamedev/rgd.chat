@@ -6,43 +6,30 @@
 		BlinkMacSystemFont, -apple-system, Cantarell, Arial, sans-serif;
 	--font-mono: 'Fira Mono', monospace;
 	--pure-white: #ffffff;
-	--primary-color: #b9c6d2;
-	--secondary-color: #d0dde9;
-	--tertiary-color: #edf0f8;
-	--accent-color: #ff3e00;
-	--heading-color: rgba(0, 0, 0, 0.7);
-	--text-color: #444444;
-	--background-without-opacity: rgba(255, 255, 255, 0.7);
-	--column-width: 42rem;
-	--column-margin-top: 4rem;
+	--primary-color: #141519;
+	--secondary-color: #191a1f;
+	--tertiary-color: #22242c;
+	--accent-color: #5c87e7;
+	--accent-gradient: radial-gradient(
+		57.5% 193.26% at 54.77% 50%,
+		#71a9eb 0%,
+		#5c87e7 72.92%,
+		#6f8dd0 100%
+	);
+	--heading-color: #f4f4f6;
+	--text-color: #e5e5ea;
+	--dimmed-text-color: #797b7e;
+
+	--discord-color: #5965f1;
+
+	--code-bg: rgba(66, 66, 66, 0.45);
+	--code-shadow: rgba(0, 0, 0, 0.4);
 }
 
 body {
 	min-height: 100vh;
 	margin: 0;
 	background-color: var(--primary-color);
-	background: linear-gradient(
-		180deg,
-		var(--primary-color) 0%,
-		var(--secondary-color) 10.45%,
-		var(--tertiary-color) 41.35%
-	);
-}
-
-body::before {
-	content: '';
-	width: 80vw;
-	height: 100vh;
-	position: absolute;
-	top: 0;
-	left: 10vw;
-	z-index: -1;
-	background: radial-gradient(
-		50% 50% at 50% 50%,
-		var(--pure-white) 0%,
-		rgba(255, 255, 255, 0) 100%
-	);
-	opacity: 0.05;
 }
 
 #root {
@@ -82,12 +69,20 @@ h2 {
 pre {
 	font-size: 16px;
 	font-family: var(--font-mono);
-	background-color: rgba(255, 255, 255, 0.45);
+	background-color: var(--code-bg);
 	border-radius: 3px;
-	box-shadow: 2px 2px 6px rgb(255 255 255 / 25%);
+	box-shadow: 1px 1px 6px var(--code-shadow);
 	padding: 0.5em;
 	overflow-x: auto;
 	color: var(--text-color);
+}
+
+button {
+	border: none;
+	border-radius: 5px;
+	padding: 0.5rem 1.5rem;
+	background-color: var(--tertiary-color);
+	color: var(--pure-white);
 }
 
 input,
@@ -98,10 +93,4 @@ button {
 
 button:focus:not(:focus-visible) {
 	outline: none;
-}
-
-@media (min-width: 720px) {
-	h1 {
-		font-size: 2.4rem;
-	}
 }
