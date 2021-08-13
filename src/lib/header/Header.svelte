@@ -124,14 +124,14 @@
 	}
 
 	.menu__link--jams::before {
-		content: url('icons/jams.svg');
+		content: url('/icons/jams.svg');
 		margin-top: 0.2em;
 		margin-left: -3.53em;
 		width: 1.8rem;
 	}
 
 	.menu__link--sponsors::before {
-		content: url('icons/sponsors.svg');
+		content: url('/icons/sponsors.svg');
 		margin-top: 0.5em;
 	}
 
