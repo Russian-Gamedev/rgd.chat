@@ -22,7 +22,6 @@
 		letter-spacing: 0.04em;
 
 		background-color: var(--discord-color);
-
 		cursor: pointer;
 	}
 
