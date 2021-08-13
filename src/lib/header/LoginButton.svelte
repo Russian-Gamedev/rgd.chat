@@ -12,6 +12,7 @@
 		align-items: center;
 		gap: 1em;
 		padding: 0.75em 2.5em;
+		margin: 0.8rem 0;
 
 		font-weight: bold;
 		letter-spacing: 0.04em;

@@ -3,54 +3,49 @@
 	import LoginButton from '$lib/header/LoginButton.svelte';
 </script>
 
-<header>
-	<div>
-		<a href="/">
-			<img src="logo.svg" alt="RGD" />
+<header class="header">
+	<div class="logo">
+		<a class="logo__link" href="/">
+			<img class="logo__image" src="logo.svg" alt="RGD" />
 		</a>
 	</div>
 	<LoginButton />
-	<nav role="menu">
-		<!-- <ul>
-			<li>
-				<a></a>
+	<nav class="menu">
+		<ul role="menu" class="menu__list">
+			<li
+				role="menuitem"
+				class="menu__item"
+				class:menu__item--active={$page.path === '/jams'}
+				aria-current={$page.path === '/jams' ? 'page' : false}
+			>
+				<a sveltekit:prefetch class="menu__link menu__link--jams" href="/jams"> Джемы </a>
 			</li>
-		</ul> -->
-		<a
-			id="jams"
-			role="menuitem"
-			class:active={$page.path === '/jams'}
-			aria-current={$page.path === '/jams' ? 'page' : false}
-			href="/jams"
-		>
-			<img src="icons/jams.svg" alt="Джем" />
-			<span>ДЖЕМЫ</span>
-		</a>
-		<a
-			id="sponsors"
-			role="menuitem"
-			class:active={$page.path === '/sponsors'}
-			aria-current={$page.path === '/sponsors' ? 'page' : false}
-			href="/sponsors"
-		>
-			<img src="icons/sponsors.svg" alt="Сердечко" />
-			<span>СПОНСОРЫ</span>
-		</a>
+			<li
+				role="menuitem"
+				class="menu__item"
+				class:menu__item--active={$page.path === '/sponsors'}
+				aria-current={$page.path === '/sponsors' ? 'page' : false}
+			>
+				<a sveltekit:prefetch class="menu__link menu__link--sponsors" href="/sponsors">
+					Спонсоры
+				</a>
+			</li>
+		</ul>
 	</nav>
 </header>
 
 <style>
-	header {
+	.header {
 		flex: 0 0 18rem;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.5rem;
+		/* gap: 0.8rem; */
 
 		background-color: var(--secondary-color);
 	}
 
-	div {
+	.logo {
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -59,34 +54,49 @@
 		height: 7rem;
 	}
 
-	div a {
+	.logo__link {
 		display: flex;
 	}
 
-	div img {
+	.logo__image {
 		width: 4rem;
 	}
 
-	nav {
+	.menu {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 		/* ^ align-self: stretch; is not supported by safari */
 	}
 
-	nav a {
+	.menu__list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.85em;
+		font-weight: bold;
+		letter-spacing: 0.05em;
+	}
+
+	.menu__item {
 		display: flex;
 		align-items: center;
-		padding-left: 2.8rem;
-		gap: 1.4rem;
 		height: 3.5rem;
 	}
 
-	nav a.active {
+	.menu__item:hover .menu__link {
+		color: var(--pure-white);
+	}
+
+	.menu__item--active {
 		background-color: var(--tertiary-color);
 	}
 
-	nav a.active::before {
+	.menu__item--active .menu__link {
+		color: var(--pure-white);
+	}
+
+	.menu__item--active::before {
 		position: absolute;
 		left: -0.16em;
 		content: '•';
@@ -94,26 +104,35 @@
 		color: var(--pure-white);
 	}
 
-	nav a img {
+	.menu__link::before {
+		position: absolute;
+		margin-left: -3.49em;
+		width: 1.6rem;
+	}
+
+	.menu__link--jams::before {
+		content: url('icons/jams.svg');
+		margin-top: 0.2em;
+		margin-left: -3.53em;
 		width: 1.8rem;
 	}
 
-	nav a {
+	.menu__link--sponsors::before {
+		margin-top: 0.5em;
+		content: url('icons/sponsors.svg');
+	}
+
+	.menu__link {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+		padding-left: 5.6rem;
 		color: var(--dimmed-text-color);
+		text-transform: uppercase;
 	}
 
-	nav a.active,
-	nav a:hover {
-		color: var(--pure-white);
-	}
-
-	nav a:hover {
+	.menu__link:hover {
 		text-decoration: none;
-	}
-
-	nav span {
-		font-size: 0.85em;
-		font-weight: bold;
-		letter-spacing: 0.05em;
 	}
 </style>
