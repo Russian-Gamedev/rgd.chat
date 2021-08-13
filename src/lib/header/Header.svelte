@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page, session } from '$app/stores';
 	import LoginButton from '$lib/header/LoginButton.svelte';
+	import Account from '$lib/header/Account.svelte';
 </script>
 
 <header class="header">
@@ -9,7 +10,11 @@
 			<img class="logo__image" src="logo.svg" alt="RGD" />
 		</a>
 	</div>
-	<LoginButton />
+	{#if $session.authorized}
+		<Account />
+	{:else}
+		<LoginButton />
+	{/if}
 	<nav class="menu">
 		<ul role="menu" class="menu__list">
 			<li
@@ -19,6 +24,14 @@
 				aria-current={$page.path === '/jams' ? 'page' : false}
 			>
 				<a sveltekit:prefetch class="menu__link menu__link--jams" href="/jams"> Джемы </a>
+			</li>
+			<li
+				role="menuitem"
+				class="menu__item"
+				class:menu__item--active={$page.path === '/blogs'}
+				aria-current={$page.path === '/blogs' ? 'page' : false}
+			>
+				<a sveltekit:prefetch class="menu__link" href="/blogs"> Блоги </a>
 			</li>
 			<li
 				role="menuitem"
@@ -118,8 +131,8 @@
 	}
 
 	.menu__link--sponsors::before {
-		margin-top: 0.5em;
 		content: url('icons/sponsors.svg');
+		margin-top: 0.5em;
 	}
 
 	.menu__link {

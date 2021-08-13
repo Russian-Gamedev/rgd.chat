@@ -1,7 +1,11 @@
 <script lang="ts">
+	function openDiscordDialog(e) {
+		console.log('What?');
+		e.target.blur();
+	}
 </script>
 
-<button>
+<button on:click={openDiscordDialog}>
 	<img src="icons/discord.svg" alt="Discord" />
 	Присоединится
 </button>
@@ -18,6 +22,8 @@
 		letter-spacing: 0.04em;
 
 		background-color: var(--discord-color);
+
+		cursor: pointer;
 	}
 
 	img {

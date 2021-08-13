@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>rgd.chat</title>
+	<title>RGD</title>
 </svelte:head>
 
 <section>
@@ -18,7 +18,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		flex: 1;
+		flex: 1; /* uncomment for not centered content*/
 	}
 
 	h1 {
