@@ -65,6 +65,7 @@
 		width: 100%;
 		/* ^ align-self: stretch; is not supported by safari */
 		height: 7rem;
+		user-select: none;
 	}
 
 	.logo__link {
