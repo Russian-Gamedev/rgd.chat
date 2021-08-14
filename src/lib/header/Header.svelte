@@ -5,7 +5,7 @@
 </script>
 
 <header class="header">
-	<div class="logo">
+	<div role="banner" class="logo">
 		<a class="logo__link" href="/">
 			<img class="logo__image" src="logo.svg" alt="RGD" />
 		</a>
@@ -49,6 +49,10 @@
 
 <style>
 	.header {
+		position: sticky;
+		top: 0;
+		height: 100vh;
+
 		flex: 0 0 18rem;
 		display: flex;
 		flex-direction: column;
@@ -56,6 +60,7 @@
 		/* gap: 0.8rem; */
 
 		background-color: var(--secondary-color);
+		box-shadow: 0 -100vh 0 var(--text-color);
 	}
 
 	.logo {
