@@ -1,6 +1,6 @@
 # Sponsors
 
-Current list of sponsors according to messages in [#донаты (закрытый канал)](https://discord.com/channels/504617984594018325/768027954265063434/805531113019670538) from 20.10.2020 to 13.08.2021
+Current list of supports received through [Donatty](https://donatty.com/rgd)
 
 | Nickname        |  Amount | User ID            |
 | --------------- | ------: | ------------------ |
@@ -18,7 +18,7 @@ Current list of sponsors according to messages in [#донаты (закрыты
 | Выго            |   150 ₽ |                    |
 | No More Goose   |   140 ₽ | 443854622419845131 |
 
-And according to list (all before 20.10.2020) from Fataliti, it looks like this (combined with list above)
+And according to list _all before 20.10.2020_ from Fataliti, it looks like this (combined with list above)
 
 | Nickname                 |  Amount | User ID            |
 | ------------------------ | ------: | ------------------ |
