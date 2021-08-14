@@ -7,7 +7,7 @@
 
 <button on:click={openDiscordDialog}>
 	<img src="icons/discord.svg" alt="Discord" />
-	Присоединится
+	Войти
 </button>
 
 <style>
@@ -15,7 +15,7 @@
 		display: flex;
 		align-items: center;
 		gap: 1em;
-		padding: 0.75em 2.5em;
+		padding: 0.75em 2.25em;
 		margin: 0.8rem 0;
 
 		font-weight: bold;
