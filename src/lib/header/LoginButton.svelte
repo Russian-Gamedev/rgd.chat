@@ -1,6 +1,6 @@
 <script lang="ts">
 	function openDiscordDialog(e) {
-		console.log('What?');
+		alert('Open authorization dialog');
 		e.target.blur();
 	}
 </script>
