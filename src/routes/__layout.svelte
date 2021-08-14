@@ -16,9 +16,9 @@
 		flex-direction: column;
 		padding: 1rem;
 		width: 100%;
-		max-width: 1024px;
+		max-width: 40rem;
 		margin: 0 auto;
-		box-sizing: border-box;
+		box-sizing: content-box;
 		color: var(--text-color);
 	}
 </style>
