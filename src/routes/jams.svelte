@@ -17,7 +17,7 @@
 		<a role="article" class="jam" title={jam.title} href={href(jam)}>
 			<!-- 16x9 image -->
 			<!-- Also, maybe wrap it into `figure` for semantics? -->
-			<img src={jam.thumbnail} alt={jam.thumbnailAlt} />
+			<img src={jam.thumbnail} loading="lazy" alt={jam.thumbnailAlt} />
 			<div class="info">
 				<div class="header">
 					<div class="details">
