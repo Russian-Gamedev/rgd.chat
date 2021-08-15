@@ -1,5 +1,5 @@
 export type Jam = {
-  id: number;
+  id: string;
   title: string;
   teaser: string;
   date: string;

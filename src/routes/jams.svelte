@@ -1,18 +1,7 @@
 <script lang="ts">
 	import type { Jam } from '$lib/jam';
 	import { href } from '$lib/jam';
-	export let jams: Jam[] = [
-		{
-			id: 123,
-			title: 'KOJIMA-ДЖЕМ — Тема: HIDEOKOJIMA GAME',
-			teaser:
-				'Админы копили с обедов, воровали, попрошайничали на конфэ джиди (э фэйерли комьюнити оф гейм девелопмент) и всё-таки накопили на джем!',
-			date: '10-13 октября 2019',
-			budget: 10000,
-			thumbnail: 'https://img.youtube.com/vi/f5w1S53cvQU/maxresdefault.jpg',
-			thumbnailAlt: 'Анонс джема весеннего сезона 2020 года'
-		}
-	];
+	import jams from '$lib/jams';
 </script>
 
 <svelte:head>
