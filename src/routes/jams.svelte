@@ -24,7 +24,8 @@
 							{jam.budget.toLocaleString('ru-RU', {
 								style: 'currency',
 								currency: 'RUB',
-								maximumFractionDigits: 0
+								maximumFractionDigits: 0,
+								minimumFractionDigits: 0
 							})}
 						</span>
 					</div>
