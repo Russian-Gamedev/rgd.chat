@@ -25,14 +25,14 @@
 			>
 				<a sveltekit:prefetch class="menu__link menu__link--jams" href="/jams"> Джемы </a>
 			</li>
-			<li
+			<!-- <li
 				role="menuitem"
 				class="menu__item"
 				class:menu__item--active={$page.path === '/blogs'}
 				aria-current={$page.path === '/blogs' ? 'page' : false}
 			>
 				<a sveltekit:prefetch class="menu__link" href="/blogs"> Блоги </a>
-			</li>
+			</li> -->
 			<li
 				role="menuitem"
 				class="menu__item"
