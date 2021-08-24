@@ -60,7 +60,7 @@
 		align-items: center;
 		/* gap: 0.8rem; */
 
-		background-color: var(--secondary-color);
+		background-color: var(--secondary-background);
 		box-shadow: 0 -100vh 0 var(--text-color);
 	}
 
