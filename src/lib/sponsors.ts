@@ -1,6 +1,6 @@
-import type { Sponsor } from '$lib/sponsor';
+import type { Sponsor } from './types';
 
-let sponsors: Sponsor[] = [
+export const sponsors: Sponsor[] = [
   {
     name: 'Benedique',
     amount: 16150,
@@ -137,5 +137,3 @@ let sponsors: Sponsor[] = [
     userID: '352903663598960643'
   },
 ];
-
-export default sponsors;

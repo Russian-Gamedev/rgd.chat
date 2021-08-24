@@ -1,5 +1,5 @@
 <script lang="ts">
-	import sponsors from '$lib/sponsors';
+	import { sponsors } from '$lib/sponsors';
 </script>
 
 <svelte:head>
@@ -13,7 +13,7 @@
 		Основной способ поддержать RGD это
 		<a rel="external" href="https://donatty.com/rgd">Donatty</a>
 	</div>
-	<div id="sponsors">Спасибо всем кто <b>&nbsp;уже&nbsp;</b> поддержал</div>
+	<div id="sponsors">Спасибо всем кто <b>уже</b> поддержал</div>
 
 	<table>
 		{#each sponsors as sponsor}
@@ -58,6 +58,10 @@
 
 	td {
 		padding: 0.5rem;
+	}
+
+	#sponsors b {
+		padding: 0 0.25em;
 	}
 
 	.name {

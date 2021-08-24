@@ -1,4 +1,4 @@
-import sponsors from '$lib/sponsors';
+import { sponsors } from '$lib/sponsors';
 
 /**
  * @type {import('@sveltejs/kit').RequestHandler}

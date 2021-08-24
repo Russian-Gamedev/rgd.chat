@@ -1,4 +1,4 @@
-import jams from '$lib/jams';
+import { jams } from '$lib/jams';
 
 /**
  * @type {import('@sveltejs/kit').RequestHandler}

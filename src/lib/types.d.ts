@@ -8,6 +8,8 @@ export type Jam = {
   thumbnailAlt: string;
 }
 
-export function href(jam: Jam): string {
-  return `/jam/${jam.id}`
-}
+export type Sponsor = {
+  name: string;
+  amount: number;
+  userID: string;
+};

@@ -1,6 +1,10 @@
-import type { Jam } from "./jam";
+import type { Jam } from "./types";
 
-let jams: Jam[] = [
+export function href(jam: Jam): string {
+  return `/jam/${jam.id}`
+}
+
+export const jams: Jam[] = [
   {
     id: 'wizard-jam',
     title: 'Wizard Jam — Тема: Вжух и ты петух',
@@ -52,5 +56,3 @@ let jams: Jam[] = [
     thumbnailAlt: 'Анонс джема осеннего сезона 2019 года'
   }
 ];
-
-export default jams;

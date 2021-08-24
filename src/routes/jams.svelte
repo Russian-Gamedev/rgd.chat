@@ -1,11 +1,6 @@
-<script context="module">
-	export const prerender = true;
-</script>
-
 <script lang="ts">
-	import type { Jam } from '$lib/jam';
-	import { href } from '$lib/jam';
-	import jams from '$lib/jams';
+	import type { Jam } from '$lib/types';
+	import { jams, href } from '$lib/jams';
 </script>
 
 <svelte:head>
