@@ -1,7 +1,8 @@
-@import '@fontsource/lato';
+@import '@fontsource/mulish';
+@import '@fontsource/mulish/500';
 
 :root {
-	font-family: 'Lato', Lato, Roboto, Oxygen, Ubuntu, 'Open Sans', 'Helvetica Neue', 'Segoe UI',
+	font-family: 'Mulish', Roboto, Oxygen, Ubuntu, 'Open Sans', 'Helvetica Neue', 'Segoe UI',
 		BlinkMacSystemFont, -apple-system, Cantarell, Arial, sans-serif;
 	font-size: 125%;
 	--primary: #5c87e7;
@@ -19,6 +20,8 @@
 	--secondary-background: #111215;
 	--dimmed: #999ca0;
 	--pure-white: #ffffff;
+
+	--header-width: 13.8rem;
 
 	/* TODO: Delete */
 	--primary-color: var(--primary-background);
@@ -44,19 +47,23 @@ body {
 }
 
 h1 {
-	font: 1.6rem/2rem;
+	font-size: 1.6rem;
+	line-height: 2rem;
 }
 
 h2 {
-	font: 1.2rem/1.6rem;
+	font-size: 1.2rem;
+	line-height: 1.6rem;
 }
 
 h3 {
-	font: 1rem/1.4rem;
+	font-size: 1rem;
+	line-height: 1.4rem;
 }
 
 body {
-	font: 1rem/1.3rem;
+	font-size: 1rem;
+	line-height: 1.3rem;
 }
 
 h1,

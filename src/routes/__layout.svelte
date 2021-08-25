@@ -10,7 +10,7 @@
 </main>
 
 <!-- TODO: Remove when adaptive design become real thing -->
-<div class="todo"><h1>Здесь мог быть ваш адаптивный дизайн</h1></div>
+<div class="todo"><h3>Здесь мог быть ваш адаптивный дизайн</h3></div>
 
 <style>
 	.todo {
@@ -50,9 +50,11 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		padding: 1rem;
+		padding: 3.2rem 2rem;
 		width: 100%;
-		max-width: 40rem;
+		/* 1040 px */
+		/* max-width: 52rem; */
+		max-width: 50.4rem;
 		margin: 0 auto;
 		box-sizing: content-box;
 		color: var(--text-color);

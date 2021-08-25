@@ -4,73 +4,98 @@
 	import Account from '$lib/header/Account.svelte';
 </script>
 
-<header class="header">
-	<div role="banner" class="logo">
-		<a class="logo__link" href="/">
-			<img class="logo__image" src="logo.svg" alt="RGD" />
-		</a>
-	</div>
-	{#if $session.authorized}
-		<Account />
-	{:else}
-		<LoginButton />
-	{/if}
-	<nav class="menu">
-		<ul role="menu" class="menu__list">
-			<li
+<header>
+	<div class="header__wrapper">
+		<div role="banner" class="logo">
+			<a class="logo__link" href="/">
+				<img class="logo__image" src="logo.svg" alt="RGD" />
+			</a>
+		</div>
+
+		<nav class="menu">
+			<a
+				sveltekit:prefetch
 				role="menuitem"
-				class="menu__item"
+				class="menu__item menu__item--games"
+				class:menu__item--active={$page.path === '/games'}
+				aria-current={$page.path === '/games' ? 'page' : false}
+				href="/games"
+			>
+				Сообщество
+			</a>
+			<a
+				sveltekit:prefetch
+				role="menuitem"
+				class="menu__item menu__item--jams"
 				class:menu__item--active={$page.path === '/jams'}
 				aria-current={$page.path === '/jams' ? 'page' : false}
+				href="/jams"
 			>
-				<a sveltekit:prefetch class="menu__link menu__link--jams" href="/jams"> Джемы </a>
-			</li>
-			<!-- <li
+				Джемы
+			</a>
+			<a
+				sveltekit:prefetch
 				role="menuitem"
-				class="menu__item"
+				class="menu__item menu__item--blogs"
 				class:menu__item--active={$page.path === '/blogs'}
 				aria-current={$page.path === '/blogs' ? 'page' : false}
+				href="/blogs"
 			>
-				<a sveltekit:prefetch class="menu__link" href="/blogs"> Блоги </a>
-			</li> -->
-			<li
+				Туториалы
+			</a>
+			<a
+				sveltekit:prefetch
 				role="menuitem"
-				class="menu__item"
+				class="menu__item menu__item--sponsors"
 				class:menu__item--active={$page.path === '/sponsors'}
 				aria-current={$page.path === '/sponsors' ? 'page' : false}
+				href="/sponsors"
 			>
-				<a sveltekit:prefetch class="menu__link menu__link--sponsors" href="/sponsors">
-					Спонсоры
-				</a>
-			</li>
-		</ul>
-	</nav>
+				Поддержка
+			</a>
+		</nav>
+
+		<div class="bottom-one">
+			{#if $session.authorized}
+				<Account />
+			{:else}
+				<LoginButton />
+			{/if}
+		</div>
+	</div>
 </header>
 
 <style>
-	.header {
+	header {
+		flex-shrink: 0;
+		flex-basis: var(--header-width);
+		/* gap: 0.8rem; */
+
+		background-color: var(--secondary-background);
+		/* box-shadow: 0 -100vh 0 var(--text-color); */
+	}
+
+	.header__wrapper {
 		position: -webkit-sticky;
 		position: sticky;
 		top: 0;
 		height: 100vh;
 
-		flex: 0 0 18rem;
+		flex: 0 0 var(--header-width);
 		display: flex;
 		flex-direction: column;
+		justify-content: start;
 		align-items: center;
-		/* gap: 0.8rem; */
-
-		background-color: var(--secondary-background);
-		box-shadow: 0 -100vh 0 var(--text-color);
 	}
 
 	.logo {
 		display: flex;
-		justify-content: center;
+		justify-content: start;
 		align-items: center;
+		box-sizing: border-box;
 		width: 100%;
 		/* ^ align-self: stretch; is not supported by safari */
-		height: 7rem;
+		padding: 3.2rem 2.45rem;
 	}
 
 	.logo__link {
@@ -78,7 +103,8 @@
 	}
 
 	.logo__image {
-		width: 4rem;
+		width: 2.6rem;
+		height: 2.7rem;
 	}
 
 	.menu {
@@ -88,70 +114,61 @@
 		/* ^ align-self: stretch; is not supported by safari */
 	}
 
-	.menu__list {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-		font-size: 0.85em;
-		font-weight: bold;
-		letter-spacing: 0.05em;
-	}
-
 	.menu__item {
 		display: flex;
 		align-items: center;
-		height: 3.5rem;
+		height: 2.8rem;
+		padding-left: 4.8rem;
+		font-size: 0.75rem;
+		color: var(--dimmed);
 	}
 
-	.menu__item:hover .menu__link {
+	.menu__item--active,
+	.menu__item:hover,
+	.menu__item--active::before,
+	.menu__item:hover::before {
 		color: var(--pure-white);
+		/* To make svg's white */
+		filter: brightness(0) invert(1);
 	}
 
-	.menu__item--active {
-		background-color: var(--tertiary-color);
-	}
-
-	.menu__item--active .menu__link {
-		color: var(--pure-white);
-	}
-
-	.menu__item--active::before {
+	.menu__item::before {
 		position: absolute;
-		left: -0.16em;
-		content: '•';
-		font-size: 2.8em;
-		color: var(--pure-white);
-	}
-
-	.menu__link::before {
-		position: absolute;
-		margin-left: -3.49em;
+		margin-left: -2.4rem;
 		width: 1.6rem;
+		height: 1.6rem;
 	}
 
-	.menu__link--jams::before {
-		content: url('/icons/jams.svg');
-		margin-top: 0.2em;
-		margin-left: -3.53em;
-		width: 1.8rem;
+	.menu__item--games::before {
+		content: url('/icons/social.svg');
 	}
 
-	.menu__link--sponsors::before {
-		content: url('/icons/sponsors.svg');
-		margin-top: 0.5em;
+	.menu__item--jams::before {
+		content: url('/icons/jam.svg');
 	}
 
-	.menu__link {
+	.menu__item--blogs::before {
+		content: url('/icons/tutorial.svg');
+	}
+
+	.menu__item--sponsors::before {
+		content: url('/icons/sponsor.svg');
+	}
+
+	.menu__item:hover {
+		text-decoration: none;
+	}
+
+	/* .menu__link {
 		display: flex;
 		align-items: center;
 		width: 100%;
 		height: 100%;
 		padding-left: 5.6rem;
 		color: var(--dimmed-text-color);
-		text-transform: uppercase;
-	}
+	} */
 
-	.menu__link:hover {
-		text-decoration: none;
+	.bottom-one {
+		margin-bottom: 6rem;
 	}
 </style>
