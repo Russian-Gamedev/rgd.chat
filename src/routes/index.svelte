@@ -21,7 +21,7 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		align-items: center;
+		align-items: flex-start;
 		flex: 1; /* uncomment for not centered content*/
 	}
 
