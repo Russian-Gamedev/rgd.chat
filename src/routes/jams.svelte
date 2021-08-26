@@ -1,78 +1,106 @@
 <script lang="ts">
 	import type { Jam } from '$lib/types';
 	import { jams, href } from '$lib/jams';
+	let jam = jams[0];
 </script>
 
 <svelte:head>
 	<title>Джемы на RGD</title>
 </svelte:head>
 
-<div class="jams">
-	{#each jams as jam}
-		<a role="article" class="jam" title={jam.title} href={href(jam)}>
-			<!-- 16x9 image -->
-			<!-- Also, maybe wrap it into `figure` for semantics? -->
-			<img src={jam.thumbnail} alt={jam.thumbnailAlt} />
-			<div class="info">
-				<h1 class="title">{jam.title}</h1>
-				<p class="teaser">{jam.teaser}</p>
-			</div>
-		</a>
-	{/each}
+<div role="article" class="banner" title={jam.title}>
+	<!-- Also, maybe wrap it into `figure` for semantics? -->
+	<img src={jam.thumbnail} alt={jam.thumbnailAlt} />
+	<div class="banner__info">
+		<div class="info">
+			<h1 class="title">{jam.title}</h1>
+			<p class="teaser">{jam.teaser}</p>
+		</div>
+		<div class="banner__link"><a href={href(jam)}> Подробнее </a></div>
+	</div>
 </div>
 
-<style>
-	.jams {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		width: 100%;
-		height: 100%;
-		gap: 1.5rem;
-	}
+{#each jams as jam}
+	<a role="article" class="jam" title={jam.title} href={href(jam)}>
+		<div class="badges">
+			<span class="badge"> ЛЕТО 2021 </span>
+		</div>
+		<img src={jam.thumbnail} alt={jam.thumbnailAlt} />
+		<div class="jam__info">
+			<h1 class="title">{jam.title}</h1>
+			<p class="teaser">{jam.teaser}</p>
+		</div>
+	</a>
+{/each}
 
-	.jam {
+<style>
+	.banner {
 		display: flex;
 		flex-direction: column;
+		gap: 0.8rem;
+		border-radius: 0.4rem;
+		padding: 0.8rem;
+		overflow: hidden;
 		text-decoration: none;
 		background-color: var(--secondary-color);
-		border-radius: 0.4rem;
-		overflow: hidden;
 	}
 
-	img {
+	.banner img {
 		margin: 0;
 		object-fit: cover;
 		width: 100%;
-		aspect-ratio: 16 / 9;
+		aspect-ratio: 3 / 1;
+
+		border-radius: 0.2rem;
+		--smooth-corners: 300, 100;
+		mask-image: paint(smooth-corners);
+		-webkit-mask-image: paint(smooth-corners);
 	}
 
-	.info {
-		padding: 1.5rem;
-		padding-top: 1rem;
+	.banner__info {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 	}
 
-	.title {
-		margin: 0;
-		font-size: 1em;
-		line-height: 1.6em;
-		font-weight: bold;
-		letter-spacing: 0.03em;
-		text-align: start;
-		color: var(--heading-color);
+	.banner__info .info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
 	}
 
-	.teaser {
-		font-size: 0.85em;
+	.banner__link {
+		display: flex;
+		align-items: center;
+		padding: 0.4rem 0.6rem 0.4rem 0.8rem;
+		background-color: var(--primary);
+
+		border-radius: 0.4rem;
+		--smooth-corners: 300, 100;
+		mask-image: paint(smooth-corners);
+		-webkit-mask-image: paint(smooth-corners);
+	}
+
+	.banner__link a {
+		font-size: 0.85rem;
+		font-weight: 500;
+		line-height: 1.2rem;
+		color: var(--pure-white);
 	}
 
 	.title,
 	.teaser {
-		line-height: 1.6em;
+		line-height: 1.2rem;
+		margin: 0;
+	}
+
+	.title {
+		font-size: 0.7rem;
+		font-weight: 500;
 	}
 
 	.teaser {
-		margin: 0;
+		font-size: 0.7rem;
 		color: var(--dimmed-text-color);
 	}
 </style>

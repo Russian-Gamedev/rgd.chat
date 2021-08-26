@@ -1,8 +1,8 @@
-@import '@fontsource/mulish';
-@import '@fontsource/mulish/500';
+@import '@fontsource/ubuntu';
+@import '@fontsource/ubuntu/500';
 
 :root {
-	font-family: 'Mulish', Roboto, Oxygen, Ubuntu, 'Open Sans', 'Helvetica Neue', 'Segoe UI',
+	font-family: 'Ubuntu', Ubuntu, Roboto, 'Open Sans', 'Helvetica Neue', 'Segoe UI',
 		BlinkMacSystemFont, -apple-system, Cantarell, Arial, sans-serif;
 	font-size: 125%;
 	--primary: #5c87e7;

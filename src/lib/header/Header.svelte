@@ -12,7 +12,7 @@
 			</a>
 		</div>
 
-		<nav class="menu">
+		<nav role="menu" class="menu">
 			<a
 				sveltekit:prefetch
 				role="menuitem"
@@ -51,7 +51,7 @@
 				aria-current={$page.path === '/sponsors' ? 'page' : false}
 				href="/sponsors"
 			>
-				Поддержка
+				Донатеры
 			</a>
 		</nav>
 

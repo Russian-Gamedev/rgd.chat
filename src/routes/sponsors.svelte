@@ -76,12 +76,4 @@
 	#sponsors {
 		display: inline-flex;
 	}
-
-	#sponsors::after {
-		/* position: absolute; */
-		margin-left: 0.4rem;
-		display: inline-block;
-		content: url('/icons/sponsors.svg');
-		min-width: 1.5em;
-	}
 </style>

@@ -1,6 +1,12 @@
-<script lang="ts">
+<script>
 	import Header from '$lib/header/Header.svelte';
 	import '../global.css';
+	import { browser } from '$app/env';
+
+	if (browser) {
+		if (CSS && 'paintWorklet' in CSS)
+			CSS.paintWorklet.addModule('https://unpkg.com/smooth-corners');
+	}
 </script>
 
 <Header />
@@ -13,6 +19,16 @@
 <div class="todo"><h3>Здесь мог быть ваш адаптивный дизайн</h3></div>
 
 <style>
+	main {
+		display: flex;
+		flex-direction: column;
+		justify-content: start;
+		align-items: flex-start;
+		width: 100%;
+		height: 100%;
+		gap: 2.4rem;
+	}
+
 	.todo {
 		display: none;
 		overflow: hidden;
