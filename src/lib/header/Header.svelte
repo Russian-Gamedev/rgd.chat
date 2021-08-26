@@ -169,6 +169,7 @@
 	} */
 
 	.bottom-one {
+		display: none;
 		margin-bottom: 6rem;
 	}
 </style>
