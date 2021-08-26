@@ -117,7 +117,7 @@
 		margin: 0;
 		object-fit: cover;
 		width: 100%;
-		aspect-ratio: 10 / 6;
+		aspect-ratio: 16 / 9;
 		border-radius: 0.2rem;
 	}
 
