@@ -70,6 +70,7 @@ h1,
 h2,
 h3 {
 	font-weight: 500;
+	margin: 0;
 }
 
 h1,
@@ -87,6 +88,20 @@ h2,
 h3,
 body {
 	color: var(--gen-text);
+}
+
+h3 {
+	padding-left: 0.8rem;
+}
+
+h3::before {
+	position: absolute;
+	content: '';
+	margin-left: -0.8rem;
+	width: 0.2rem;
+	height: 1.4em;
+	border-radius: 1em;
+	background-color: var(--primary);
 }
 
 a {
