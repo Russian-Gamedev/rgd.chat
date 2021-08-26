@@ -50,11 +50,7 @@
 		object-fit: cover;
 		width: 100%;
 		aspect-ratio: 3 / 1;
-
 		border-radius: 0.2rem;
-		--smooth-corners: 300, 100;
-		mask-image: paint(smooth-corners);
-		-webkit-mask-image: paint(smooth-corners);
 	}
 
 	.banner__info {
@@ -74,11 +70,7 @@
 		align-items: center;
 		padding: 0.4rem 0.6rem 0.4rem 0.8rem;
 		background-color: var(--primary);
-
 		border-radius: 0.4rem;
-		--smooth-corners: 300, 100;
-		mask-image: paint(smooth-corners);
-		-webkit-mask-image: paint(smooth-corners);
 	}
 
 	.banner__link a {

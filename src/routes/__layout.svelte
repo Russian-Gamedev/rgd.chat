@@ -1,12 +1,6 @@
 <script>
 	import Header from '$lib/header/Header.svelte';
 	import '../global.css';
-	import { browser } from '$app/env';
-
-	if (browser) {
-		if (CSS && 'paintWorklet' in CSS)
-			CSS.paintWorklet.addModule('https://unpkg.com/smooth-corners');
-	}
 </script>
 
 <Header />

@@ -9,7 +9,6 @@ specifiers:
   cookie: ^0.4.1
   prettier: ~2.2.1
   prettier-plugin-svelte: ^2.3.1
-  smooth-corners: ^1.0.8
   svelte: ^3.42.1
   svelte-check: ^2.2.4
   svelte-preprocess: ^4.7.4
@@ -20,7 +19,6 @@ dependencies:
   '@fontsource/ubuntu': 4.5.0
   '@lukeed/uuid': 2.0.0
   cookie: 0.4.1
-  smooth-corners: 1.0.8
 
 devDependencies:
   '@sveltejs/adapter-vercel': 1.0.0-next.27
@@ -482,10 +480,6 @@ packages:
     dependencies:
       mri: 1.1.6
     dev: true
-
-  /smooth-corners/1.0.8:
-    resolution: {integrity: sha512-JcHYm/7l3RZAX+Ev7/91tRX2zau1h+8nVWqMkl3mvqMsHQkUCbEQjFNKRj58s49PyqDcpl9TcUeC2zHHyGu2sQ==}
-    dev: false
 
   /source-map-js/0.6.2:
     resolution: {integrity: sha512-/3GptzWzu0+0MBQFrDKzw/DvvMTUORvgY6k6jd/VS6iCR4RDTKWH6v6WPwQoUO8667uQEf9Oe38DxAYWY5F/Ug==}
