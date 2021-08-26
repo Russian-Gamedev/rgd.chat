@@ -11,8 +11,5 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: Get Commit Hash
-        id: get_commit_hash
-        run: echo ::set-output name=COMMIT_HASH::$(git rev-parse --short "$GITHUB_SHA")
       - name: Build image
-        run: docker build -t "rgd-chat:${{ steps.get_commit_hash.outputs.COMMIT_HASH }}" .
+        run: docker build -t rgd-chat .
