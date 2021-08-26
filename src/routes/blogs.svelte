@@ -3,7 +3,7 @@
 		title: string;
 	};
 
-	let posts: Post[] = [{ title: 'Shit together' }, { title: 'Some good title' }];
+	let posts: Post[] = [{ title: 'Title one' }, { title: 'Title two' }];
 </script>
 
 <svelte:head>
