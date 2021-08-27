@@ -1,6 +1,0 @@
-[submodule "deploy/supabase"]
-	path = deploy/supabase
-	url = git@github.com:supabase/supabase.git
-[submodule "deploy/plausible"]
-	path = deploy/plausible
-	url = git@github.com:plausible/hosting.git
