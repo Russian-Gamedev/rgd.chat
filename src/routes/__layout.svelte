@@ -64,7 +64,7 @@
 		width: 100%;
 		/* 1040 px */
 		/* max-width: 52rem; */
-		max-width: 50.4rem;
+		max-width: 52rem;
 		margin: 0 auto;
 		box-sizing: content-box;
 		color: var(--text-color);

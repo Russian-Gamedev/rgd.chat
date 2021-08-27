@@ -56,6 +56,7 @@
 		width: 100%;
 		aspect-ratio: 3 / 1;
 		border-radius: 0.2rem;
+		background: #648ce8;
 	}
 
 	.banner__info {
@@ -103,8 +104,9 @@
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		flex-basis: 15rem;
-		flex-grow: 1;
+		flex-basis: 15.2rem;
+		/* flex-grow: 1; */
+		box-sizing: border-box;
 		gap: 0.8rem;
 		border-radius: 0.4rem;
 		padding: 0.8rem;
