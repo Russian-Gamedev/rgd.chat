@@ -12,7 +12,7 @@ Right now pipeline is easy:
 - Backend (Database and Storage)
 
   ```sh
-  cd deploy/supabase/docker
+  cd deploy/supabase
   docker-compose up -d -p supabase
   ```
 
