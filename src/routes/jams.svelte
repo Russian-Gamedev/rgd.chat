@@ -90,7 +90,8 @@
 	.jams {
 		display: flex;
 		flex-direction: column;
-		gap: 1.2rem;
+		justify-content: space-between;
+		row-gap: 1.2rem;
 	}
 
 	.jams__list {
@@ -101,11 +102,10 @@
 	}
 
 	.jam {
+		flex: 1 1 15.2rem;
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		flex-basis: 15.2rem;
-		/* flex-grow: 1; */
 		box-sizing: border-box;
 		gap: 0.8rem;
 		border-radius: 0.4rem;

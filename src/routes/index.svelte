@@ -48,7 +48,7 @@
 			</div>
 			<div class="useful-link__text">
 				<h5>YouTube</h5>
-				<p>Записи подведения итогов джемов</p>
+				<p>Записи итогов джемов</p>
 			</div>
 		</a>
 		<a sveltekit:prefetch class="useful-link" href="/jam/wizard-jam">
@@ -122,11 +122,13 @@
 	.useful-links {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.4rem;
+		justify-content: space-between;
+		column-gap: 2.4rem;
+		row-gap: 1.6rem;
 	}
 
 	.useful-link {
-		flex: 1 0 15.2rem;
+		flex: 1 1 13rem;
 		display: flex;
 		flex-direction: column;
 		gap: 0.8rem;
