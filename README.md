@@ -1,5 +1,8 @@
 # rgd.chat
 
+> If you reach rgd.chat right now, it would be old React version.
+> This version is not published yet :\
+
 ## Developing
 
 Once you've created a project and installed dependencies with `pnpm i`, start a development server:
