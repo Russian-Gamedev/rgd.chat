@@ -1,29 +1,29 @@
 # rgd.chat
 
-![rgd.chat Homepage](https://user-images.githubusercontent.com/26527529/131203635-b1aff017-673b-4c33-a783-aa3dc9d82859.jpg)
+![Главная rgd.chat](https://user-images.githubusercontent.com/26527529/131203635-b1aff017-673b-4c33-a783-aa3dc9d82859.jpg)
 
-> If you reach rgd.chat right now, it would be old React version.
-> This version is not published yet :\
+> Сейчас по домену rgd.chat находится React версия этого сайта со старым дизайном.
+> Эта версия будет опубликована как будет доделан минимальный функционал (Список джемов и страница донатеров)
 
-## Developing
+## Разработка
 
-Once you've created a project and installed dependencies with `pnpm i`, start a development server:
+После создания проекта и установки зависимостей с помощью `pnpm i`, запустите сервер разработки:
 
-> We using _[pnpm](https://github.com/pnpm/pnpm)_ for development
+> Мы используем _[pnpm](https://github.com/pnpm/pnpm)_ для разработки
 
 ```bash
 pnpm dev
 
-# or start the server and open the app in a new browser tab
+# или можно одновременно еще открыть вкладку в браузере
 pnpm dev -- --open
 ```
 
-## Building
+## Сборка
 
-To build production run:
+Соберите прод:
 
 ```bash
 pnpm build
 ```
 
-> You can preview the built app with `pnpm preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
+> Вы можете предварительно просмотреть собранное приложение с помощью `pnpm preview`, независимо от того, установили ли вы адаптер (почитайте что это в доках sveltekit). Эту херню нельзя использовать для хостинга прода.
