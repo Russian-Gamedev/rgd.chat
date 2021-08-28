@@ -130,7 +130,6 @@
 		margin: 1.5rem 1.2rem;
 		display: flex;
 		justify-content: flex-end;
-		color: var(--pure-white);
 	}
 
 	.badge {
@@ -141,6 +140,7 @@
 		line-height: 0.8rem;
 		letter-spacing: 0.025rem;
 		border-radius: 2em;
+		color: var(--pure-white);
 		background-color: var(--secondary-background);
 	}
 

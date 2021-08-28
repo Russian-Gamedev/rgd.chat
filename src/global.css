@@ -5,6 +5,8 @@
 	font-family: 'Ubuntu', Ubuntu, Roboto, 'Open Sans', 'Helvetica Neue', 'Segoe UI',
 		BlinkMacSystemFont, -apple-system, Cantarell, Arial, sans-serif;
 	font-size: 125%;
+	letter-spacing: 0.005rem;
+
 	--primary: #5c87e7;
 	--gen-text: #fefefe;
 	--control-label: #343434;
@@ -31,7 +33,6 @@
 	--heading-color: var(--pure-white);
 	--text-color: var(--gen-text);
 	--dimmed-text-color: var(--dimmed);
-
 	--discord-color: var(--primary);
 }
 
@@ -71,13 +72,6 @@ h2,
 h3 {
 	font-weight: 500;
 	margin: 0;
-}
-
-h1,
-h2,
-h3,
-body {
-	letter-spacing: 0.005rem;
 }
 
 h1 {
