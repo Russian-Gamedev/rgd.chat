@@ -1,5 +1,7 @@
 # rgd.chat
 
+![rgd.chat Homepage](https://user-images.githubusercontent.com/26527529/131203635-b1aff017-673b-4c33-a783-aa3dc9d82859.jpg)
+
 > If you reach rgd.chat right now, it would be old React version.
 > This version is not published yet :\
 
