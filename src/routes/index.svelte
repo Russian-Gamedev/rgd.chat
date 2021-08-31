@@ -1,12 +1,28 @@
 <script context="module" lang="ts">
 	import Badge from '$lib/components/Badge.svelte';
+	import MetaTags from '$lib/components/MetaTags.svelte';
+	import { page } from '$app/stores';
 
 	export const prerender = true;
 </script>
 
-<svelte:head>
-	<title>RGD</title>
-</svelte:head>
+<MetaTags
+	title="Russian Gamedev — Discord сообщество"
+	openGraph={{
+		site_name: 'Russian Gamedev',
+		title: 'Главная',
+		description:
+			'Обитель разработчиков игр, где вы услышите экспертное мнение по поводу своих игр и идей, найдёте отличных напарников которые не бросят под самый релиз, и живой войс где мы регулярно срём новых участников и играем в игры.',
+		type: 'website',
+		locale: 'ru_RU',
+		url: 'https://' + $page.host,
+		images: [
+			{
+				url: 'https://' + $page.host + '/placeholders/banner.jpg'
+			}
+		]
+	}}
+/>
 
 <section id="server-info">
 	<div class="info">

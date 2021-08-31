@@ -24,7 +24,7 @@ dependencies:
 
 devDependencies:
   '@sveltejs/adapter-node': 1.0.0-next.43
-  '@sveltejs/kit': 1.0.0-next.159_svelte@3.42.4
+  '@sveltejs/kit': 1.0.0-next.160_svelte@3.42.4
   '@types/cookie': 0.4.1
   prettier: 2.2.1
   prettier-plugin-svelte: 2.4.0_prettier@2.2.1+svelte@3.42.4
@@ -67,8 +67,8 @@ packages:
       tiny-glob: 0.2.9
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.159_svelte@3.42.4:
-    resolution: {integrity: sha512-aSq2zgnPmTFgiVBMtlkv5X/wnVBJDAmM9coRzk+qAKZoSLmLEmDteJbFt4m6IcAS7YoNKx/smSfC8QkdGjjrdg==}
+  /@sveltejs/kit/1.0.0-next.160_svelte@3.42.4:
+    resolution: {integrity: sha512-JmacpK+VsppUKDQu1B3oJ70SnE9BXb/PSAP3f91K/DMnaSEGj7vtHn/3e6l7Mop12t1PkBk5lImh/ULqBO+YfA==}
     engines: {node: ^12.20 || >=14.13}
     hasBin: true
     peerDependencies:

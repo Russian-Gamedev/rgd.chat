@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<title>Джемы на RGD</title>
+	<title>Джемы</title>
 </svelte:head>
 
 <div role="article" class="banner" title={jam.title}>

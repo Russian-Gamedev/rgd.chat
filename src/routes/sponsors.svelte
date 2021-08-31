@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+	import MetaTags from '$lib/components/MetaTags.svelte';
 	import Badge from '$lib/components/Badge.svelte';
 
 	import { sponsors } from '$lib/sponsors';
@@ -18,9 +20,32 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Спонсоры сервера</title>
-</svelte:head>
+<!-- <svelte:head>
+	<title>Донатеры</title>
+	<meta property="og:site_name" content="Russian Gamedev" />
+	<meta property="og:title" content="Донатеры" />
+	<meta property="og:type" content="website" />
+	<meta property="og:locale" content="ru_RU" />
+	<meta property="og:url" content={page.toString()} />
+	<meta property="og:image" content="https://ia.media-imdb.com/images/rock.jpg" />
+</svelte:head> -->
+
+<MetaTags
+	title="Донатеры"
+	openGraph={{
+		site_name: 'Russian Gamedev',
+		title: 'Донатеры',
+		description: 'Список поддержавших сервер',
+		type: 'website',
+		locale: 'ru_RU',
+		url: 'https://' + $page.host + $page.path,
+		images: [
+			{
+				url: 'https://' + $page.host + '/placeholders/sponsors.jpg'
+			}
+		]
+	}}
+/>
 
 <div class="banner" title="Поддержи RGD">
 	<!-- Also, maybe wrap it into `figure` for semantics? -->
@@ -29,7 +54,7 @@
 		<div class="banner__content__info">
 			<h1 class="title">Возможность внести свою лепту</h1>
 			<p class="teaser">
-				Основной способ поддержать RGD —
+				Основной способ поддержать Russian Gamedev —
 				<a rel="external" href="https://donatty.com/rgd"> Donatty </a>
 			</p>
 		</div>
