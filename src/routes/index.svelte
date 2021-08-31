@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
+	import { page } from '$app/stores';
 	import Badge from '$lib/components/Badge.svelte';
 	import MetaTags from '$lib/components/MetaTags.svelte';
-	import { page } from '$app/stores';
 
 	export const prerender = true;
 </script>

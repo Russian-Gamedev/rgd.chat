@@ -87,6 +87,7 @@
 
 <style lang="scss">
 	.banner {
+		align-self: stretch;
 		display: flex;
 		flex-direction: column;
 		gap: 0.8rem;
