@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Jam } from '$lib/types';
 	import { jams, href } from '$lib/jams';
+	import Badge from '$lib/components/Badge.svelte';
 	let jam = jams[0];
 </script>
 
@@ -11,12 +12,12 @@
 <div role="article" class="banner" title={jam.title}>
 	<!-- Also, maybe wrap it into `figure` for semantics? -->
 	<img src={jam.thumbnail} alt={jam.thumbnailAlt} />
-	<div class="banner__info">
-		<div class="info">
+	<div class="banner__content">
+		<div class="banner__content__info">
 			<h1 class="title">{jam.title}</h1>
 			<p class="teaser">{jam.teaser}</p>
 		</div>
-		<div class="banner__link"><a href={href(jam)}> Подробнее </a></div>
+		<a class="banner__content__link" href={href(jam)}> Подробнее </a>
 	</div>
 </div>
 
@@ -25,11 +26,11 @@
 	<div class="jams__list">
 		{#each jams.slice(1, jams.length) as jam}
 			<a role="article" class="jam" title={jam.title} href={href(jam)}>
-				<div class="badges">
-					<span class="badge"> ЛЕТО 2021 </span>
+				<div class="jam__badges">
+					<Badge>ЛЕТО 2021</Badge>
 				</div>
 				<img src={jam.thumbnail} alt={jam.thumbnailAlt} />
-				<div class="jam__info">
+				<div>
 					<h1 class="title">{jam.title}</h1>
 					<p class="teaser">{jam.teaser}</p>
 				</div>
@@ -38,7 +39,7 @@
 	</div>
 </div>
 
-<style>
+<style lang="scss">
 	.banner {
 		display: flex;
 		flex-direction: column;
@@ -48,115 +49,132 @@
 		overflow: hidden;
 		text-decoration: none;
 		background-color: var(--secondary-color);
-	}
 
-	.banner img {
-		margin: 0;
-		object-fit: cover;
-		width: 100%;
-		aspect-ratio: 3 / 1;
-		border-radius: 0.2rem;
-		background: #648ce8;
-	}
+		img {
+			margin: 0;
+			object-fit: cover;
+			width: 100%;
+			aspect-ratio: 3 / 1;
+			border-radius: 0.2rem;
+			background: #648ce8;
+		}
 
-	.banner__info {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 2rem;
-	}
+		&__content {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 2rem;
 
-	.banner__info .info {
-		display: flex;
-		flex-direction: column;
-		gap: 0.2rem;
-	}
+			&__info {
+				display: flex;
+				flex-direction: column;
+				gap: 0.2rem;
 
-	.banner__link {
-		display: flex;
-		align-items: center;
-		padding: 0.4rem 0.6rem 0.4rem 0.8rem;
-		background-color: var(--primary);
-		border-radius: 0.4rem;
-	}
+				.title,
+				.teaser {
+					line-height: 1.2rem;
+					margin: 0;
+				}
 
-	.banner__link a {
-		font-size: 0.85rem;
-		font-weight: 500;
-		line-height: 1.2rem;
-		color: var(--pure-white);
+				.title {
+					font-size: 0.7rem;
+					font-weight: 500;
+				}
+
+				.teaser {
+					font-size: 0.7rem;
+					color: var(--dimmed-text-color);
+				}
+			}
+
+			&__link {
+				display: flex;
+				align-items: center;
+				padding: 0.4rem 0.6rem 0.4rem 0.8rem;
+				background-color: var(--primary);
+				border-radius: 0.4rem;
+				font-size: 0.85rem;
+				font-weight: 500;
+				line-height: 1.2rem;
+				color: var(--pure-white);
+
+				&:hover {
+					text-decoration: none;
+				}
+
+				&::after {
+					margin-left: 0.4rem;
+					width: 1.2rem;
+					height: 1.2rem;
+					content: url('/icons/chevron-right.svg');
+				}
+			}
+		}
 	}
 
 	.jams {
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
 		row-gap: 1.2rem;
-	}
 
-	.jams__list {
-		display: flex;
-		flex-wrap: wrap;
-		column-gap: 2.4rem;
-		row-gap: 1.6rem;
-	}
+		&__list {
+			display: flex;
+			flex-wrap: wrap;
+			column-gap: 2.4rem;
+			row-gap: 1.6rem;
+		}
 
-	.jam {
-		flex: 1 1 15.2rem;
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		box-sizing: border-box;
-		gap: 0.8rem;
-		border-radius: 0.4rem;
-		padding: 0.8rem;
-		overflow: hidden;
-		text-decoration: none;
-		background-color: var(--secondary-color);
-	}
+		.jam {
+			flex: 0 1 15.2rem;
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			box-sizing: border-box;
+			gap: 0.8rem;
+			border-radius: 0.4rem;
+			padding: 0.8rem;
+			overflow: hidden;
+			text-decoration: none;
+			background-color: var(--secondary-color);
 
-	.jam img {
-		margin: 0;
-		object-fit: cover;
-		width: 100%;
-		aspect-ratio: 16 / 9;
-		border-radius: 0.2rem;
-	}
+			@media (max-width: 1028px) {
+				& {
+					flex-grow: 1;
+				}
+			}
 
-	.badges {
-		position: absolute;
-		top: 0;
-		right: 0;
-		margin: 1.5rem 1.2rem;
-		display: flex;
-		justify-content: flex-end;
-	}
+			img {
+				margin: 0;
+				object-fit: cover;
+				width: 100%;
+				aspect-ratio: 16 / 9;
+				border-radius: 0.2rem;
+			}
 
-	.badge {
-		display: block;
-		padding: 0.1rem 0.4rem;
-		font-size: 0.5rem;
-		font-weight: 500;
-		line-height: 0.8rem;
-		letter-spacing: 0.025rem;
-		border-radius: 2em;
-		color: var(--pure-white);
-		background-color: var(--secondary-background);
-	}
+			&__badges {
+				position: absolute;
+				top: 0;
+				right: 0;
+				margin: 1.5rem 1.2rem;
+				display: flex;
+				justify-content: flex-end;
+			}
 
-	.title,
-	.teaser {
-		line-height: 1.2rem;
-		margin: 0;
-	}
+			.title,
+			.teaser {
+				line-height: 1.2rem;
+				margin: 0;
+			}
 
-	.title {
-		font-size: 0.7rem;
-		font-weight: 500;
-	}
+			.title {
+				font-size: 0.7rem;
+				font-weight: 500;
+			}
 
-	.teaser {
-		font-size: 0.7rem;
-		color: var(--dimmed-text-color);
+			.teaser {
+				font-size: 0.7rem;
+				color: var(--dimmed-text-color);
+			}
+		}
 	}
 </style>

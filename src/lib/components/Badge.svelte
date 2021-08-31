@@ -1,10 +1,11 @@
-<span>
+<span on:click class={$$props.class}>
 	<slot />
 </span>
 
-<style>
+<style lang="scss">
 	span {
-		display: inline-block;
+		display: inline-flex;
+		gap: 0.2rem;
 		padding: 0.1rem 0.4rem;
 		font-size: 0.5rem;
 		font-weight: 500;

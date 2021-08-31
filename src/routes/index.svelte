@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	import Label from '$lib/label/Label.svelte';
+	import Badge from '$lib/components/Badge.svelte';
 
 	export const prerender = true;
 </script>
@@ -11,7 +11,7 @@
 <section id="server-info">
 	<div class="info">
 		<div class="text">
-			<h1>Russian Gamedev — русскоязычное сообщество игроделов</h1>
+			<h1>Russian Gamedev — Discord сообщество</h1>
 			<p>
 				Обитель разработчиков игр, где вы услышите экспертное мнение по поводу своих игр и идей,
 				найдёте отличных напарников которые не бросят под самый релиз, и живой войс где мы регулярно
@@ -19,8 +19,8 @@
 			</p>
 		</div>
 		<div class="stats">
-			<Label>УЧАСТНИКОВ: <span class="label__counter">2347</span></Label>
-			<Label>ОНЛАЙН: <span class="label__counter">758</span></Label>
+			<Badge>УЧАСТНИКОВ: <span class="label__counter">2 347</span></Badge>
+			<Badge>ОНЛАЙН: <span class="label__counter">758</span></Badge>
 		</div>
 	</div>
 	<a class="invite" rel="external" href="https://discord.gg/EKUg5VhCVW">Присоединиться</a>

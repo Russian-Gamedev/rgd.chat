@@ -7,6 +7,13 @@
 	font-size: 125%;
 	letter-spacing: 0.005rem;
 
+	text-rendering: optimizeLegibility;
+	text-rendering: geometricPrecision;
+	font-smooth: always;
+	-moz-font-smoothing: antialiased;
+	-webkit-font-smoothing: antialiased;
+	-webkit-font-smoothing: subpixel-antialiased;
+
 	--primary: #5c87e7;
 	--gen-text: #fefefe;
 	--control-label: #343434;

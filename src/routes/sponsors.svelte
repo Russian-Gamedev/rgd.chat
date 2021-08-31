@@ -1,79 +1,204 @@
 <script lang="ts">
+	import Badge from '$lib/components/Badge.svelte';
+
 	import { sponsors } from '$lib/sponsors';
+
+	function sponsorClass(index: number): string {
+		let result = 'amount';
+		switch (index + 1) {
+			case 1:
+				return result + ' amount--gold';
+			case 2:
+				return result + ' amount--silver';
+			case 3:
+				return result + ' amount--bronze';
+			default:
+				return result;
+		}
+	}
 </script>
 
 <svelte:head>
 	<title>Спонсоры сервера</title>
 </svelte:head>
 
-<div class="sponsors">
-	<h1>Поддержавшие Russian Gamedev</h1>
-
-	<div>
-		Основной способ поддержать RGD это
-		<a rel="external" href="https://donatty.com/rgd">Donatty</a>
+<div class="banner" title="Поддержи RGD">
+	<!-- Also, maybe wrap it into `figure` for semantics? -->
+	<img src="/placeholders/sponsors.jpg" alt="Поддержи RGD" />
+	<div class="banner__content">
+		<div class="banner__content__info">
+			<h1 class="title">Возможность внести свою лепту</h1>
+			<p class="teaser">
+				Основной способ поддержать RGD —
+				<a rel="external" href="https://donatty.com/rgd"> Donatty </a>
+			</p>
+		</div>
+		<a class="banner__content__link" rel="external" href="https://donatty.com/rgd"> Поддержать </a>
 	</div>
-	<div id="sponsors">Спасибо всем кто <b>уже</b> поддержал</div>
+</div>
 
-	<table>
-		{#each sponsors as sponsor}
-			<tr>
-				<td class="name">{sponsor.name}</td>
-				<td class="amount"
-					>{sponsor.amount.toLocaleString('ru-RU', {
+<div class="sponsors">
+	<h3>Поддержавшие</h3>
+
+	<div class="sponsors__list">
+		{#each sponsors as sponsor, index}
+			<div class="sponsor">
+				<a class="profile" href="#ass">
+					<img src="/placeholders/profile.jpg" alt={'Аватар' + sponsor.name} />
+					<span class="name">{sponsor.name}</span>
+				</a>
+				<Badge class={sponsorClass(index)}>
+					{sponsor.amount.toLocaleString('ru-RU', {
 						style: 'currency',
 						currency: 'RUB',
 						maximumFractionDigits: 0,
 						minimumFractionDigits: 0
-					})}</td
-				>
-			</tr>
+					})}
+				</Badge>
+			</div>
 		{/each}
-	</table>
+	</div>
 </div>
 
-<style>
+<style lang="scss">
+	.banner {
+		display: flex;
+		flex-direction: column;
+		gap: 0.8rem;
+		border-radius: 0.4rem;
+		padding: 0.8rem;
+		overflow: hidden;
+		text-decoration: none;
+		background-color: var(--secondary-color);
+
+		img {
+			margin: 0;
+			object-fit: cover;
+			width: 100%;
+			aspect-ratio: 3 / 1;
+			border-radius: 0.2rem;
+			background: #648ce8;
+		}
+
+		&__content {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 2rem;
+
+			&__info {
+				display: flex;
+				flex-direction: column;
+				gap: 0.2rem;
+
+				.title,
+				.teaser {
+					line-height: 1.2rem;
+					margin: 0;
+				}
+
+				.title {
+					font-size: 0.7rem;
+					font-weight: 500;
+				}
+
+				.teaser {
+					font-size: 0.7rem;
+					color: var(--dimmed-text-color);
+				}
+			}
+
+			&__link {
+				display: flex;
+				align-items: center;
+				padding: 0.4rem 0.6rem 0.4rem 0.8rem;
+				background-color: var(--primary);
+				border-radius: 0.4rem;
+				font-size: 0.85rem;
+				font-weight: 500;
+				line-height: 1.2rem;
+				color: var(--pure-white);
+
+				&:hover {
+					text-decoration: none;
+				}
+
+				&::after {
+					margin-left: 0.4rem;
+					width: 1.2rem;
+					height: 1.2rem;
+					content: url('/icons/chevron-right.svg');
+				}
+			}
+		}
+	}
+
 	.sponsors {
 		display: flex;
-		width: 100%;
-		height: 100%;
+		row-gap: 1.2rem;
 		flex-direction: column;
-		align-items: center;
-	}
 
-	table {
-		overflow: auto;
-		width: max-content;
-		max-width: 100%;
-		font-variant-numeric: lining-nums tabular-nums;
-	}
+		&__list {
+			display: flex;
+			flex-wrap: wrap;
+			column-gap: 2.4rem;
+			row-gap: 1.6rem;
+		}
 
-	tr {
-		background-color: var(--secondary-color);
-	}
+		.sponsor {
+			flex: 1 0 15.2rem;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 0.4rem;
+			padding: 0.8rem;
+			box-sizing: border-box;
+			border-radius: 0.4rem;
+			background-color: var(--secondary-color);
 
-	tr:nth-child(2n) {
-		background-color: var(--tertiary-color);
-	}
+			.profile {
+				display: flex;
+				align-items: center;
+				gap: 0.4rem;
+				color: var(--pure-white);
 
-	td {
-		padding: 0.5rem;
-	}
+				&:hover {
+					text-decoration: none;
+				}
 
-	#sponsors b {
-		padding: 0 0.25em;
-	}
+				&:visited {
+					color: var(--pure-white);
+				}
 
-	.name {
-		padding-right: 1rem;
-		min-width: 12rem;
-	}
+				img {
+					width: 1.4rem;
+					height: 1.4rem;
+					border-radius: 0.45rem;
+				}
 
-	.amount {
-		text-align: right;
-	}
+				.name {
+					font-size: 0.7rem;
+					font-weight: 500;
+					line-height: 1.2rem;
+				}
+			}
 
-	#sponsors {
-		display: inline-flex;
+			:global(.amount) {
+				font-variant-numeric: tabular-nums;
+				background-color: var(--primary);
+			}
+
+			:global(.amount--gold) {
+				background-color: #deb259;
+			}
+
+			:global(.amount--silver) {
+				background-color: #9fa7ab;
+			}
+
+			:global(.amount--bronze) {
+				background-color: #de9c65;
+			}
+		}
 	}
 </style>

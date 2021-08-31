@@ -1,15 +1,31 @@
 <script>
-	import Header from '$lib/header/Header.svelte';
+	import Header from '$lib/components/Header.svelte';
 	import '../global.css';
 </script>
 
 <Header />
 
-<main>
-	<slot />
-</main>
+<div class="content">
+	<!-- Breadcrumbs -->
+
+	<main>
+		<slot />
+	</main>
+
+	<!-- Footer -->
+</div>
 
 <style>
+	.content {
+		margin: 0 auto;
+		height: 100%;
+		max-width: 50.4rem;
+		box-sizing: content-box;
+		padding: 3.2rem 2rem;
+		color: var(--text-color);
+	}
+
+	.content,
 	main {
 		flex: 1;
 		display: flex;
@@ -17,13 +33,5 @@
 		justify-content: start;
 		align-items: flex-start;
 		gap: 2.4rem;
-		margin: 0 auto;
-		padding: 3.2rem 2rem;
-		box-sizing: content-box;
-		width: 100%;
-		/* 1040 px */
-		max-width: 52rem;
-		height: 100%;
-		color: var(--text-color);
 	}
 </style>

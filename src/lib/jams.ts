@@ -10,7 +10,7 @@ export const jams: Jam[] = [
     title: 'Wizard Jam',
     teaser:
       'У админов наступила ностальгия новогодних джемов, ведь 2020 мы пропустили, пусть вьюга станет нашим путеводом!',
-    thumbnail: 'https://xshxhmntnugvfztasqwt.supabase.in/storage/v1/object/public/images/placeholder-banner.jpg',
+    thumbnail: '/placeholders/banner.jpg',
     thumbnailAlt: 'Анонс джема зимнего сезона 2020–21 года'
   },
   {

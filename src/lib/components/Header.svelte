@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page, session } from '$app/stores';
-	import LoginButton from '$lib/header/LoginButton.svelte';
-	import Account from '$lib/header/Account.svelte';
+	import LoginButton from '$lib/components/header/LoginButton.svelte';
+	import Account from '$lib/components/header/Account.svelte';
 </script>
 
 <header>
@@ -21,7 +21,7 @@
 				aria-current={$page.path === '/games' ? 'page' : false}
 				href="/games"
 			>
-				Сообщество
+				Игры
 			</a>
 			<a
 				sveltekit:prefetch
@@ -41,7 +41,7 @@
 				aria-current={$page.path === '/blogs' ? 'page' : false}
 				href="/blogs"
 			>
-				Туториалы
+				Блоги
 			</a>
 			<a
 				sveltekit:prefetch
