@@ -26,7 +26,7 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "@fontsource/ubuntu": "^4.5.0",
+    "@fontsource/mulish": "^4.5.1",
     "@lukeed/uuid": "^2.0.0",
     "cookie": "^0.4.1",
     "sass": "^1.38.2"

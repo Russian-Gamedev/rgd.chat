@@ -20,16 +20,6 @@
 	}
 </script>
 
-<!-- <svelte:head>
-	<title>Донатеры</title>
-	<meta property="og:site_name" content="Russian Gamedev" />
-	<meta property="og:title" content="Донатеры" />
-	<meta property="og:type" content="website" />
-	<meta property="og:locale" content="ru_RU" />
-	<meta property="og:url" content={page.toString()} />
-	<meta property="og:image" content="https://ia.media-imdb.com/images/rock.jpg" />
-</svelte:head> -->
-
 <MetaTags
 	title="Донатеры"
 	openGraph={{
@@ -125,7 +115,7 @@
 
 				.title {
 					font-size: 0.7rem;
-					font-weight: 500;
+					font-weight: 700;
 				}
 
 				.teaser {
@@ -141,7 +131,7 @@
 				background-color: var(--primary);
 				border-radius: 0.4rem;
 				font-size: 0.85rem;
-				font-weight: 500;
+				font-weight: 700;
 				line-height: 1.2rem;
 				color: var(--pure-white);
 
@@ -204,13 +194,12 @@
 
 				.name {
 					font-size: 0.7rem;
-					font-weight: 500;
+					font-weight: 700;
 					line-height: 1.2rem;
 				}
 			}
 
 			:global(.amount) {
-				font-variant-numeric: tabular-nums;
 				background-color: var(--primary);
 			}
 

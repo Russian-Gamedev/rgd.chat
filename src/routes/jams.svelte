@@ -79,7 +79,7 @@
 
 				.title {
 					font-size: 0.7rem;
-					font-weight: 500;
+					font-weight: 700;
 				}
 
 				.teaser {
@@ -95,7 +95,7 @@
 				background-color: var(--primary);
 				border-radius: 0.4rem;
 				font-size: 0.85rem;
-				font-weight: 500;
+				font-weight: 700;
 				line-height: 1.2rem;
 				color: var(--pure-white);
 
@@ -169,7 +169,7 @@
 
 			.title {
 				font-size: 0.7rem;
-				font-weight: 500;
+				font-weight: 700;
 			}
 
 			.teaser {

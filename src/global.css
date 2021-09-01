@@ -1,8 +1,8 @@
-@import '@fontsource/ubuntu';
-@import '@fontsource/ubuntu/500';
+@import '@fontsource/mulish';
+@import '@fontsource/mulish/700';
 
 :root {
-	font-family: 'Ubuntu', Ubuntu, Roboto, 'Open Sans', 'Helvetica Neue', 'Segoe UI',
+	font-family: 'Mulish', Ubuntu, Roboto, 'Open Sans', 'Helvetica Neue', 'Segoe UI',
 		BlinkMacSystemFont, -apple-system, Cantarell, Arial, sans-serif;
 	font-size: 125%;
 	letter-spacing: 0.005rem;
@@ -77,7 +77,7 @@ body {
 h1,
 h2,
 h3 {
-	font-weight: 500;
+	font-weight: 700;
 	margin: 0;
 }
 

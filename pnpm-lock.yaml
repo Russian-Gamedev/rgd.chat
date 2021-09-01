@@ -1,7 +1,8 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@fontsource/ubuntu': ^4.5.0
+  '@fontsource/inter': ^4.5.0
+  '@fontsource/mulish': ^4.5.1
   '@lukeed/uuid': ^2.0.0
   '@sveltejs/adapter-node': ^1.0.0-next.43
   '@sveltejs/kit': next
@@ -17,7 +18,8 @@ specifiers:
   typescript: ^4.4.2
 
 dependencies:
-  '@fontsource/ubuntu': 4.5.0
+  '@fontsource/inter': 4.5.0
+  '@fontsource/mulish': 4.5.1
   '@lukeed/uuid': 2.0.0
   cookie: 0.4.1
   sass: 1.38.2
@@ -36,8 +38,12 @@ devDependencies:
 
 packages:
 
-  /@fontsource/ubuntu/4.5.0:
-    resolution: {integrity: sha512-PytR+FgXPPK+UNrLNhYucrNXewS9b4YOJpS2oYw4dfJq+5iyG8iV6CfwToy2UOVSOmBSBhCQ6mJa5Z6BqrGqMw==}
+  /@fontsource/inter/4.5.0:
+    resolution: {integrity: sha512-2efK8Ru0LkuOYrEpiHPlV02YkTdIKGbezlxVNeA8/3c+tNt7P2aQPuiYYkVy7N4GA5LWSUVcLL/91MpCIjinOw==}
+    dev: false
+
+  /@fontsource/mulish/4.5.1:
+    resolution: {integrity: sha512-0CcAyvf1y0E74jAWLRjBEMw5ud3AKJFTfrFFsJn4E1OJZ3eLzKmb7MKM3GilhFvqTA00uz/22ZPxp1Z1J3f9sw==}
     dev: false
 
   /@lukeed/csprng/1.0.0:

@@ -118,7 +118,7 @@
 		display: block;
 		padding: 0.6rem 1rem;
 		border-radius: 0.4rem;
-		font-weight: 500;
+		font-weight: 700;
 		line-height: 1.2rem;
 		color: var(--pure-white);
 		background-color: var(--primary);
@@ -182,7 +182,7 @@
 	.useful-link__text h5 {
 		margin: 0;
 		font-size: 0.7rem;
-		font-weight: 500;
+		font-weight: 700;
 		color: var(--pure-white);
 	}
 
