@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Badge from '$lib/components/Badge.svelte';
+	import Banner from '$lib/components/Banner.svelte';
 	import MetaTags from '$lib/components/MetaTags.svelte';
 	import { sponsors } from '$lib/sponsors';
 
@@ -36,20 +37,17 @@
 	}}
 />
 
-<div class="banner" title="Поддержи RGD">
-	<!-- Also, maybe wrap it into `figure` for semantics? -->
-	<img src="/placeholders/sponsors.jpg" alt="Поддержи RGD" />
-	<div class="banner__content">
-		<div class="banner__content__info">
-			<h1 class="title">Возможность внести свою лепту</h1>
-			<p class="teaser">
-				Основной способ поддержать Russian Gamedev —
-				<a rel="external" href="https://donatty.com/rgd"> Donatty </a>
-			</p>
-		</div>
-		<a class="banner__content__link" rel="external" href="https://donatty.com/rgd"> Поддержать </a>
-	</div>
-</div>
+<Banner
+	role=""
+	title="Возможность внести свою лепту"
+	image="/placeholders/sponsors.jpg"
+	imageAlt="Поддержи RGD"
+	href="https://donatty.com/rgd"
+	rel="external"
+>
+	Основной способ поддержать Russian Gamedev —
+	<a rel="external" href="https://donatty.com/rgd"> Donatty </a>
+</Banner>
 
 <div class="sponsors">
 	<h3>Поддержавшие</h3>
@@ -58,7 +56,10 @@
 		{#each sponsors as sponsor, index}
 			<div class="sponsor">
 				<a class="profile" href="#ass">
-					<img src="/placeholders/profile.jpg" alt={'Аватар' + sponsor.name} />
+					<img
+						src="https://cdn.discordapp.com/avatars/281037696225247233/7fc45e72e599ddf519ffba81538dd380.jpg?size=64"
+						alt=""
+					/>
 					<span class="name">{sponsor.name}</span>
 				</a>
 				<Badge class={sponsorClass(index)}>
@@ -75,79 +76,6 @@
 </div>
 
 <style lang="scss">
-	.banner {
-		align-self: stretch;
-		display: flex;
-		flex-direction: column;
-		gap: 0.8rem;
-		border-radius: 0.4rem;
-		padding: 0.8rem;
-		overflow: hidden;
-		text-decoration: none;
-		background-color: var(--secondary-color);
-
-		img {
-			margin: 0;
-			object-fit: cover;
-			width: 100%;
-			aspect-ratio: 3 / 1;
-			border-radius: 0.2rem;
-			background: #648ce8;
-		}
-
-		&__content {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			gap: 2rem;
-
-			&__info {
-				display: flex;
-				flex-direction: column;
-				gap: 0.2rem;
-
-				.title,
-				.teaser {
-					line-height: 1.2rem;
-					margin: 0;
-				}
-
-				.title {
-					font-size: 0.7rem;
-					font-weight: 700;
-				}
-
-				.teaser {
-					font-size: 0.7rem;
-					color: var(--dimmed-text-color);
-				}
-			}
-
-			&__link {
-				display: flex;
-				align-items: center;
-				padding: 0.4rem 0.6rem 0.4rem 0.8rem;
-				background-color: var(--primary);
-				border-radius: 0.4rem;
-				font-size: 0.85rem;
-				font-weight: 700;
-				line-height: 1.2rem;
-				color: var(--pure-white);
-
-				&:hover {
-					text-decoration: none;
-				}
-
-				&::after {
-					margin-left: 0.4rem;
-					width: 1.2rem;
-					height: 1.2rem;
-					content: url('/icons/chevron-right.svg');
-				}
-			}
-		}
-	}
-
 	.sponsors {
 		display: flex;
 		row-gap: 1.2rem;
