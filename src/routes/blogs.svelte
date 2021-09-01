@@ -1,15 +1,7 @@
 <script lang="ts">
-	type Post = {
-		title: string;
-	};
-
-	let posts: Post[] = [{ title: 'Title one' }, { title: 'Title two' }];
+	import MetaTags from '$lib/components/MetaTags.svelte';
 </script>
 
-<svelte:head>
-	<title>Блоги</title>
-</svelte:head>
+<MetaTags noindex={true} nofollow={true} title="Блоги" />
 
-{#each posts as post}
-	<span>{post.title}</span>
-{/each}
+<h3>Блоги</h3>

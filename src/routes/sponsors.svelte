@@ -21,6 +21,8 @@
 </script>
 
 <MetaTags
+	noindex={true}
+	nofollow={true}
 	title="Донатеры"
 	openGraph={{
 		site_name: 'Russian Gamedev',

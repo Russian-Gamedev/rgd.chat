@@ -6,7 +6,7 @@
 	let jam = jams[0];
 </script>
 
-<MetaTags title="Джемы" />
+<MetaTags noindex={true} nofollow={true} title="Джемы" />
 
 <Banner
 	role="article"
