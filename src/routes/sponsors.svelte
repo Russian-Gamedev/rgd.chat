@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import MetaTags from '$lib/components/MetaTags.svelte';
 	import Badge from '$lib/components/Badge.svelte';
-
+	import MetaTags from '$lib/components/MetaTags.svelte';
 	import { sponsors } from '$lib/sponsors';
 
 	function sponsorClass(index: number): string {

@@ -1,7 +1,6 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@fontsource/inter': ^4.5.0
   '@fontsource/mulish': ^4.5.1
   '@lukeed/uuid': ^2.0.0
   '@sveltejs/adapter-node': ^1.0.0-next.43
@@ -18,7 +17,6 @@ specifiers:
   typescript: ^4.4.2
 
 dependencies:
-  '@fontsource/inter': 4.5.0
   '@fontsource/mulish': 4.5.1
   '@lukeed/uuid': 2.0.0
   cookie: 0.4.1
@@ -37,10 +35,6 @@ devDependencies:
   typescript: 4.4.2
 
 packages:
-
-  /@fontsource/inter/4.5.0:
-    resolution: {integrity: sha512-2efK8Ru0LkuOYrEpiHPlV02YkTdIKGbezlxVNeA8/3c+tNt7P2aQPuiYYkVy7N4GA5LWSUVcLL/91MpCIjinOw==}
-    dev: false
 
   /@fontsource/mulish/4.5.1:
     resolution: {integrity: sha512-0CcAyvf1y0E74jAWLRjBEMw5ud3AKJFTfrFFsJn4E1OJZ3eLzKmb7MKM3GilhFvqTA00uz/22ZPxp1Z1J3f9sw==}
@@ -117,8 +111,8 @@ packages:
     resolution: {integrity: sha512-XW/Aa8APYr6jSVVA1y/DEIZX0/GMKLEVekNG727R8cs56ahETkRAy/3DR7+fJyh7oUgGwNQaRfXCun0+KbWY7Q==}
     dev: true
 
-  /@types/node/16.7.8:
-    resolution: {integrity: sha512-8upnoQU0OPzbIkm+ZMM0zCeFCkw2s3mS0IWdx0+AAaWqm4fkBb0UJp8Edl7FVKRamYbpJC/aVsHpKWBIbiC7Zg==}
+  /@types/node/16.7.10:
+    resolution: {integrity: sha512-S63Dlv4zIPb8x6MMTgDq5WWRJQe56iBEY0O3SOFA9JrRienkOVDXSXBjjJw6HTNQYSE2JI6GMCR6LVbIMHJVvA==}
     dev: true
 
   /@types/pug/2.0.5:
@@ -128,7 +122,7 @@ packages:
   /@types/sass/1.16.1:
     resolution: {integrity: sha512-iZUcRrGuz/Tbg3loODpW7vrQJkUtpY2fFSf4ELqqkApcS2TkZ1msk7ie8iZPB86lDOP8QOTTmuvWjc5S0R9OjQ==}
     dependencies:
-      '@types/node': 16.7.8
+      '@types/node': 16.7.10
     dev: true
 
   /ansi-styles/4.3.0:
