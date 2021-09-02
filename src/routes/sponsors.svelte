@@ -99,7 +99,7 @@
 			padding: 0.8rem;
 			box-sizing: border-box;
 			border-radius: 0.4rem;
-			background-color: var(--secondary-color);
+			background-color: var(--secondary-background);
 
 			.profile {
 				display: flex;

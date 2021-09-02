@@ -13,10 +13,13 @@
 	text-rendering: optimizeLegibility;
 	text-rendering: geometricPrecision;
 
+	--pure-white: #ffffff;
 	--primary: #5c87e7;
 	--gen-text: #fefefe;
+	--dimmed-text: #999ca0;
 	--control-label: #343434;
-	--gen-background: #1f1d1d;
+	--gen-background: #1b1c1f;
+	--secondary-background: #111215;
 	--black: #121111;
 	--link: #005bd1;
 	--link-visited: #528fdf;
@@ -24,28 +27,13 @@
 	--error: #ed0a34;
 	--notify: #ff9e00;
 
-	--primary-background: #1b1c1f;
-	--secondary-background: #111215;
-	--dimmed: #999ca0;
-	--pure-white: #ffffff;
-
 	--header-width: 13.8rem;
-
-	/* TODO: Delete */
-	--primary-color: var(--primary-background);
-	--secondary-color: var(--secondary-background);
-	--tertiary-color: #22242c;
-	--accent-color: var(--primary);
-	--heading-color: var(--pure-white);
-	--text-color: var(--gen-text);
-	--dimmed-text-color: var(--dimmed);
-	--discord-color: var(--primary);
 }
 
 body {
 	min-height: 100vh;
 	margin: 0;
-	background-color: var(--primary-background);
+	background-color: var(--gen-background);
 }
 
 #root {

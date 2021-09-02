@@ -107,7 +107,7 @@
 
 	.text p {
 		margin: 0;
-		color: var(--dimmed);
+		color: var(--dimmed-text);
 	}
 
 	.stats {
@@ -195,6 +195,6 @@
 		margin: 0;
 		font-size: 0.7rem;
 		font-weight: 400;
-		color: var(--dimmed);
+		color: var(--dimmed-text);
 	}
 </style>

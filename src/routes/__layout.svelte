@@ -22,7 +22,7 @@
 		max-width: 50.4rem;
 		box-sizing: content-box;
 		padding: 3.2rem 2rem;
-		color: var(--text-color);
+		color: var(--gen-text);
 	}
 
 	.content,

@@ -21,7 +21,7 @@
 		font-weight: bold;
 		letter-spacing: 0.04em;
 
-		background-color: var(--discord-color);
+		background-color: var(--primary);
 		cursor: pointer;
 	}
 

@@ -34,7 +34,7 @@
 		padding: 0.8rem;
 		overflow: hidden;
 		text-decoration: none;
-		background-color: var(--secondary-color);
+		background-color: var(--secondary-background);
 
 		img {
 			margin: 0;
@@ -69,7 +69,7 @@
 
 				.teaser {
 					font-size: 0.7rem;
-					color: var(--dimmed-text-color);
+					color: var(--dimmed-text-gen-text);
 				}
 			}
 

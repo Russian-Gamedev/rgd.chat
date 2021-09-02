@@ -72,7 +72,7 @@
 		/* gap: 0.8rem; */
 
 		background-color: var(--secondary-background);
-		/* box-shadow: 0 -100vh 0 var(--text-color); */
+		/* box-shadow: 0 -100vh 0 var(--gen-text); */
 	}
 
 	.header__wrapper {
@@ -120,7 +120,7 @@
 		height: 2.8rem;
 		padding-left: 4.8rem;
 		font-size: 0.75rem;
-		color: var(--dimmed);
+		color: var(--dimmed-text);
 	}
 
 	.menu__item--active,
@@ -165,7 +165,7 @@
 		width: 100%;
 		height: 100%;
 		padding-left: 5.6rem;
-		color: var(--dimmed-text-color);
+		color: var(--dimmed-text-gen-text);
 	} */
 
 	.bottom-one {
