@@ -69,7 +69,7 @@
 
 				.teaser {
 					font-size: 0.7rem;
-					color: var(--dimmed-text-gen-text);
+					color: var(--dimmed-text);
 				}
 			}
 

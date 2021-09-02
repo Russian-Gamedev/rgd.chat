@@ -159,15 +159,6 @@
 		text-decoration: none;
 	}
 
-	/* .menu__link {
-		display: flex;
-		align-items: center;
-		width: 100%;
-		height: 100%;
-		padding-left: 5.6rem;
-		color: var(--dimmed-text-gen-text);
-	} */
-
 	.bottom-one {
 		display: none;
 		margin-bottom: 6rem;

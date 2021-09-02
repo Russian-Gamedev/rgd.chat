@@ -20,6 +20,10 @@
 	}
 </script>
 
+<svelte:head>
+	<link rel="preconnect" href="https://cdn.discordapp.com" />
+</svelte:head>
+
 <MetaTags
 	noindex={true}
 	nofollow={true}
