@@ -12,7 +12,9 @@
 
 <div {role} class="banner">
 	<!-- Also, maybe wrap it into `figure` for semantics? -->
-	<img src={image} alt={imageAlt} style={`background-color: ${imageBGColor};`} />
+	<slot name="image">
+		<img src={image} alt={imageAlt} style={`background-color: ${imageBGColor};`} />
+	</slot>
 	<div class="content">
 		<div class="info">
 			<h1 class="title">{title}</h1>
@@ -20,7 +22,9 @@
 				<slot>{teaser}</slot>
 			</p>
 		</div>
-		<a class="link" {href} {rel}> {buttonText} </a>
+		<slot name="button">
+			<a class="link" {href} {rel}> {buttonText} </a>
+		</slot>
 	</div>
 </div>
 
