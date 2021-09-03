@@ -13,16 +13,18 @@
 		</div>
 
 		<nav role="menu" class="menu">
-			<a
-				sveltekit:prefetch
-				role="menuitem"
-				class="menu__item menu__item--games"
-				class:menu__item--active={$page.path === '/games'}
-				aria-current={$page.path === '/games' ? 'page' : false}
-				href="/games"
-			>
-				Игры
-			</a>
+			{#if false}
+				<a
+					sveltekit:prefetch
+					role="menuitem"
+					class="menu__item menu__item--games"
+					class:menu__item--active={$page.path === '/games'}
+					aria-current={$page.path === '/games' ? 'page' : false}
+					href="/games"
+				>
+					Игры
+				</a>
+			{/if}
 			<a
 				sveltekit:prefetch
 				role="menuitem"
@@ -33,16 +35,18 @@
 			>
 				Джемы
 			</a>
-			<a
-				sveltekit:prefetch
-				role="menuitem"
-				class="menu__item menu__item--blogs"
-				class:menu__item--active={$page.path === '/blogs'}
-				aria-current={$page.path === '/blogs' ? 'page' : false}
-				href="/blogs"
-			>
-				Блоги
-			</a>
+			{#if false}
+				<a
+					sveltekit:prefetch
+					role="menuitem"
+					class="menu__item menu__item--blogs"
+					class:menu__item--active={$page.path === '/blogs'}
+					aria-current={$page.path === '/blogs' ? 'page' : false}
+					href="/blogs"
+				>
+					Блоги
+				</a>
+			{/if}
 			<a
 				sveltekit:prefetch
 				role="menuitem"
@@ -69,10 +73,8 @@
 	header {
 		flex-shrink: 0;
 		flex-basis: var(--header-width);
-		/* gap: 0.8rem; */
 
 		background-color: var(--secondary-background);
-		/* box-shadow: 0 -100vh 0 var(--gen-text); */
 	}
 
 	.header__wrapper {
@@ -94,7 +96,6 @@
 		align-items: center;
 		box-sizing: border-box;
 		width: 100%;
-		/* ^ align-self: stretch; is not supported by safari */
 		padding: 3.2rem 2.45rem;
 	}
 
@@ -111,7 +112,6 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		/* ^ align-self: stretch; is not supported by safari */
 	}
 
 	.menu__item {
@@ -140,19 +140,19 @@
 	}
 
 	.menu__item--games::before {
-		content: url('/icons/social.svg');
+		content: url('/icons/games.svg');
 	}
 
 	.menu__item--jams::before {
-		content: url('/icons/jam.svg');
+		content: url('/icons/jams.svg');
 	}
 
 	.menu__item--blogs::before {
-		content: url('/icons/tutorial.svg');
+		content: url('/icons/blogs.svg');
 	}
 
 	.menu__item--sponsors::before {
-		content: url('/icons/sponsor.svg');
+		content: url('/icons/sponsors.svg');
 	}
 
 	.menu__item:hover {

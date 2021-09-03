@@ -6,16 +6,15 @@
 	import { sponsors } from '$lib/sponsors';
 
 	function sponsorClass(index: number): string {
-		let result = 'amount';
 		switch (index + 1) {
 			case 1:
-				return result + ' amount--gold';
+				return ' amount--gold';
 			case 2:
-				return result + ' amount--silver';
+				return ' amount--silver';
 			case 3:
-				return result + ' amount--bronze';
+				return ' amount--bronze';
 			default:
-				return result;
+				return '';
 		}
 	}
 </script>
@@ -68,7 +67,7 @@
 					/>
 					<span class="name">{sponsor.name}</span>
 				</a>
-				<Badge class={sponsorClass(index)}>
+				<Badge class={'amount' + sponsorClass(index)}>
 					{sponsor.amount.toLocaleString('ru-RU', {
 						style: 'currency',
 						currency: 'RUB',
