@@ -48,7 +48,7 @@
 			width: 100%;
 			aspect-ratio: 3 / 1;
 			border-radius: 0.2rem;
-			background: #648ce8;
+			background-color: var(--ternary-background);
 		}
 
 		.content {
