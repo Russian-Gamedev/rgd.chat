@@ -12,7 +12,7 @@
 	role="article"
 	title={jam.title}
 	image={jam.thumbnail}
-	imageBGColor="#648ce8"
+	imageBGColor="#767275"
 	imageAlt={jam.thumbnailAlt}
 	teaser={jam.teaser}
 	href={href(jam)}
@@ -75,6 +75,7 @@
 				width: 100%;
 				aspect-ratio: 16 / 9;
 				border-radius: 0.2rem;
+				background-color: var(--ternary-background);
 			}
 
 			&__badges {

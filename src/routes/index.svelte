@@ -5,6 +5,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Badge from '$lib/components/Badge.svelte';
+	import ButtonLink from '$lib/components/ButtonLink.svelte';
 	import MetaTags from '$lib/components/MetaTags.svelte';
 </script>
 
@@ -44,7 +45,9 @@
 			<Badge>ОНЛАЙН: <span class="label__counter">758</span></Badge>
 		</div>
 	</div>
-	<a class="invite" rel="external" href="https://discord.gg/EKUg5VhCVW">Присоединиться</a>
+	<ButtonLink class="external-icon" rel="external" href="https://discord.gg/EKUg5VhCVW">
+		Присоединиться
+	</ButtonLink>
 </section>
 
 <section id="useful-links">
@@ -119,18 +122,15 @@
 		color: var(--primary);
 	}
 
-	.invite {
-		display: block;
-		padding: 0.6rem 1rem;
-		border-radius: 0.4rem;
-		font-weight: 700;
-		line-height: 1.2rem;
-		color: var(--pure-white);
-		background-color: var(--primary);
+	:global(.external-icon) {
+		padding: 0.6rem 0.8rem 0.6rem 1rem;
 	}
 
-	.invite:hover {
-		text-decoration: none;
+	:global(.external-icon::after) {
+		margin-left: 0.4rem;
+		width: 1.2rem;
+		height: 1.2rem;
+		content: url('/icons/external-link.svg');
 	}
 
 	section#useful-links {

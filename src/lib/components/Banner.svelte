@@ -1,4 +1,6 @@
 <script lang="ts">
+	import ButtonLink from './ButtonLink.svelte';
+
 	export let role: string;
 	export let title: string;
 	export let teaser: string = '';
@@ -23,7 +25,7 @@
 			</p>
 		</div>
 		<slot name="button">
-			<a class="link" {href} {rel}> {buttonText} </a>
+			<ButtonLink class="chevron-icon" {href} {rel}>{buttonText}</ButtonLink>
 		</slot>
 	</div>
 </div>
@@ -58,7 +60,7 @@
 			.info {
 				display: flex;
 				flex-direction: column;
-				gap: 0.2rem;
+				gap: 0.3rem;
 
 				.title,
 				.teaser {
@@ -77,27 +79,15 @@
 				}
 			}
 
-			.link {
-				display: flex;
-				align-items: center;
-				padding: 0.4rem 0.6rem 0.4rem 0.8rem;
-				background-color: var(--primary);
-				border-radius: 0.4rem;
-				font-size: 0.85rem;
-				font-weight: 700;
-				line-height: 1.2rem;
-				color: var(--pure-white);
+			:global(.chevron-icon) {
+				padding: 0.6rem 0.8rem 0.6rem 1rem;
+			}
 
-				&:hover {
-					text-decoration: none;
-				}
-
-				&::after {
-					margin-left: 0.4rem;
-					width: 1.2rem;
-					height: 1.2rem;
-					content: url('/icons/chevron-right.svg');
-				}
+			:global(.chevron-icon::after) {
+				margin-left: 0.4rem;
+				width: 1.2rem;
+				height: 1.2rem;
+				content: url('/icons/chevron-right.svg');
 			}
 		}
 	}

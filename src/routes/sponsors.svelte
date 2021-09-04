@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import Badge from '$lib/components/Badge.svelte';
 	import Banner from '$lib/components/Banner.svelte';
+	import ButtonLink from '$lib/components/ButtonLink.svelte';
 	import MetaTags from '$lib/components/MetaTags.svelte';
 	import { sponsors } from '$lib/sponsors';
 
@@ -47,11 +48,15 @@
 	title="Возможность внести свою лепту"
 	image="/placeholders/sponsors.jpg"
 	imageAlt="Поддержи RGD"
+	imageBGColor="#343438"
 	href="https://donatty.com/rgd"
 	rel="external"
 >
 	Основной способ поддержать Russian Gamedev —
 	<a rel="external" href="https://donatty.com/rgd"> Donatty </a>
+	<ButtonLink slot="button" class="sponsor-icon" rel="external" href="https://donatty.com/rgd">
+		Поддержать
+	</ButtonLink>
 </Banner>
 
 <div class="sponsors">
@@ -81,6 +86,17 @@
 </div>
 
 <style lang="scss">
+	:global(.sponsor-icon) {
+		padding: 0.6rem 0.8rem 0.6rem 1rem;
+	}
+
+	:global(.sponsor-icon::after) {
+		margin-left: 0.4rem;
+		width: 1.2rem;
+		height: 1.2rem;
+		content: url('/icons/dollar-sign.svg');
+	}
+
 	.sponsors {
 		display: flex;
 		row-gap: 1.2rem;
