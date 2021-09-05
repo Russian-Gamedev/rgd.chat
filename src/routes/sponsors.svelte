@@ -65,7 +65,8 @@
 	<div class="sponsors__list">
 		{#each sponsors as sponsor, index}
 			<div class="sponsor">
-				<a class="profile" href="#ass">
+				<!-- svelte-ignore a11y-missing-attribute -->
+				<a class="profile">
 					<img
 						src="https://cdn.discordapp.com/avatars/281037696225247233/7fc45e72e599ddf519ffba81538dd380.jpg?size=64"
 						alt=""
