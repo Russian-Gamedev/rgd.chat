@@ -8,7 +8,7 @@
 	export let imageAlt: string = '';
 	export let imageBGColor: string = '#648ce8';
 	export let buttonText: string = 'Подробнее';
-	export let href: string;
+	export let href: string = '';
 	export let rel: string = '';
 </script>
 
@@ -32,17 +32,20 @@
 
 <style lang="scss">
 	.banner {
+		width: 100%;
 		align-self: stretch;
 		display: flex;
 		flex-direction: column;
 		gap: 0.8rem;
 		border-radius: 0.4rem;
 		padding: 0.8rem;
+		box-sizing: border-box;
 		overflow: hidden;
 		text-decoration: none;
 		background-color: var(--secondary-background);
 
 		img {
+			// flex-grow: 1;
 			margin: 0;
 			object-fit: cover;
 			width: 100%;
