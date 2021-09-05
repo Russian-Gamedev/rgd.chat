@@ -75,7 +75,7 @@
 				<p>Записи итогов джемов</p>
 			</div>
 		</a>
-		<a sveltekit:prefetch class="useful-link" href="/jam/wizard-jam">
+		<a sveltekit:prefetch class="useful-link" href="/wizard-jam">
 			<div class="useful-link__icon">
 				<img src="/icons/social_jam.svg" alt="Jam" />
 			</div>
