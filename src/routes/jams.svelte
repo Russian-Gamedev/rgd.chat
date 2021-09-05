@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { jams, href } from '$lib/jams';
+	import { jams } from '$lib/jams';
 	import Badge from '$lib/components/Badge.svelte';
 	import Banner from '$lib/components/Banner.svelte';
 	import MetaTags from '$lib/components/MetaTags.svelte';
@@ -8,6 +8,10 @@
 
 <MetaTags noindex={true} nofollow={true} title="Джемы" />
 
+<svelte:head>
+	<link rel="preconnect" href="https://xshxhmntnugvfztasqwt.supabase.in" />
+</svelte:head>
+
 <Banner
 	role="article"
 	title={jam.title}
@@ -15,7 +19,7 @@
 	imageBGColor="#767275"
 	imageAlt={jam.thumbnailAlt}
 	teaser={jam.teaser}
-	href={href(jam)}
+	href={`/${jam.id}`}
 />
 
 <div class="jams">
@@ -23,7 +27,7 @@
 
 	<div class="jams__list">
 		{#each jams.slice(1, jams.length) as jam}
-			<a role="article" class="jam" title={jam.title} href={href(jam)}>
+			<a role="article" class="jam" title={jam.title} href={`/${jam.id}`}>
 				<div class="jam__badges">
 					<Badge>ЛЕТО 2021</Badge>
 				</div>
