@@ -1,10 +1,39 @@
+<script context="module" lang="ts">
+	import { supabase } from '$lib/db';
+
+	/**
+	 * @type {import('@sveltejs/kit').Load}
+	 */
+	export async function load({ page, session, context }) {
+		let { data: sponsors, error } = await supabase
+			.from('sponsors')
+			.select('*')
+			.order('amount', { ascending: false });
+
+		if (sponsors) {
+			return {
+				props: {
+					sponsors: sponsors
+				}
+			};
+		}
+
+		return {
+			status: 404,
+			error: error
+		};
+	}
+</script>
+
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Badge from '$lib/components/Badge.svelte';
 	import Banner from '$lib/components/Banner.svelte';
 	import ButtonLink from '$lib/components/ButtonLink.svelte';
 	import MetaTags from '$lib/components/MetaTags.svelte';
-	import { sponsors } from '$lib/sponsors';
+	import type { Sponsor } from '$lib/types';
+	import { defaultAvatar } from '$lib/utils';
+	export let sponsors: Sponsor[];
 
 	function sponsorClass(index: number): string {
 		switch (index + 1) {
@@ -18,30 +47,34 @@
 				return '';
 		}
 	}
-</script>
 
-<svelte:head>
-	<link rel="preconnect" href="https://cdn.discordapp.com" />
-</svelte:head>
+	function sponsorAvatar(avatarURL: string, size: number = 64): string {
+		let avatar = new URL(avatarURL);
+		avatar.searchParams.set('size', size.toString());
+		return avatar.toString();
+	}
 
-<MetaTags
-	noindex={true}
-	nofollow={true}
-	title="Донатеры"
-	openGraph={{
+	const openGraph = {
 		site_name: 'Russian Gamedev',
 		title: 'Донатеры',
 		description: 'Список поддержавших сервер',
 		type: 'website',
 		locale: 'ru_RU',
-		url: 'https://' + $page.host + $page.path,
+		url: `https://${$page.host + $page.path}`,
 		images: [
 			{
-				url: 'https://' + $page.host + '/placeholders/sponsors.jpg'
+				url: `https://${$page.host}/placeholders/sponsors.jpg}`
 			}
 		]
-	}}
-/>
+	};
+</script>
+
+<svelte:head>
+	<link rel="preconnect" href="https://xshxhmntnugvfztasqwt.supabase.in" />
+	<link rel="preconnect" href="https://cdn.discordapp.com" />
+</svelte:head>
+
+<MetaTags noindex={true} nofollow={true} title="Донатеры" {openGraph} />
 
 <Banner
 	role=""
@@ -67,11 +100,12 @@
 			<div class="sponsor">
 				<!-- svelte-ignore a11y-missing-attribute -->
 				<a class="profile">
-					<img
-						src="https://cdn.discordapp.com/avatars/281037696225247233/7fc45e72e599ddf519ffba81538dd380.jpg?size=64"
-						alt=""
-					/>
-					<span class="name">{sponsor.name}</span>
+					{#if sponsor.avatar_url}
+						<img src={sponsorAvatar(sponsor.avatar_url)} alt="" />
+					{:else}
+						<img src={defaultAvatar(sponsor.discriminator)} alt="" />
+					{/if}
+					<span class="name">{sponsor.username}</span>
 				</a>
 				<Badge class={'amount' + sponsorClass(index)}>
 					{sponsor.amount.toLocaleString('ru-RU', {
@@ -139,6 +173,7 @@
 					width: 1.4rem;
 					height: 1.4rem;
 					border-radius: 0.45rem;
+					image-rendering: crisp-edges;
 				}
 
 				.name {

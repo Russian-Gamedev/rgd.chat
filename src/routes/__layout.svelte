@@ -31,7 +31,6 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: start;
-		align-items: flex-start;
 		gap: 2.4rem;
 	}
 </style>

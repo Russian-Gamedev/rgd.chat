@@ -1,8 +1,33 @@
+<script context="module" lang="ts">
+	import { supabase } from '$lib/db';
+
+	/**
+	 * @type {import('@sveltejs/kit').Load}
+	 */
+	export async function load({ page, session, context }) {
+		let { data: jams, error } = await supabase.from('jams').select('*');
+
+		if (jams) {
+			return {
+				props: {
+					jams: jams
+				}
+			};
+		}
+
+		return {
+			status: 404,
+			error: error
+		};
+	}
+</script>
+
 <script lang="ts">
-	import { jams } from '$lib/jams';
 	import Badge from '$lib/components/Badge.svelte';
 	import Banner from '$lib/components/Banner.svelte';
 	import MetaTags from '$lib/components/MetaTags.svelte';
+	import type { Jam } from '$lib/types';
+	export let jams: Jam[];
 	let jam = jams[0];
 </script>
 
@@ -12,34 +37,38 @@
 	<link rel="preconnect" href="https://xshxhmntnugvfztasqwt.supabase.in" />
 </svelte:head>
 
-<Banner
-	role="article"
-	title={jam.title}
-	image={jam.thumbnail}
-	imageBGColor="#767275"
-	imageAlt={jam.thumbnailAlt}
-	teaser={jam.teaser}
-	href={`/${jam.id}`}
-/>
+{#if jam}
+	<Banner
+		role="article"
+		title={jam.title}
+		image={jam.thumbnail}
+		imageBGColor="#767275"
+		teaser={jam.teaser}
+		href={`/jam/${jam.slug}`}
+	/>
+{/if}
 
-<div class="jams">
-	<h3>Джемы</h3>
+{#if jams.length > 1}
+	<div class="jams">
+		<h3>Джемы</h3>
 
-	<div class="jams__list">
-		{#each jams.slice(1, jams.length) as jam}
-			<a role="article" class="jam" title={jam.title} href={`/${jam.id}`}>
-				<div class="jam__badges">
-					<Badge>ЛЕТО 2021</Badge>
-				</div>
-				<img src={jam.thumbnail} alt={jam.thumbnailAlt} />
-				<div>
-					<h1 class="title">{jam.title}</h1>
-					<p class="teaser">{jam.teaser}</p>
-				</div>
-			</a>
-		{/each}
+		<div class="jams__list">
+			{#each jams.slice(1, jams.length) as jam}
+				<a role="article" class="jam" title={jam.title} href={`/jam/${jam.slug}`}>
+					<div class="jam__badges">
+						<Badge>ЛЕТО 2021</Badge>
+					</div>
+					<!-- svelte-ignore a11y-missing-attribute -->
+					<img src={jam.thumbnail} />
+					<div>
+						<h1 class="title">{jam.title}</h1>
+						<p class="teaser">{jam.teaser}</p>
+					</div>
+				</a>
+			{/each}
+		</div>
 	</div>
-</div>
+{/if}
 
 <style lang="scss">
 	.jams {

@@ -7,14 +7,8 @@
 	import Badge from '$lib/components/Badge.svelte';
 	import ButtonLink from '$lib/components/ButtonLink.svelte';
 	import MetaTags from '$lib/components/MetaTags.svelte';
-</script>
 
-<!-- TODO: Delete noindex and nofollow before publishing on rgd.chat -->
-<MetaTags
-	noindex={true}
-	nofollow={true}
-	title="Russian Gamedev — Discord сообщество"
-	openGraph={{
+	const openGraph = {
 		site_name: 'Russian Gamedev',
 		title: 'Главная',
 		description:
@@ -27,8 +21,11 @@
 				url: 'https://' + $page.host + '/placeholders/banner.jpg'
 			}
 		]
-	}}
-/>
+	};
+</script>
+
+<!-- TODO: Delete noindex and nofollow before publishing on rgd.chat -->
+<MetaTags noindex={true} nofollow={true} title="Russian Gamedev — Discord сообщество" {openGraph} />
 
 <section id="server-info">
 	<div class="info">

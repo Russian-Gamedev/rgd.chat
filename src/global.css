@@ -113,6 +113,10 @@ a:hover {
 	text-decoration: underline;
 }
 
+p {
+	margin: unset;
+}
+
 button {
 	display: flex;
 	justify-content: center;
