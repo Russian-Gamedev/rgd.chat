@@ -1,197 +1,116 @@
 <script context="module" lang="ts">
-	export const prerender = true;
+	import { browser } from "$app/env";
+
+	const default_stats = {
+		props: {
+			members: 2437,
+			online: 561,
+		},
+	};
+
+	/**
+	 * @type {import('@sveltejs/kit').Load}
+	 */
+	export async function load() {
+		const url = "https://rgd-stats.terisback.workers.dev";
+		const res: Response = await fetch(url);
+
+		if (res.ok) {
+			let data = await res.json();
+
+			return {
+				props: {
+					members: +data.approximate_member_count,
+					online: +data.approximate_presence_count,
+				},
+			};
+		}
+
+		return default_stats;
+	}
 </script>
 
 <script lang="ts">
-	import { page } from '$app/stores';
-	import Badge from '$lib/components/Badge.svelte';
-	import ButtonLink from '$lib/components/ButtonLink.svelte';
-	import MetaTags from '$lib/components/MetaTags.svelte';
-
-	const openGraph = {
-		site_name: 'Russian Gamedev',
-		title: 'Главная',
-		description:
-			'Обитель разработчиков игр, где вы услышите экспертное мнение по поводу своих игр и идей, найдёте отличных напарников которые не бросят под самый релиз, и живой войс где мы регулярно срём новых участников и играем в игры.',
-		type: 'website',
-		locale: 'ru_RU',
-		url: 'https://' + $page.host,
-		images: [
-			{
-				url: 'https://' + $page.host + '/placeholders/banner.jpg'
-			}
-		]
-	};
+	import TertiaryHeader from "$lib/components/TertiaryHeader.svelte";
+	import ColorfulJam from "$lib/icons/ColorfulJam.svelte";
+	import SocialVk from "$lib/icons/SocialVK.svelte";
+	import SocialYt from "$lib/icons/SocialYT.svelte";
+	import ExternalLink from "$lib/icons/ExternalLink.svelte";
+	export let members: number;
+	export let online: number;
 </script>
 
-<!-- TODO: Delete noindex and nofollow before publishing on rgd.chat -->
-<MetaTags noindex={true} nofollow={true} title="Russian Gamedev — Discord сообщество" {openGraph} />
-
-<section id="server-info">
-	<div class="info">
-		<div class="text">
-			<h1>Russian Gamedev — Discord сообщество</h1>
-			<p>
-				Обитель разработчиков игр, где вы услышите экспертное мнение по поводу своих игр и идей,
-				найдёте отличных напарников которые не бросят под самый релиз, и живой войс где мы регулярно
-				срём новых участников и играем в игры.
-			</p>
+<main>
+	<h1>Russian Gamedev — Discord сообщество</h1>
+	<p>
+		Обитель разработчиков игр, где вы услышите экспертное мнение по поводу своих
+		игр и идей, найдёте отличных напарников которые не бросят под самый релиз, и
+		живой войс где мы регулярно срём новых участников и играем в игры.
+	</p>
+	<div class="flex gap-5 font-semibold text-badge uppercase text-general">
+		<div class="py-0.5 px-2 rounded-full bg-black">
+			участников: <span class="text-primary"
+				>{members.toLocaleString("ru-RU")}</span
+			>
 		</div>
-		<div class="stats">
-			<Badge>УЧАСТНИКОВ: <span class="label__counter">2 347</span></Badge>
-			<Badge>ОНЛАЙН: <span class="label__counter">758</span></Badge>
+		<div class="py-0.5 px-2 rounded-full bg-black">
+			онлайн: <span class="text-primary">{online.toLocaleString("ru-RU")}</span>
 		</div>
 	</div>
-	<ButtonLink class="external-icon" rel="external" href="https://discord.gg/EKUg5VhCVW">
-		Присоединиться
-	</ButtonLink>
-</section>
-
-<section id="useful-links">
-	<h3>Полезные ссылки</h3>
-	<div class="useful-links">
-		<a class="useful-link" rel="external" href="https://vk.com/rgd_discord">
-			<div class="useful-link__icon">
-				<img src="/icons/social_vk.svg" alt="ВК" />
+	<a
+		class="mt-6 py-3 pl-5 pr-4 w-fit flex gap-3 items-center font-bold text-white bg-primary rounded-lg"
+		rel="external"
+		href="https://discord.gg/EKUg5VhCVW"
+	>
+		Присоединится
+		<ExternalLink />
+	</a>
+	<TertiaryHeader>Полезные ссылки</TertiaryHeader>
+	<div class="flex gap-12 gap-y-8">
+		<a
+			class="p-4 w-[19rem] flex flex-col items-start rounded-lg bg-black"
+			rel="external"
+			href="https://vk.com/rgd_discord"
+		>
+			<div
+				class="p-2.5 w-10 h-10 flex justify-center items-center text-white bg-primary rounded-xl"
+			>
+				<SocialVk />
 			</div>
-			<div class="useful-link__text">
-				<h5>Вконтакте</h5>
-				<p>Сообщество ВК</p>
+			<div class="mt-4">
+				<div class="text-card font-bold text-general">ВКонтакте</div>
+				<div class="mt-1.5 text-card">Сообщество с мемасиками</div>
 			</div>
 		</a>
 		<a
-			class="useful-link"
+			class="p-4 w-[19rem] flex flex-col items-start rounded-lg bg-black"
 			rel="external"
 			href="https://www.youtube.com/channel/UCZq4wK7UprpSiJRQLIjtbqw"
 		>
-			<div class="useful-link__icon">
-				<img src="/icons/social_yt.svg" alt="YT" />
+			<div
+				class="p-2.5 w-10 h-10 flex justify-center items-center text-white bg-primary rounded-xl"
+			>
+				<SocialYt />
 			</div>
-			<div class="useful-link__text">
-				<h5>YouTube</h5>
-				<p>Записи итогов джемов</p>
+			<div class="mt-4">
+				<div class="text-card font-bold text-general">YouTube</div>
+				<div class="mt-1.5 text-card">Записи подведения итогов джемов</div>
 			</div>
 		</a>
-		<a sveltekit:prefetch class="useful-link" href="/wizard-jam">
-			<div class="useful-link__icon">
-				<img src="/icons/social_jam.svg" alt="Jam" />
+		<a
+			class="p-4 w-[19rem] flex flex-col items-start rounded-lg bg-black"
+			rel="external"
+			href="https://vk.com/rgd_discord"
+		>
+			<div
+				class="p-2.5 w-10 h-10 flex justify-center items-center text-white bg-primary rounded-xl"
+			>
+				<ColorfulJam />
 			</div>
-			<div class="useful-link__text">
-				<h5>Последний джем</h5>
-				<p>35 игр, 5 часов прохождения</p>
+			<div class="mt-4">
+				<div class="text-card font-bold text-general">Последний джем</div>
+				<div class="mt-1.5 text-card">35 игр, 5 часов прохождения</div>
 			</div>
 		</a>
 	</div>
-</section>
-
-<style>
-	section#server-info {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		flex: 1; /* uncomment for not centered content*/
-		gap: 1.2rem;
-	}
-
-	.info {
-		display: flex;
-		flex-direction: column;
-		gap: 0.8rem;
-	}
-
-	.text {
-		display: flex;
-		flex-direction: column;
-		gap: 1.3rem;
-	}
-
-	.text p {
-		margin: 0;
-		color: var(--dimmed-text);
-	}
-
-	.stats {
-		display: flex;
-		gap: 1rem;
-	}
-
-	.label__counter {
-		color: var(--primary);
-	}
-
-	:global(.external-icon) {
-		padding: 0.6rem 0.8rem 0.6rem 1rem;
-	}
-
-	:global(.external-icon::after) {
-		margin-left: 0.4rem;
-		width: 1.2rem;
-		height: 1.2rem;
-		content: url('/icons/external-link.svg');
-	}
-
-	section#useful-links {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		gap: 1.2rem;
-	}
-
-	.useful-links {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-		column-gap: 2.4rem;
-		row-gap: 1.6rem;
-	}
-
-	.useful-link {
-		flex: 1 1 13rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.8rem;
-		padding: 0.8rem;
-		border-radius: 0.4rem;
-		background-color: var(--secondary-background);
-	}
-
-	.useful-link:hover {
-		text-decoration: none;
-	}
-
-	.useful-link__icon {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 2rem;
-		height: 2rem;
-		/* padding: 0.5rem; */
-		border-radius: 0.6rem;
-		background-color: var(--primary);
-		overflow: hidden;
-	}
-
-	.useful-link__icon img {
-		width: 1rem;
-	}
-
-	.useful-link__text {
-		display: flex;
-		flex-direction: column;
-		gap: 0.3rem;
-	}
-
-	.useful-link__text h5 {
-		margin: 0;
-		font-size: 0.7rem;
-		font-weight: 700;
-		color: var(--pure-white);
-	}
-
-	.useful-link__text p {
-		margin: 0;
-		font-size: 0.7rem;
-		font-weight: 400;
-		color: var(--dimmed-text);
-	}
-</style>
+</main>

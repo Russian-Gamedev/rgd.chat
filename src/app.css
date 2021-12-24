@@ -1,0 +1,34 @@
+@import '@fontsource/mulish/500';
+@import '@fontsource/mulish/600';
+@import '@fontsource/mulish/700';
+
+@tailwind base;
+
+@layer base {
+    h1 {
+        @apply font-bold text-mega text-white;
+    }
+    h2 {
+        @apply mt-6 mb-4 font-bold text-lx text-white;
+    }
+    h3 {
+        @apply mt-6 mb-2 font-bold text-lg text-white;
+    }
+    p {
+        @apply py-4 text-base;
+    }
+    br {
+        @apply h-0 leading-3;
+    }
+}
+
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    @apply font-sans text-body bg-midnight;
+}
+
+#biba {
+    @apply flex gap-10;
+}

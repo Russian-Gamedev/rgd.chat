@@ -1,37 +1,35 @@
 {
-	"name": "rgd.chat",
-	"version": "0.1.0",
-	"license": "MIT",
-	"homepage": "https://rgd.chat/",
-	"type": "module",
-	"scripts": {
-		"dev": "svelte-kit dev",
-		"build": "svelte-kit build",
-		"preview": "svelte-kit preview",
-		"check": "svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. .",
-		"format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. ."
-	},
-	"devDependencies": {
-		"@sveltejs/adapter-node": "^1.0.0-next.45",
-		"@sveltejs/kit": "next",
-		"@types/cookie": "^0.4.1",
-		"prettier": "~2.2.1",
-		"prettier-plugin-svelte": "^2.4.0",
-		"sass": "^1.39.0",
-		"svelte": "^3.42.4",
-		"svelte-check": "^2.2.5",
-		"svelte-preprocess": "^4.8.0",
-		"tslib": "^2.3.1",
-		"typescript": "^4.4.2"
-	},
-	"dependencies": {
-		"@editorjs/editorjs": "^2.22.2",
-		"@fontsource/mulish": "^4.5.1",
-		"@lukeed/uuid": "^2.0.0",
-		"@supabase/supabase-js": "^1.22.6",
-		"cookie": "^0.4.1"
-	},
-	"private": "true"
+  "name": "rgd.chat",
+  "version": "1.0.0",
+  "author": {
+    "name": "Anton Zavodchikov",
+    "email": "terisbackno@gmail.com",
+    "url": "https://terisback.ru"
+  },
+  "scripts": {
+    "dev": "svelte-kit dev",
+    "build": "svelte-kit build",
+    "package": "svelte-kit package",
+    "preview": "svelte-kit preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
+  },
+  "type": "module",
+  "private": "true",
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "next",
+    "@sveltejs/kit": "next",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.5",
+    "svelte": "^3.44.3",
+    "svelte-check": "^2.2.11",
+    "svelte-preprocess": "^4.10.1",
+    "tailwindcss": "^3.0.7",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "@fontsource/mulish": "^4.5.2",
+    "svelte-meta-tags": "^2.2.1"
+  }
 }

@@ -1,36 +1,10 @@
 <script>
-	import Header from '$lib/components/Header.svelte';
-	import '../global.css';
+    import Sidebar from "$lib/components/Sidebar.svelte";
+    import "../app.css";
 </script>
 
-<Header />
+<Sidebar />
 
-<div class="content">
-	<!-- Breadcrumbs -->
-
-	<main>
-		<slot />
-	</main>
-
-	<!-- Footer -->
+<div class="mt-16 mb-16 w-full max-w-5xl text-base">
+    <slot />
 </div>
-
-<style>
-	.content {
-		margin: 0 auto;
-		height: 100%;
-		max-width: 50.4rem;
-		box-sizing: content-box;
-		padding: 3.2rem 2rem;
-		color: var(--gen-text);
-	}
-
-	.content,
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		justify-content: start;
-		gap: 2.4rem;
-	}
-</style>
