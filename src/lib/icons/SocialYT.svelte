@@ -10,6 +10,7 @@
 	{height}
 	fill="none"
 	viewBox="0 0 20 14"
+	aria-label="Иконка соц сети YouTube"
 >
 	<path
 		fill="currentColor"

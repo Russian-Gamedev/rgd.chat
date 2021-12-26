@@ -10,6 +10,7 @@
 	{height}
 	fill="none"
 	viewBox="0 0 32 32"
+	aria-label="Иконка короны"
 >
 	<path fill="currentColor" d="M5 21h22v2H5z" />
 	<path

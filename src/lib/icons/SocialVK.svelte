@@ -10,6 +10,7 @@
 	{height}
 	fill="none"
 	viewBox="0 0 20 20"
+	aria-label="Иконка соц сети ВКонтакте"
 >
 	<path
 		fill="currentColor"

@@ -10,6 +10,7 @@
 	{width}
 	{height}
 	fill="none"
+	aria-label="Иконка доллара"
 >
 	<g clip-path="url(#clip0)">
 		<path

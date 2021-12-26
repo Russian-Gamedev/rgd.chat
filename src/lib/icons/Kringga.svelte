@@ -10,6 +10,7 @@
 	{height}
 	fill="none"
 	viewBox="0 0 88 18"
+	aria-label="Иконка дизайн студии Кринга"
 >
 	<path
 		fill="#fff"

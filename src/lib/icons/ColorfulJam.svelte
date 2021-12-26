@@ -10,6 +10,7 @@
 	{height}
 	fill="none"
 	viewBox="0 0 20 24"
+	aria-label="Иконка радостного джема"
 >
 	<rect width="15" height="11" x="2" y="10" fill="#fff" rx="1" />
 	<path

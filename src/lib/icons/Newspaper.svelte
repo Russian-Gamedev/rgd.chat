@@ -10,6 +10,7 @@
 	{width}
 	{height}
 	fill="none"
+	aria-label="Иконка новостной газеты"
 >
 	<path
 		stroke="currentColor"

@@ -10,6 +10,7 @@
 	{width}
 	{height}
 	fill="none"
+	aria-label="Иконка джойстика"
 >
 	<circle cx="16" cy="10" r="5" stroke="currentColor" stroke-width="2" />
 	<path

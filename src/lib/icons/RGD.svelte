@@ -10,6 +10,7 @@
 	{height}
 	fill="none"
 	viewBox="0 0 52 54"
+	aria-label="Иконка RGD"
 >
 	<path
 		fill="currentColor"

@@ -10,6 +10,7 @@
 	{width}
 	{height}
 	fill="none"
+	aria-label="Иконка следовать"
 >
 	<path
 		stroke="currentColor"

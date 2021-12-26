@@ -9,6 +9,7 @@
 	viewBox="0 0 24 24"
 	{width}
 	{height}
+	aria-label="Иконка дискорда"
 >
 	<path
 		fill="currentColor"

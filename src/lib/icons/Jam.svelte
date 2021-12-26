@@ -10,6 +10,7 @@
 	{width}
 	{height}
 	fill="none"
+	aria-label="Иконка радостного джема"
 >
 	<path
 		fill="currentColor"
