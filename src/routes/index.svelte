@@ -1,35 +1,3 @@
-<script context="module" lang="ts">
-	import { browser } from "$app/env";
-
-	const default_stats = {
-		props: {
-			members: 2436,
-			online: 275,
-		},
-	};
-
-	/**
-	 * @type {import('@sveltejs/kit').Load}
-	 */
-	export async function load() {
-		const url = "https://rgd-stats.terisback.workers.dev";
-		const res: Response = await fetch(url);
-
-		if (res.ok) {
-			let data = await res.json();
-
-			return {
-				props: {
-					members: +data.approximate_member_count,
-					online: +data.approximate_presence_count,
-				},
-			};
-		}
-
-		return default_stats;
-	}
-</script>
-
 <script lang="ts">
 	import TertiaryHeader from "$lib/components/TertiaryHeader.svelte";
 	import ColorfulJam from "$lib/icons/ColorfulJam.svelte";
