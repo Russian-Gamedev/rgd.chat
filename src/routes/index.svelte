@@ -3,8 +3,8 @@
 
 	const default_stats = {
 		props: {
-			members: 2437,
-			online: 561,
+			members: 2436,
+			online: 275,
 		},
 	};
 
@@ -36,8 +36,7 @@
 	import SocialVk from "$lib/icons/SocialVK.svelte";
 	import SocialYt from "$lib/icons/SocialYT.svelte";
 	import ExternalLink from "$lib/icons/ExternalLink.svelte";
-	export let members: number;
-	export let online: number;
+	import { stats } from "$lib/stores/stats";
 </script>
 
 <main>
@@ -50,11 +49,13 @@
 	<div class="flex gap-5 font-semibold text-badge uppercase text-general">
 		<div class="py-0.5 px-2 rounded-full bg-black">
 			участников: <span class="text-primary"
-				>{members.toLocaleString("ru-RU")}</span
+				>{$stats.total.toLocaleString("ru-RU")}</span
 			>
 		</div>
 		<div class="py-0.5 px-2 rounded-full bg-black">
-			онлайн: <span class="text-primary">{online.toLocaleString("ru-RU")}</span>
+			онлайн: <span class="text-primary"
+				>{$stats.online.toLocaleString("ru-RU")}</span
+			>
 		</div>
 	</div>
 	<a

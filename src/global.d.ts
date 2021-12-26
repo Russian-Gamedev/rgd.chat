@@ -1,5 +1,10 @@
 /// <reference types="@sveltejs/kit" />
 
+export type Stats = {
+	total: number
+	online: number
+}
+
 export type Patron = {
 	id?: string
 	username: string
