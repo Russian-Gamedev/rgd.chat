@@ -90,7 +90,7 @@
 			id: "281037696225247233",
 			username: "Terisback",
 			avatar_url:
-				"https://cdn.discordapp.com/avatars/281037696225247233/a_7fc45e72e599ddf519ffba81538dd380.gif?size=64",
+				"https://cdn.discordapp.com/avatars/281037696225247233/a_1ee42e17a246cd80e4228b340071a61e.gif?size=64",
 			amount: 1638,
 		},
 		{
