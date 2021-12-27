@@ -9,6 +9,8 @@
 			username: "Benedique",
 			avatar_url:
 				"https://cdn.discordapp.com/avatars/408367130988511234/d051bc8f0b62a17615c90b26d5f03db7.png?size=64",
+			banner_url:
+				"https://cdn.discordapp.com/banners/408367130988511234/bc28bcba72c4f4bd4f8519c13d253d3e.png?size=512",
 			amount: 16150,
 		},
 		{
@@ -16,6 +18,7 @@
 			username: "Дядя Женя",
 			avatar_url:
 				"https://cdn.discordapp.com/avatars/357599627605966848/7a73bf25d03dd355bcf6b26d371b3f71.png?size=64",
+			banner_color: "#DFB569",
 			amount: 12600,
 		},
 		{
@@ -23,6 +26,7 @@
 			username: "YellowAfterlife",
 			avatar_url:
 				"https://cdn.discordapp.com/avatars/183367789501874176/3d3a6113f1c3199a3937f98b6ec4aeb1.png?size=64",
+			banner_color: "#7993C8",
 			amount: 10000,
 		},
 		{
@@ -212,6 +216,10 @@
 				return "bg-primary";
 		}
 	}
+
+	function patronBannerAllowed(index: number): boolean {
+		return index < 3;
+	}
 </script>
 
 <svelte:head>
@@ -248,23 +256,40 @@
 
 <div class="flex flex-wrap gap-12 gap-y-8">
 	{#each patrons as patron, index}
-		<div
-			class="w-[19rem] p-4 flex gap-2 items-center rounded-lg font-bold text-card text-general bg-black"
-		>
-			<img
-				class="w-7 h-7 rounded-full"
-				alt={`${patron.username} avatar`}
-				src={patronAvatar(patron, 32)}
-			/>{patron.username}
-			<div
-				class="ml-auto py-0.5 px-2 text-badge rounded-full {patronBadge(index)}"
-			>
-				{patron.amount.toLocaleString("ru-RU", {
-					style: "currency",
-					currency: "RUB",
-					maximumFractionDigits: 0,
-					minimumFractionDigits: 0,
-				})}
+		<div class="w-[19rem] flex flex-col bg-black rounded-lg">
+			{#if patron.banner_url && patronBannerAllowed(index)}
+				<img
+					alt={`Баннер ${patron.username}`}
+					class="aspect-[152/65] object-cover rounded-t-lg"
+					src={patron.banner_url}
+				/>
+			{:else if patron.banner_color && patronBannerAllowed(index)}
+				<div
+					class="aspect-[152/65] object-cover rounded-t-lg"
+					style="background: {patron.banner_color}"
+				/>
+			{:else}
+				<!-- Заплатка если юзер будет в одном ряду с разрешённым баннером -->
+				<div class="h-full object-cover rounded-t-lg bg-control" />
+			{/if}
+			<div class="p-4 flex gap-2 items-center font-bold text-card text-general">
+				<img
+					class="w-7 h-7 rounded-full"
+					alt={`${patron.username} avatar`}
+					src={patronAvatar(patron, 32)}
+				/>{patron.username}
+				<div
+					class="ml-auto py-0.5 px-2 text-badge rounded-full {patronBadge(
+						index
+					)}"
+				>
+					{patron.amount.toLocaleString("ru-RU", {
+						style: "currency",
+						currency: "RUB",
+						maximumFractionDigits: 0,
+						minimumFractionDigits: 0,
+					})}
+				</div>
 			</div>
 		</div>
 	{/each}

@@ -9,6 +9,8 @@ export type Patron = {
 	id?: string
 	username: string
 	avatar_url?: string
+	banner_url?: string
+	banner_color?: string
 	amount: number
 }
 
