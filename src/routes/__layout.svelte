@@ -5,6 +5,6 @@
 
 <Sidebar />
 
-<div class="mt-16 mb-16 w-full max-w-5xl text-base">
+<div class="mt-16 mb-16 mr-10 w-full max-w-5xl text-base">
 	<slot />
 </div>
