@@ -26,7 +26,8 @@
 			username: "YellowAfterlife",
 			avatar_url:
 				"https://cdn.discordapp.com/avatars/183367789501874176/3d3a6113f1c3199a3937f98b6ec4aeb1.png?size=64",
-			banner_color: "#7993C8",
+			banner_url:
+				"https://img.itch.zone/aW1nLzQzODQyOTEucG5n/original/RcHvAV.png",
 			amount: 10000,
 		},
 		{
@@ -226,7 +227,11 @@
 	<link rel="preconnect" href="https://cdn.discordapp.com" />
 </svelte:head>
 
-<div class="w-fit flex flex-col gap-4 p-4 rounded-lg bg-black">
+<a
+	class="w-fit flex flex-col gap-4 p-4 rounded-lg bg-black"
+	rel="external"
+	href="https://donatty.com/rgd"
+>
 	<img
 		class="w-[61rem] aspect-[3/1] object-cover rounded-[.25rem] bg-control"
 		alt="Поддержи RGD"
@@ -243,14 +248,8 @@
 				>
 			</div>
 		</div>
-		<a
-			class="py-3 pl-5 pr-4 flex gap-3 items-center font-bold text-white text-base bg-primary rounded-lg"
-			rel="external"
-			href="https://donatty.com/rgd"
-			>Поддержать <DollarSign />
-		</a>
 	</div>
-</div>
+</a>
 
 <TertiaryHeader>Доска почёта</TertiaryHeader>
 
