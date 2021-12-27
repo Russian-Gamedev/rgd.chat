@@ -21,9 +21,15 @@ export const stats = readable(default_stats, function start(set) {
 
 	const url = "https://rgd-stats.terisback.workers.dev";
 	fetch(url).then(
-		res => res.json()
+		res => {
+			if (res.ok) {
+				return res.json()
+			}
+		}
 	).then(
 		data => {
+			if (!data) return;
+
 			let rec: Stats = {
 				total: +data.approximate_member_count,
 				online: +data.approximate_presence_count,
