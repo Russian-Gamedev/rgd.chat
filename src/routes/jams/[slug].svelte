@@ -1,67 +1,61 @@
 <script context="module">
-	export const ssr = false;
-	const jams = import.meta.globEager("../../jams/**/*.md");
-
-	let body = [];
-	for (let path in jams) {
-		const post = jams[path];
-		const metadata = post.metadata;
-		const pathArray = path.split("/");
-		const slug = pathArray[pathArray.length - 2];
-		const p = { post, path, slug, metadata };
-		body.push(p);
-	}
-
-	export const load = ({ page }) => {
-		const posts = body;
-		const { slug } = page.params;
-		const filteredPosts = posts.filter((p) => {
-			return p.slug.toLowerCase() === slug.toLowerCase();
-		});
-
-		const filtered = filteredPosts[0];
-
-		filtered.metadata.games.sort((a, b) => {
-			const ao = !!a.order;
-			const bo = !!b.order;
-
-			if (!ao && !bo) {
-				return 0;
-			}
-
-			if (ao && !bo) {
-				return -1;
-			}
-
-			if (!ao && bo) {
-				return 1;
-			}
-
-			if (ao && bo) {
-				return a.order - b.order;
-			}
-		});
+	// export const prerender = true;
+	export async function load({ fetch, page: { params } }) {
+		const { slug } = params;
+		const res = await fetch(`/jams/${slug}.json`);
+		if (res.ok) {
+			const { jam } = await res.json();
+			return {
+				props: { jam },
+			};
+		}
 
 		return {
-			props: {
-				page: filtered.post.default,
-				metadata: filtered.metadata,
-			},
+			status: 404,
+			error: `Unable to fetch '${slug}' jam`,
 		};
-	};
+	}
 </script>
 
 <script>
 	import TertiaryHeader from "$lib/components/TertiaryHeader.svelte";
+	import { userAvatar } from "$lib/utils/avatar";
 
-	export let page;
-	export let metadata;
+	export let jam;
 </script>
 
-<svelte:component this={page} />
+{@html jam.html}
 
-<TertiaryHeader>Игры ({metadata.games.length})</TertiaryHeader>
+{#if jam.games}
+	<TertiaryHeader>Игры ({jam.games.length})</TertiaryHeader>
 
-{#each metadata.games as game}
-	<h3>{game.name} {game.order}</h3>
-{/each}
+	<div class="flex flex-wrap gap-12 gap-y-8">
+		{#each jam.games as game}
+			<div class="relative p-4 grow-0 flex flex-col gap-4 rounded-lg bg-black">
+				{#if game.image}
+					<img
+						class="w-[17rem] aspect-video rounded"
+						alt=""
+						src={`/src/jams/${jam.slug}/${game.image}`}
+					/>
+				{:else}
+					<div
+						class="w-[17rem] aspect-video flex items-center justify-center rounded bg-control"
+					>
+						<span class="italic text-card">картинка в другом замке :(</span>
+					</div>
+				{/if}
+				<div class="flex flex-col text-card">
+					<span class="flex gap-2 items-center font-bold text-general"
+						><img
+							class="w-7 h-7 rounded-full"
+							alt="Аватар автора"
+							src={userAvatar(game.author)}
+						/>{game.author.username}</span
+					>
+					<span class="mt-1.5 max-w-[17rem]">{game.name}</span>
+				</div>
+			</div>
+		{/each}
+	</div>
+{/if}
