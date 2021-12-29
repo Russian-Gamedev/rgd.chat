@@ -15,7 +15,7 @@
 </script>
 
 <aside
-	class="sticky w-69 h-screen top-0 pl-12 pb-12 pt-16 flex flex-col bg-black"
+	class="sticky flex-shrink-0 w-69 h-screen top-0 pl-12 pb-12 pt-16 flex flex-col bg-black"
 >
 	<div class="mb-16">
 		<a sveltekit:prefetch class="text-white" href="/">
