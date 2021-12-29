@@ -236,7 +236,7 @@
 	</div>
 </a>
 
-<TertiaryHeader>Доска почёта</TertiaryHeader>
+<TertiaryHeader id="cool-guys">Доска почёта</TertiaryHeader>
 
 <div class="flex flex-wrap gap-12 gap-y-8">
 	{#each patrons as patron, index}

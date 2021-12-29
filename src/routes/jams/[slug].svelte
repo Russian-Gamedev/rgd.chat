@@ -63,7 +63,7 @@
 {@html jam.html}
 
 {#if jam.games}
-	<TertiaryHeader>Игры ({jam.games.length})</TertiaryHeader>
+	<TertiaryHeader id="games">Игры ({jam.games.length})</TertiaryHeader>
 
 	<div class="grid xl:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-12 gap-y-8">
 		{#each jam.games as game}

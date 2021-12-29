@@ -1,4 +1,8 @@
-<h3 class="mt-12 mb-6 pl-4 font-bold text-lg text-white">
+<script>
+	export let id = "";
+</script>
+
+<h3 {id} class="mt-12 mb-6 pl-4 font-bold text-lg text-white">
 	<slot />
 </h3>
 
