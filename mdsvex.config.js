@@ -1,3 +1,5 @@
+import HeadingID from "remark-heading-id";
+
 const config = {
 	extensions: [".svelte.md", ".md", ".svx"],
 
@@ -5,7 +7,7 @@ const config = {
 		dashes: "oldschool",
 	},
 
-	remarkPlugins: [],
+	remarkPlugins: [HeadingID],
 	rehypePlugins: [],
 };
 
