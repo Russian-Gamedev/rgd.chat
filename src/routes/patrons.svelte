@@ -188,22 +188,7 @@
 		},
 	];
 
-	function patronAvatar(patron: Patron, size: number = 64): string {
-		if (patron.avatar_url) {
-			let avatar = new URL(patron.avatar_url);
-			avatar.searchParams.set("size", size.toString());
-			return avatar.toString();
-		} else if (patron.id) {
-			// It's definitely not right, but I dont give a fuck
-			return `https://cdn.discordapp.com/embed/avatars/${
-				+patron.id % 5
-			}.png?size=${+size}`;
-		} else {
-			return `https://cdn.discordapp.com/embed/avatars/${
-				patron.username.charCodeAt(0) % 5
-			}.png?size=${+size}`;
-		}
-	}
+	import { userAvatar } from "$lib/utils/avatar";
 
 	function patronBadge(index: number): string {
 		switch (index + 1) {
@@ -275,7 +260,7 @@
 				<img
 					class="w-7 h-7 rounded-full"
 					alt={`${patron.username} avatar`}
-					src={patronAvatar(patron, 32)}
+					src={userAvatar(patron, 32)}
 				/>{patron.username}
 				<div
 					class="ml-auto py-0.5 px-2 text-badge rounded-full {patronBadge(
