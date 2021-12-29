@@ -10,7 +10,7 @@ games:
       id: 292702400718962688
       username: Andrysha
       avatar_url: https://cdn.discordapp.com/avatars/292702400718962688/73a8ef7ac912f189a9a2a72edaf2a921.png?size=64
-    image: dead-starling.gif
+    image: 1.gif
     url: https://game-dynasty.itch.io/dead-starling
     order: 3
     badge:
