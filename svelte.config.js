@@ -5,18 +5,18 @@ import { mdsvex } from "mdsvex";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  extensions: [".svelte", ...mdsvexConfig.extensions],
+	extensions: [".svelte", ...mdsvexConfig.extensions],
 
-  // Consult https://github.com/sveltejs/svelte-preprocess
-  // for more information about preprocessors
-  preprocess: [preprocess({}), mdsvex(mdsvexConfig)],
+	// Consult https://github.com/sveltejs/svelte-preprocess
+	// for more information about preprocessors
+	preprocess: [preprocess({}), mdsvex(mdsvexConfig)],
 
-  kit: {
-    adapter: adapter(),
-    target: "#biba",
-  },
+	kit: {
+		adapter: adapter(),
+		target: "#biba",
+	},
 
-  plugins: [mdsvex],
+	plugins: [mdsvex],
 };
 
 export default config;
