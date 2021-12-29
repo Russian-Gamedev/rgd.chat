@@ -9,7 +9,7 @@
 	import Github from "$lib/icons/Github.svelte";
 </script>
 
-<main class="h-full flex flex-col">
+<div class="h-full flex flex-col">
 	<h1>Russian Gamedev — Discord сообщество</h1>
 	<p>
 		Обитель разработчиков игр, где вы услышите экспертное мнение по поводу своих
@@ -101,4 +101,4 @@
 			<Github />
 		</a>
 	</div>
-</main>
+</div>
