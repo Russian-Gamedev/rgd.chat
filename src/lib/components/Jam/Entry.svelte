@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { userAvatar } from "$lib/utils/avatar";
+	import { userAvatar } from "$lib/tools/avatar";
 
 	import type { JamEntry } from "src/global";
 
@@ -26,6 +26,7 @@
 			><img
 				class="w-7 h-7 rounded-full"
 				alt="Аватар автора"
+				loading="lazy"
 				src={userAvatar(game.author)}
 			/>{game.author.username}</span
 		>

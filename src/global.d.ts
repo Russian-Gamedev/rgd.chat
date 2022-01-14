@@ -1,7 +1,7 @@
 /// <reference types="@sveltejs/kit" />
 
 export type Stats = {
-	total: number
+	members: number
 	online: number
 }
 

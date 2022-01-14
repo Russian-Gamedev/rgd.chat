@@ -22,7 +22,7 @@
 	<div class="flex gap-5 font-semibold text-badge uppercase text-general">
 		<div class="py-0.5 px-2 rounded-full bg-black">
 			участников: <span class="text-primary"
-				>{$stats.total.toLocaleString("ru-RU")}</span
+				>{$stats.members.toLocaleString("ru-RU")}</span
 			>
 		</div>
 		<div class="py-0.5 px-2 rounded-full bg-black">

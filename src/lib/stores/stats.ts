@@ -2,42 +2,31 @@ import { readable } from 'svelte/store';
 import type { Stats } from 'src/global';
 import { browser } from '$app/env';
 
+const url = "https://rgd.terisback.ru/preview";
+
 const default_stats: Stats = {
-	total: 2437,
+	members: 2437,
 	online: 561,
 }
 
 export const stats = readable(default_stats, function start(set) {
 	if (browser) {
-		let rec = localStorage.getItem('stats')
-
-		if (rec) {
-			set(JSON.parse(rec) as Stats)
-		} else {
-			set(default_stats)
-			localStorage.setItem('stats', JSON.stringify(default_stats))
-		}
+		const item = localStorage.getItem('stats')
+		const data = item ? JSON.parse(item) as Stats : default_stats
+		set(data)
+		localStorage.setItem('stats', JSON.stringify(data))
 	}
 
-	const url = "https://rgd-stats.terisback.workers.dev";
 	fetch(url).then(
 		res => {
-			if (res.ok) {
-				return res.json()
-			}
+			if (res.ok) { return res.json() }
 		}
 	).then(
-		data => {
+		(data: Stats) => {
 			if (!data) return;
-
-			let rec: Stats = {
-				total: +data.approximate_member_count,
-				online: +data.approximate_presence_count,
-			}
-			set(rec)
-
+			set(data)
 			if (browser) {
-				localStorage.setItem('stats', JSON.stringify(rec))
+				localStorage.setItem('stats', JSON.stringify(data))
 			}
 		}
 	);

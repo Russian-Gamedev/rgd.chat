@@ -1,7 +1,7 @@
 <script lang="ts">
 	import TertiaryHeader from "$lib/components/TertiaryHeader.svelte";
 	import { patrons } from "./_patrons";
-	import { userAvatar } from "$lib/utils/avatar";
+	import { userAvatar } from "$lib/tools/avatar";
 	import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
 
 	function patronBadge(index: number): string {
