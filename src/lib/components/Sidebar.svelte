@@ -28,8 +28,8 @@
 			<a
 				sveltekit:prefetch
 				role="menuitem"
-				class="flex gap-4 items-center text-navigation hover:text-white {$page.path ===
-				path
+				class="flex gap-4 items-center text-navigation hover:text-white {$page
+					.url.pathname === path
 					? 'text-white'
 					: 'text-body'}"
 				href={path}
