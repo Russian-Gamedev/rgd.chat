@@ -7,9 +7,12 @@
 	import { stats } from "$lib/stores/stats";
 	import Kringga from "$lib/icons/Kringga.svelte";
 	import Github from "$lib/icons/Github.svelte";
+	import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
 </script>
 
 <div class="h-full flex flex-col">
+	<Breadcrumbs path={[{ title: "Главная", href: "/" }]} />
+
 	<h1>Russian Gamedev — Discord сообщество</h1>
 	<p>
 		Обитель разработчиков игр, где вы услышите экспертное мнение по поводу своих

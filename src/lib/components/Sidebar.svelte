@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page, session } from "$app/stores";
+	import { page } from "$app/stores";
 	import RGD from "$lib/icons/RGD.svelte";
 	import Jam from "$lib/icons/Jam.svelte";
 	import Joystick from "$lib/icons/Joystick.svelte";
@@ -10,7 +10,7 @@
 		// [Joystick, "Игры", "/games"],
 		[Jam, "Джемы", "/jams"],
 		// [Newspaper, "Блоги", "/blogs"],
-		[Crown, "Донатеры", "/patrons"],
+		[Crown, "Патроны", "/patrons"],
 	];
 </script>
 

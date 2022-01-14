@@ -15,10 +15,16 @@ export type Patron = {
 }
 
 export type Jam = {
+	// Example: kojima-jam
+	slug: string
 	// Example: Архив 2020
 	season: string
 	title: string
+	display_title?: string
+	display_desc?: string
 	prize: string
+	thumbnail?: string
+	stream?: string
 	// Unix timestamp
 	start: number
 	// Unix timestamp
@@ -39,6 +45,12 @@ export type JamEntry = {
 	order?: number
 	badge?: {
 		title: string
+		tooltip?: string
 		color: string
 	}
+}
+
+export type BreadcrumbPart = {
+	title: string
+	href: string
 }
