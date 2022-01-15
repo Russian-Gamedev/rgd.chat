@@ -43,11 +43,13 @@ export type JamEntry = {
 	image?: string
 	url?: string
 	order?: number
-	badge?: {
-		title: string
-		tooltip?: string
-		color: string
-	}
+	badge?: Badge
+}
+
+export type Badge = {
+	title: string
+	tooltip?: string
+	color?: string
 }
 
 export type BreadcrumbPart = {

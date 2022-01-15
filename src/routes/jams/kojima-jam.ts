@@ -25,7 +25,6 @@ const jam: Jam = {
 			order: 3,
 			badge: {
 				title: "Сочный Гений",
-				color: "primary",
 			},
 		},
 		{
@@ -62,7 +61,6 @@ const jam: Jam = {
 			order: 4,
 			badge: {
 				title: "Непризнанный Гений",
-				color: "primary",
 			},
 		},
 		{
@@ -100,7 +98,7 @@ const jam: Jam = {
 			badge: {
 				title: "Гений от Народа",
 				tooltip: "Вручена в ходе голосования участников сервера",
-				color: "primary",
+				color: "bronze"
 			},
 		},
 		{
@@ -116,7 +114,6 @@ const jam: Jam = {
 			order: 5,
 			badge: {
 				title: "Филологений Гений",
-				color: "primary",
 			},
 		},
 		{
@@ -132,7 +129,6 @@ const jam: Jam = {
 			order: 7,
 			badge: {
 				title: "Многозадачный Гений",
-				color: "primary",
 			},
 		},
 		{
@@ -166,7 +162,8 @@ const jam: Jam = {
 			order: 1,
 			badge: {
 				title: "Юмор и Гениальный Лентяй",
-				color: "primary",
+				tooltip: "Просто умора",
+				color: "gold",
 			},
 		},
 		{
@@ -220,8 +217,9 @@ const jam: Jam = {
 			url: "https://relayx.itch.io/iteration",
 			order: 2,
 			badge: {
-				title: "Гении Визуализации и Удачливый Гений",
-				color: "primary",
+				title: "Гении Графики и Удачливый Гений",
+				tooltip: "Выиграли вторую номинацию в ходе голосования участников сервера",
+				color: "bronze"
 			},
 		},
 		{
@@ -271,7 +269,6 @@ const jam: Jam = {
 			order: 6,
 			badge: {
 				title: "Злобное отражение гения",
-				color: "primary",
 			},
 		},
 		{
