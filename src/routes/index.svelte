@@ -92,7 +92,7 @@
 		<a
 			class="py-0.5 px-2 flex items-center rounded-full bg-black"
 			rel="external"
-			href="https://vk.com/kringga"
+			href="https://www.behance.net/KRINGGA"
 		>
 			<Kringga />
 		</a>
