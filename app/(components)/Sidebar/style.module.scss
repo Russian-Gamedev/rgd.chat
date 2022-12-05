@@ -1,0 +1,37 @@
+.sidebar {
+  background-color: #111215;
+  padding-top: 4rem;
+  padding-bottom: 3rem;
+  padding-left: 3rem;
+  width: 17.25rem;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+
+  &__logotype {
+    color: #fff;
+    margin-bottom: 4rem;
+  }
+
+  &__menu {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    > a {
+      color: #999ca0;
+      font-size: 1rem;
+      line-height: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-decoration: none;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+}

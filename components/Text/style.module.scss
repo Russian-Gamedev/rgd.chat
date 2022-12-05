@@ -1,0 +1,40 @@
+.text {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+
+  &__h1 {
+    font-size: 2rem;
+    line-height: 2.5rem;
+    font-weight: 700;
+  }
+
+  &__h2 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+  }
+
+  &__h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 700;
+  }
+
+  &__h4 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    line-height: 1.625rem;
+  }
+
+  &__p {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    line-height: 1.625rem;
+  }
+}

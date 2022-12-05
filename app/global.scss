@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@500;600;700&display=swap');
+
+:root {
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  line-height: 1.5;
+  tab-size: 4;
+  font-family: Mulish;
+}
+
+body {
+  margin: 0;
+  line-height: inherit;
+  background-color: #1b1c1f;
+  display: flex;
+  gap: 2.5em;
+}
+
+main {
+  width: 100%;
+  margin-right: 2.5rem;
+  margin-bottom: 4rem;
+  margin-top: 4rem;
+}
