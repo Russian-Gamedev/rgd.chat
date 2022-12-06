@@ -2,6 +2,10 @@
 
 :root {
   scroll-behavior: smooth;
+
+  --text-body: #999ca0;
+  --text-general: 0.9375rem;
+  --color-primary: #5c87e7;
 }
 
 * {
@@ -27,4 +31,8 @@ main {
   margin-right: 2.5rem;
   margin-bottom: 4rem;
   margin-top: 4rem;
+}
+
+a {
+  color: inherit;
 }

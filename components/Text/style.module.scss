@@ -1,11 +1,9 @@
 .text {
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-
   &__h1 {
     font-size: 2rem;
     line-height: 2.5rem;
     font-weight: 700;
+    color: #fff;
   }
 
   &__h2 {
@@ -14,6 +12,7 @@
     font-size: 1.5rem;
     line-height: 2rem;
     font-weight: 700;
+    color: #fff;
   }
 
   &__h3 {
@@ -22,6 +21,7 @@
     font-size: 1.25rem;
     line-height: 1.75rem;
     font-weight: 700;
+    color: #fff;
   }
 
   &__h4 {
@@ -29,6 +29,7 @@
     margin-bottom: 0.5rem;
     font-size: 1.25rem;
     line-height: 1.625rem;
+    color: #fff;
   }
 
   &__p {
@@ -36,5 +37,33 @@
     margin-bottom: 1rem;
     font-size: 1.25rem;
     line-height: 1.625rem;
+    color: var(--text-body);
+  }
+
+  &__a {
+    text-decoration: none;
+  }
+
+  &__span {
+    color: #fff;
+  }
+
+  &__tertiary {
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+    margin-top: 3rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      margin-left: -0.95rem;
+      height: 1.75rem;
+      width: 0.25rem;
+      border-radius: 0.75rem;
+      background-color: #5c87e7;
+    }
   }
 }

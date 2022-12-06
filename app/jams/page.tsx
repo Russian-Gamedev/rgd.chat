@@ -1,5 +1,16 @@
+import Breadcrumbs from '@/components/Breadcrumbs';
 import Text from '@/components/Text';
 
 export default function Page() {
-  return <Text>Jams</Text>;
+  return (
+    <>
+      <Breadcrumbs
+        path={[
+          { title: 'Главная', href: '/' },
+          { title: 'Джемы', href: '/jams' },
+        ]}
+      />
+      <Text>Jams</Text>
+    </>
+  );
 }
