@@ -34,7 +34,7 @@
 	<a
 		class="mt-6 py-3 pl-5 pr-4 w-fit flex gap-3 items-center font-bold text-white bg-primary rounded-lg"
 		rel="external"
-		href="https://discord.gg/EKUg5VhCVW"
+		href="https://discord.gg/5kZhhWD"
 	>
 		Присоединится
 		<ExternalLink />
