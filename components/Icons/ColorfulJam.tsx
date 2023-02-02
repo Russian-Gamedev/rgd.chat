@@ -14,27 +14,28 @@ export default function ColorfulJam({ width, height }: IconProps) {
       <rect width="15" height="11" x="2" y="10" fill="#fff" rx="1" />
       <path
         stroke="#fff"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="1.538"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.538"
         d="M15.429 3.001H4.613c-.853 0-1.545.15-1.545.333v2.334c0 .184.692.333 1.545.333H15.43c.853 0 1.545-.15 1.545-.333V3.334c0-.184-.692-.333-1.545-.333z"
       />
+      strokeLinecap
       <path
         fill="#5C87E7"
         d="M13.111 14.251a.761.761 0 00.772-.75.761.761 0 00-.772-.75.762.762 0 00-.773.75c0 .414.346.75.773.75zM6.931 14.251a.762.762 0 00.772-.75.762.762 0 00-.772-.75.762.762 0 00-.773.75c0 .414.346.75.773.75z"
       />
       <path
         stroke="#fff"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width=".629"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth=".629"
         d="M8.337 16.502s.631.817 1.684.817 1.685-.817 1.685-.817"
       />
       <path
         fill="#5C87E7"
         d="M7.703 15.75c0 .296.06.589.176.862.117.273.287.52.503.73.215.209.47.375.752.488a2.377 2.377 0 002.525-.488c.215-.21.386-.457.502-.73.117-.273.177-.566.177-.861H7.703z"
       />
-      <path stroke="#fff" stroke-width="1.346" d="M3.84 5.626L1.4 8.702M16.201 5.544l2.406 3.121" />
+      <path stroke="#fff" strokeWidth="1.346" d="M3.84 5.626L1.4 8.702M16.201 5.544l2.406 3.121" />
       <path
         fill="#fff"
         fill-rule="evenodd"

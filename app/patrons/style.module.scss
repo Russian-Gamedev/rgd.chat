@@ -1,0 +1,24 @@
+.cards {
+  display: flex;
+  gap: 3rem;
+  row-gap: 2rem;
+  flex-wrap: wrap;
+
+  .card {
+    background-color: #111215;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    width: 19rem;
+
+    &__banner {
+      object-fit: cover;
+      border-top-left-radius: 0.5rem;
+      border-top-right-radius: 0.5rem;
+      aspect-ratio: 152 / 65;
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+}
