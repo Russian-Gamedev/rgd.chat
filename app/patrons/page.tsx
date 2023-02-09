@@ -16,7 +16,9 @@ export default async function Page() {
           { title: 'Патроны', href: '/patron' },
         ]}
       />
-      <Text tertiary>Доска почёта</Text>
+      <Text as="h3" tertiary>
+        Доска почёта
+      </Text>
       <div className={style.cards}>
         {patrons.map((patron, i) => (
           <Card key={patron.user.id} {...patron} showBanner={i < 3} badge={Math.min(i, 3)} />
