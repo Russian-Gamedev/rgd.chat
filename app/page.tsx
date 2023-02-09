@@ -53,7 +53,7 @@ export default function Page() {
           <Text color="primary">{online.toLocaleString('ru-RU')}</Text>
         </Badge>
       </div>
-      <Button color="primary" as="a" rel="external" href="https://discord.gg/EKUg5VhCVW">
+      <Button color="primary" as="a" rel="external" href="https://discord.gg/6Ph8VkrPPU">
         <Text>Присоединиться</Text>
         <ExternalLink />
       </Button>

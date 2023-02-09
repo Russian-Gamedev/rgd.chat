@@ -10,7 +10,7 @@ export default function Page() {
           { title: 'Джемы', href: '/jams' },
         ]}
       />
-      <Text>Jams</Text>
+      <Text>Какие Джемы?</Text>
     </>
   );
 }

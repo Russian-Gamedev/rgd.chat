@@ -20,5 +20,28 @@
       height: auto;
       display: block;
     }
+    &__info {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      color: rgb(254 254 254);
+      font-size: 0.875rem;
+      line-height: 1.5rem;
+      font-weight: 700;
+
+      > img {
+        border-radius: 999px;
+      }
+      &__amount {
+        margin-left: auto;
+        border-radius: 9999px;
+        font-size: 0.625rem;
+        line-height: 1rem;
+        letter-spacing: 0.03125rem;
+        padding: 0.125rem 0.5rem;
+      }
+    }
   }
 }

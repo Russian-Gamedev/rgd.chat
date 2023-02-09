@@ -5,6 +5,16 @@ const nextConfig = {
   experimental: {
     appDir: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        hostname: 'cdn.discordapp.com',
+      },
+      {
+        hostname: 'img.itch.zone',
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;
