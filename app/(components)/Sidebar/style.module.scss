@@ -1,25 +1,43 @@
+@import './media.scss';
+
 .sidebar {
   background-color: #111215;
-  padding-top: 4rem;
-  padding-bottom: 3rem;
-  padding-left: 3rem;
-  width: 17.25rem;
-  height: 100vh;
+  width: 100%;
   position: sticky;
   top: 0;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
   flex-shrink: 0;
-  flex-direction: column;
+
+  @include for-size(tablet-landscape-up) {
+    width: 17.25rem;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    padding-top: 4rem;
+    padding-bottom: 3rem;
+    padding-left: 3rem;
+  }
 
   &__logotype {
     color: #fff;
-    margin-bottom: 4rem;
+
+    @include for-size(tablet-landscape-up) {
+      margin-bottom: 4rem;
+    }
   }
 
   &__menu {
     display: flex;
-    flex-direction: column;
     gap: 1.5rem;
+
+    @include for-size(tablet-landscape-up) {
+      flex-direction: column;
+    }
+
     > a {
       color: #999ca0;
       font-size: var(--text-general);

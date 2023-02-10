@@ -1,3 +1,5 @@
+@import './media.scss';
+
 .badges {
   display: flex;
   gap: 1.25rem;
@@ -24,8 +26,12 @@
   display: flex;
   align-items: flex-start;
   flex-direction: column;
-  width: 19rem;
+  width: 100%;
   text-decoration: none;
+
+  @include for-size(tablet-landscape-up) {
+    width: 19rem;
+  }
 
   > div {
     color: #fff;

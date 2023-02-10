@@ -1,9 +1,14 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   experimental: {
     appDir: true,
+  },
+  sassOptions: {
+    includePaths: [path.resolve('styles')],
   },
   images: {
     remotePatterns: [

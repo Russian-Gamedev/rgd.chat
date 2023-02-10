@@ -1,3 +1,4 @@
+@import 'media.scss';
 .cards {
   display: flex;
   gap: 3rem;
@@ -9,13 +10,18 @@
     border-radius: 0.5rem;
     display: flex;
     flex-direction: column;
-    width: 19rem;
+    width: 100%;
+
+    @include for-size(tablet-landscape-up) {
+      width: 19rem;
+    }
 
     &__banner {
       object-fit: cover;
       border-top-left-radius: 0.5rem;
       border-top-right-radius: 0.5rem;
       aspect-ratio: 152 / 65;
+      width: 100% !important;
       max-width: 100%;
       height: auto;
       display: block;

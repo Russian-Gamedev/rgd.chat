@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Mulish:wght@500;600;700&display=swap');
+@import 'media.scss';
 
 :root {
   scroll-behavior: smooth;
@@ -24,14 +25,26 @@ body {
   background-color: #1b1c1f;
   display: flex;
   gap: 2.5em;
+  flex-direction: column;
+
+  @include for-size(tablet-landscape-up) {
+    flex-direction: row;
+  }
 }
 
 main {
   width: 100%;
-  max-width: 63rem;
-  margin-right: 2.5rem;
-  margin-bottom: 4rem;
-  margin-top: 4rem;
+  max-width: 70rem;
+
+  > div {
+    padding: 1rem;
+
+    @include for-size(tablet-landscape-up) {
+      margin-right: 2.5rem;
+      margin-bottom: 4rem;
+      margin-top: 4rem;
+    }
+  }
 }
 
 a {
