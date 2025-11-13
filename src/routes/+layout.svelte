@@ -65,7 +65,6 @@
 
 <style>
 	main {
-		max-width: 800px;
 		padding: 64px 40px;
 	}
 </style>

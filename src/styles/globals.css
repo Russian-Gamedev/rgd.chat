@@ -9,9 +9,15 @@
 	--color-text-secondary: #999ca0;
 
 	font-family: 'Mulish', sans-serif;
+	scroll-behavior: smooth;
+
+	line-height: 1.5;
+	tab-size: 4;
 }
 
-* {
+*,
+*::before,
+*::after {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
@@ -20,6 +26,17 @@
 body {
 	background: var(--color-bg);
 	color: var(--color-text);
+}
+
+body::-webkit-scrollbar {
+	width: 14px;
+	background-color: var(--color-bg-surface);
+}
+body::-webkit-scrollbar-thumb {
+	border: 4px solid rgba(0, 0, 0, 0);
+	border-radius: 1rem;
+	background-clip: padding-box;
+	background-color: var(--color-primaryrimary);
 }
 
 h1 {
