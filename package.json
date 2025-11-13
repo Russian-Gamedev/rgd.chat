@@ -1,0 +1,44 @@
+{
+	"name": "rgd.chat",
+	"version": "0.0.1",
+	"type": "module",
+	"license": "ISC",
+	"author": "RGD Community",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Russian-Gamedev/rgd.chat.git"
+	},
+	"homepage": "https://rgd.chat",
+	"scripts": {
+		"dev": "bunx --bun vite dev",
+		"build": "bunx --bun vite build",
+		"preview": "bunx --bun vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"format": "prettier --write .",
+		"lint": "prettier --check . && eslint .",
+		"predeploy": "bun run build",
+		"deploy": "gh-pages -d build"
+	},
+	"devDependencies": {
+		"@eslint/compat": "^1.4.0",
+		"@eslint/js": "^9.38.0",
+		"@sveltejs/adapter-static": "^3.0.10",
+		"@sveltejs/kit": "^2.47.1",
+		"@sveltejs/vite-plugin-svelte": "^6.2.1",
+		"@types/node": "^20",
+		"eslint": "^9.38.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-svelte": "^3.12.4",
+		"globals": "^16.4.0",
+		"mdsvex": "^0.12.6",
+		"prettier": "^3.6.2",
+		"prettier-plugin-svelte": "^3.4.0",
+		"svelte": "^5.41.0",
+		"svelte-check": "^4.3.3",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.46.1",
+		"vite": "^7.1.10"
+	}
+}
