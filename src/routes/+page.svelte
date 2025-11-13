@@ -9,10 +9,6 @@
 	let { data }: PageProps = $props();
 </script>
 
-<svelte:head>
-	<title>Russian Gamedev — Discord сообщество разработчиков игр</title>
-</svelte:head>
-
 <Breadcrumb items={[{ label: 'Главная', href: '/' }]} />
 
 <h1>Russian Gamedev — Discord сообщество</h1>
