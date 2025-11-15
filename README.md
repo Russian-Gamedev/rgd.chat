@@ -2,11 +2,13 @@
 
 # rgd.chat
 
-![Главная rgd.chat](https://user-images.githubusercontent.com/26527529/131203635-b1aff017-673b-4c33-a783-aa3dc9d82859.jpg)
-
-[![Discord Link](https://dcbadge.limes.pink/api/server/5kZhhWD)](https://discord.gg/5kZhhWD)
+[![Discord Link](https://bot.rgd.chat/embed/invite/5kZhhWD/banner)](https://discord.gg/5kZhhWD)
 
 </div>
+
+## Скриношоты
+
+![Главная rgd.chat](https://user-images.githubusercontent.com/26527529/131203635-b1aff017-673b-4c33-a783-aa3dc9d82859.jpg)
 
 ## Разработка
 
