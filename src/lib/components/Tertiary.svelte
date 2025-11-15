@@ -1,17 +1,18 @@
 <script lang="ts">
 	export let label: string;
+	export let id: string = '';
 </script>
 
-<span class="tertiary">{label}</span>
+<span class="tertiary" {id}>{label}</span>
 
 <style>
 	.tertiary {
+		display: block;
+
 		font-weight: 700;
 		font-size: 1.25rem;
 		line-height: 1.75rem;
 		padding-left: 1rem;
-		margin-bottom: 1.5rem;
-		margin-top: 3rem;
 
 		&::before {
 			content: '';

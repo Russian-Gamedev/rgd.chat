@@ -3,6 +3,9 @@
 :root {
 	/* COLORS */
 	--color-primary: #5c87e7;
+	--color-success: #0dc268;
+	--color-error: #ed0a34;
+	--color-warning: #ff9e00;
 	--color-bg: #1b1c1f;
 	--color-bg-surface: #111215;
 	--color-text: #fefefe;

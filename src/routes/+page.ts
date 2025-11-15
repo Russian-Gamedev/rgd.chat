@@ -9,6 +9,7 @@ export const prerender = true;
 export const load: PageLoad = async ({ depends }) => {
 	depends('members:stats');
 	const stats = await API.getMembersStats();
+
 	const cards = [
 		{
 			icon: Vk,
@@ -29,5 +30,9 @@ export const load: PageLoad = async ({ depends }) => {
 			link: 'https://youtu.be/bDBhfamPtvo'
 		}
 	];
-	return { stats, cards };
+
+	return {
+		stats,
+		cards
+	};
 };
