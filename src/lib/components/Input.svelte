@@ -6,13 +6,15 @@
 		value?: string;
 		label?: string;
 		id?: string;
+		oninput?: (e: Event) => void;
 	}
 
 	let {
 		type = '',
-		value = '',
+		value = $bindable(''),
 		label = '',
-		id = `input-${Math.random().toString(36).substr(2, 9)}`
+		id = `input-${Math.random().toString(36).substr(2, 9)}`,
+		oninput
 	}: InputProps = $props();
 
 	let isFocused = $state(false);
@@ -25,6 +27,7 @@
 		{id}
 		{type}
 		bind:value
+		{oninput}
 		onfocus={() => (isFocused = true)}
 		onblur={() => (isFocused = false)}
 		class:no-label={!label}
