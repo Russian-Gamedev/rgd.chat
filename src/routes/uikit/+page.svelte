@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import Button from '$lib/components/Button.svelte';
+	import Input from '$lib/components/Input.svelte';
 	import Tertiary from '$lib/components/Tertiary.svelte';
 </script>
 
@@ -73,6 +74,17 @@
 	</div>
 
 	<Button as="a" href="/uikit">Link Button</Button>
+</section>
+
+<section>
+	<Tertiary label="Inputs" id="inputs" />
+
+	<div style="background:var(--color-bg);flex-direction:column;display:flex;gap:1rem;padding:1rem;">
+		<Input label="Text Input:" type="text" />
+		<Input label="Password Input:" type="password" />
+		<Input label="Email Input:" type="email" />
+		<Input type="text" />
+	</div>
 </section>
 
 <style>
