@@ -26,16 +26,31 @@
 	<Badge label="Онлайн" count={stats.online} />
 </div>
 
-<Button
-	as="a"
-	class="join-button"
-	href="https://join.rgd.chat"
-	target="_blank"
-	data-rybbit-event="join_discord"
->
-	Присоединиться
-	<ExternalLink />
-</Button>
+<div class="actions">
+	<Button
+		as="a"
+		class="join-button"
+		href="https://join.rgd.chat"
+		target="_blank"
+		data-rybbit-event="join_discord"
+	>
+		Присоединиться
+		<ExternalLink />
+	</Button>
+
+	<Button
+		as="a"
+		class="join-button"
+		href="https://discord.gg/MXWGuNtT4C"
+		target="_blank"
+		data-rybbit-event="join_new_discord"
+		color="success"
+	>
+		Новый неформальный сервер
+		<ExternalLink />
+		<span class="new-badge">NEW!</span>
+	</Button>
+</div>
 
 <section class="links">
 	<Tertiary label="Полезные ссылки" />
@@ -64,10 +79,30 @@
 		font-weight: bold;
 		font-size: 20px;
 		margin: 24px 0;
+		position: relative;
 	}
 
 	.links {
 		margin-top: 48px;
+	}
+
+	.actions {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.new-badge {
+		background-color: var(--color-error);
+		color: #fff;
+		font-size: 0.75rem;
+		font-weight: 600;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.375rem;
+		margin-left: 0.5rem;
+		position: absolute;
+		right: -5%;
+		top: -25%;
 	}
 
 	.cards {
