@@ -8,7 +8,7 @@ export const prerender = true;
 
 export const load: PageLoad = async ({ depends }) => {
 	depends('members:stats');
-	const stats = await API.getMembersStats();
+	const stats = await API.getMembersStats().catch(() => null);
 
 	const cards = [
 		{

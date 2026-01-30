@@ -22,8 +22,8 @@
 </p>
 
 <div class="badges">
-	<Badge label="Участников" count={stats.total} />
-	<Badge label="Онлайн" count={stats.online} />
+	<Badge label="Участников" count={stats.total ?? 2263} />
+	<Badge label="Онлайн" count={stats.online ?? 520} />
 </div>
 
 <div class="actions">
