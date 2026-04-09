@@ -9,12 +9,14 @@
 		oninput?: (e: Event) => void;
 	}
 
+	let fallbackId = $props.id();
+
 	let {
 		type = '',
 		value = $bindable(''),
 		label = '',
-		id = `input-${Math.random().toString(36).substr(2, 9)}`,
-		oninput
+		oninput,
+		id = fallbackId
 	}: InputProps = $props();
 
 	let isFocused = $state(false);

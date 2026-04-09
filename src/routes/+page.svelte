@@ -8,7 +8,8 @@
 
 	let { data }: PageProps = $props();
 
-	const { stats, cards } = data;
+	const stats = $derived(data.stats);
+	const cards = $derived(data.cards);
 </script>
 
 <Breadcrumb items={[{ label: 'Главная', href: '/' }]} />

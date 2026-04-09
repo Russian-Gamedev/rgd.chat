@@ -8,6 +8,7 @@
 <style>
 	.tertiary {
 		display: block;
+		position: relative;
 
 		font-weight: 700;
 		font-size: 1.25rem;

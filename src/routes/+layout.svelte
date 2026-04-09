@@ -7,9 +7,8 @@
 
 	let { children, data }: LayoutProps = $props();
 
-	// This will be reactive and update when child pages provide their own metadata
-	const { ...metaTags } = $derived(deepMerge(data.baseMetaTags, page.data.pageMetaTags));
-	const { themeColor } = data;
+	const metaTags = $derived(deepMerge(data.baseMetaTags, page.data.pageMetaTags));
+	const themeColor = $derived(data.themeColor);
 </script>
 
 <MetaTags {...metaTags} />

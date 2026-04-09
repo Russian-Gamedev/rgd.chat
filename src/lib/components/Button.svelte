@@ -16,7 +16,7 @@
 		...rest
 	}: ButtonProps & SvelteHTMLElements[Element] = $props();
 
-	const classes = ['button', variant, rest.class].filter(Boolean).join(' ');
+	const classes = $derived(['button', variant, rest.class].filter(Boolean).join(' '));
 </script>
 
 <svelte:element this={as} {...rest} class={classes} style={'--color: var(--color-' + color + ')'}>

@@ -29,17 +29,17 @@
 	<Tertiary label="Breadcrumb" id="breadcrumb" />
 
 	<Breadcrumb items={[]} />
-	<Breadcrumb items={[{ href: '/home', label: 'Home' }]} />
+	<Breadcrumb items={[{ href: '/', label: 'Home' }]} />
 	<Breadcrumb
 		items={[
-			{ href: '/home', label: 'Home' },
+			{ href: '/', label: 'Home' },
 			{ href: '/uikit', label: 'UI Kit' }
 		]}
 	/>
 
 	<Breadcrumb
 		items={[
-			{ href: '/home', label: 'Home' },
+			{ href: '/', label: 'Home' },
 			{ href: '/uikit', label: 'UI Kit' },
 			{ href: '/uikit#typography', label: 'Typography' }
 		]}

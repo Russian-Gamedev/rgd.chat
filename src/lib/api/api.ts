@@ -9,6 +9,11 @@ export class API {
 
 	static request<T>(endpoint: string, options?: RequestInit): Promise<T> {
 		const url = `${this.baseUrl}${endpoint}`;
-		return fetch(url, options).then((response) => response.json() as Promise<T>);
+		return fetch(url, options).then((response) => {
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			}
+			return response.json() as Promise<T>;
+		});
 	}
 }

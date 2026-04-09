@@ -1,12 +1,14 @@
 <script lang="ts">
-	export let label: string;
-	export let count: number | undefined;
+	interface BadgeProps {
+		label: string;
+		count?: number;
+	}
 
-	label += count !== undefined ? ':' : '';
+	let { label, count }: BadgeProps = $props();
 </script>
 
 <span class="badge">
-	{label}
+	{label}{count !== undefined ? ':' : ''}
 	{#if count !== undefined}
 		<span class="count">{count}</span>
 	{/if}
