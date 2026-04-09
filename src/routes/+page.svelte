@@ -55,7 +55,7 @@
 <section class="links">
 	<Tertiary label="Полезные ссылки" />
 	<div class="cards">
-		{#each cards as card}
+		{#each cards as card (card.link)}
 			<a
 				href={card.link}
 				target="_blank"

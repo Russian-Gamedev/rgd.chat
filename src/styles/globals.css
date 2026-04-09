@@ -39,7 +39,7 @@ body::-webkit-scrollbar-thumb {
 	border: 4px solid rgba(0, 0, 0, 0);
 	border-radius: 1rem;
 	background-clip: padding-box;
-	background-color: var(--color-primaryrimary);
+	background-color: var(--color-primary);
 }
 
 h1 {
