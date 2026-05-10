@@ -36,12 +36,23 @@
 		width: fit-content;
 		color: var(--color-text);
 		text-decoration: none;
-		transition: all 300ms ease-in;
+		transition:
+			background-color 200ms ease,
+			border-color 200ms ease,
+			color 200ms ease,
+			filter 200ms ease,
+			opacity 200ms ease,
+			transform 200ms ease;
 		cursor: pointer;
 
 		&:active {
 			filter: brightness(0.95);
-			scale: 0.98;
+			transform: scale(0.98);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--color);
+			outline-offset: 3px;
 		}
 
 		&:disabled {
@@ -77,6 +88,16 @@
 			&:hover {
 				background-color: var(--color);
 				color: var(--color-text);
+			}
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(.button) {
+			transition: none;
+
+			&:active {
+				transform: none;
 			}
 		}
 	}

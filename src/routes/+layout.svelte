@@ -4,6 +4,7 @@
 	import '../styles/globals.css';
 	import type { LayoutProps } from './$types';
 	import { page } from '$app/state';
+	import Navbar from './navbar.svelte';
 
 	let { children, data }: LayoutProps = $props();
 
@@ -22,12 +23,32 @@
 	<meta name="language" content="Russian" />
 </svelte:head>
 
-<main>
-	{@render children()}
-</main>
+<div class="root">
+	<Navbar />
+	<main>
+		{@render children()}
+	</main>
+</div>
 
 <style>
+	.root {
+		display: flex;
+		min-height: 100vh;
+	}
+
 	main {
+		flex: 1;
+		min-width: 0;
 		padding: 64px 40px;
+	}
+
+	@media (max-width: 767px) {
+		.root {
+			flex-direction: column;
+		}
+
+		main {
+			padding: 24px 16px;
+		}
 	}
 </style>

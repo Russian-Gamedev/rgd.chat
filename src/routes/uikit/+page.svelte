@@ -3,6 +3,9 @@
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import Tertiary from '$lib/components/Tertiary.svelte';
+	import * as icons from '$lib/assets/icons';
+
+	const iconEntries = Object.entries(icons).sort(([a], [b]) => a.localeCompare(b));
 </script>
 
 <section>
@@ -87,6 +90,21 @@
 	</div>
 </section>
 
+<section>
+	<Tertiary label="Icons" id="icons" />
+
+	<div class="icon-grid">
+		{#each iconEntries as [name, Icon] (name)}
+			<article class="icon-card">
+				<div class="icon-preview">
+					<Icon />
+				</div>
+				<span>{name}</span>
+			</article>
+		{/each}
+	</div>
+</section>
+
 <style>
 	:global(main) {
 		display: flex;
@@ -111,5 +129,47 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 1rem;
+	}
+
+	.icon-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+		gap: 1rem;
+	}
+
+	.icon-card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 1rem;
+		border-radius: 8px;
+		background: var(--color-bg);
+		color: var(--color-text);
+	}
+
+	.icon-preview {
+		display: grid;
+		place-items: center;
+		width: 3.5rem;
+		height: 3.5rem;
+		transition: color 300ms ease-in-out;
+	}
+
+	.icon-preview :global(svg) {
+		width: 32px;
+		height: 32px;
+	}
+
+	.icon-preview:hover {
+		color: var(--color-primary);
+	}
+
+	.icon-card span {
+		color: var(--color-text-secondary);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		text-align: center;
+		overflow-wrap: anywhere;
 	}
 </style>
