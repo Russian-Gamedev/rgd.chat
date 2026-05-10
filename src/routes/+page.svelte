@@ -33,6 +33,7 @@
 		class="join-button"
 		href="https://join.rgd.chat"
 		target="_blank"
+		rel="noopener noreferrer"
 		data-rybbit-event="join_discord"
 	>
 		Присоединиться
@@ -44,6 +45,7 @@
 		class="join-button"
 		href="https://discord.gg/MXWGuNtT4C"
 		target="_blank"
+		rel="noopener noreferrer"
 		data-rybbit-event="join_new_discord"
 		color="success"
 	>
@@ -101,6 +103,7 @@
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.375rem;
 		margin-left: 0.5rem;
+		line-height: 1;
 		position: absolute;
 		right: -5%;
 		top: -25%;

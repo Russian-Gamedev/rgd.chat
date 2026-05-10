@@ -1,13 +1,9 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
 
-	interface InputProps {
-		type?: HTMLInputAttributes['type'];
-		value?: string;
+	type InputProps = HTMLInputAttributes & {
 		label?: string;
-		id?: string;
-		oninput?: (e: Event) => void;
-	}
+	};
 
 	let fallbackId = $props.id();
 
@@ -15,8 +11,8 @@
 		type = '',
 		value = $bindable(''),
 		label = '',
-		oninput,
-		id = fallbackId
+		id = fallbackId,
+		...rest
 	}: InputProps = $props();
 
 	let isFocused = $state(false);
@@ -28,8 +24,8 @@
 	<input
 		{id}
 		{type}
+		{...rest}
 		bind:value
-		{oninput}
 		onfocus={() => (isFocused = true)}
 		onblur={() => (isFocused = false)}
 		class:no-label={!label}

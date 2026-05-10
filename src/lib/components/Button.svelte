@@ -34,7 +34,7 @@
 		align-items: center;
 		justify-content: center;
 		width: fit-content;
-		color: var(--text-primary);
+		color: var(--color-text);
 		text-decoration: none;
 		transition: all 300ms ease-in;
 		cursor: pointer;
@@ -51,7 +51,7 @@
 		}
 
 		&.solid {
-			color: var(--text-primary);
+			color: var(--color-text);
 			background-color: var(--color);
 
 			&:hover {
@@ -66,7 +66,7 @@
 
 			&:hover {
 				background-color: var(--color);
-				color: var(--text-primary);
+				color: var(--color-text);
 			}
 		}
 
@@ -76,7 +76,7 @@
 
 			&:hover {
 				background-color: var(--color);
-				color: var(--text-primary);
+				color: var(--color-text);
 			}
 		}
 	}

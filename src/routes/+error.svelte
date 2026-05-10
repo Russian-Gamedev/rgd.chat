@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 </script>
 
-<main>
+<section class="error-page">
 	{#if page.status === 404}
 		<h1>Такой страницы нет</h1>
 		<p>Похоже, вы заблудились. Попробуйте вернуться на главную страницу.</p>
@@ -13,10 +13,10 @@
 	{/if}
 
 	<img src={NotFoundImage} alt="Здесь ничего нет, как и актива на этом сайте. Made by Jacob." />
-</main>
+</section>
 
 <style>
-	main {
+	.error-page {
 		display: flex;
 		flex-direction: column;
 		align-items: center;

@@ -43,7 +43,7 @@
 		color: var(--color-text);
 		cursor: pointer;
 		font-size: 15px;
-		font-weight: regular;
+		font-weight: 400;
 	}
 
 	.breadcrumb-item a:hover {
@@ -52,6 +52,6 @@
 
 	.breadcrumb-item span[aria-current='page'] {
 		font-weight: bold;
-		color: var(--color-text-primary);
+		color: var(--color-text);
 	}
 </style>
