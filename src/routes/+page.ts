@@ -1,14 +1,14 @@
-import { API } from '$lib/api/api';
+import { createApi } from '$lib/api/api';
 import { IconJam, IconVK, IconYoutube } from '$lib/assets/icons';
+
 import type { PageLoad } from './$types';
 
 export const prerender = true;
 
 export const load: PageLoad = async ({ depends, fetch }) => {
 	depends('members:stats');
-	const stats = await API.use(fetch)
-		.getMembersStats()
-		.catch(() => null);
+	const api = createApi({ fetch });
+	const stats = await api.getMembersStats().catch(() => null);
 
 	const cards = [
 		{
