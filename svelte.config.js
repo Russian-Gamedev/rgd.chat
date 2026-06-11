@@ -9,7 +9,15 @@ const config = {
 	kit: {
 		adapter: adapter({
 			fallback: '404.html'
-		})
+		}),
+		prerender: {
+			handleHttpError: ({ path, status, message }) => {
+				const pendingRoutes = new Set(['/games', '/jams', '/blogs', '/donators']);
+				if (status === 404 && pendingRoutes.has(path)) return;
+
+				throw new Error(message);
+			}
+		}
 	},
 	extensions: ['.svelte', '.svx']
 };
