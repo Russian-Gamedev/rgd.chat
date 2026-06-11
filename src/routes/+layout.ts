@@ -4,16 +4,18 @@ export const load = ({ url }) => {
 	const title = 'Russian Gamedev — Discord сообщество';
 	const description =
 		'Обитель разработчиков игр, где вы услышите экспертное мнение по поводу своих игр и идей, найдёте отличных напарников которые не бросят под самый релиз, и живой войс где мы регулярно срём новых участников и играем в игры.';
+	const origin = url.origin === 'http://sveltekit-prerender' ? 'https://rgd.chat' : url.origin;
+	const canonical = new URL(url.pathname, origin).href;
 
 	const baseTags = defineBaseMetaTags({
 		title,
 		titleTemplate: '%s | Russian Gamedev',
 		description,
 		keywords: ['gamedev', 'game development', 'discord', 'russian gamedev', 'разработка игр'],
-		canonical: new URL(url.pathname, url.origin).href,
+		canonical,
 		openGraph: {
 			type: 'website',
-			url: new URL(url.pathname, url.origin).href,
+			url: canonical,
 			locale: 'ru_RU',
 			title,
 			description,
