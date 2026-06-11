@@ -1,10 +1,10 @@
 <script lang="ts">
-	interface BadgeProps {
-		label: string;
-		count?: number;
-	}
+interface BadgeProps {
+	label: string;
+	count?: number;
+}
 
-	let { label, count }: BadgeProps = $props();
+let { label, count }: BadgeProps = $props();
 </script>
 
 <span class="badge">

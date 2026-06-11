@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
+import { resolve } from '$app/paths';
 
-	interface Breadcrumb {
-		label: string;
-		href: Parameters<typeof resolve>[0];
-	}
+interface Breadcrumb {
+	label: string;
+	href: Parameters<typeof resolve>[0];
+}
 
-	export let items: Breadcrumb[] = [];
+export let items: Breadcrumb[] = [];
 </script>
 
 <nav aria-label="Breadcrumb">

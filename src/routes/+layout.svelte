@@ -1,15 +1,17 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
-	import { deepMerge, MetaTags } from 'svelte-meta-tags';
-	import '../styles/globals.css';
-	import type { LayoutProps } from './$types';
-	import { page } from '$app/state';
-	import Navbar from './navbar.svelte';
+import { deepMerge, MetaTags } from 'svelte-meta-tags';
 
-	let { children, data }: LayoutProps = $props();
+import favicon from '$lib/assets/favicon.svg';
+import '../styles/globals.css';
+import { page } from '$app/state';
 
-	const metaTags = $derived(deepMerge(data.baseMetaTags, page.data.pageMetaTags));
-	const themeColor = $derived(data.themeColor);
+import type { LayoutProps } from './$types';
+import Navbar from './navbar.svelte';
+
+let { children, data }: LayoutProps = $props();
+
+const metaTags = $derived(deepMerge(data.baseMetaTags, page.data.pageMetaTags));
+const themeColor = $derived(data.themeColor);
 </script>
 
 <MetaTags {...metaTags} />

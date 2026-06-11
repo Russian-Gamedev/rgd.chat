@@ -1,6 +1,6 @@
 <script>
-	import NotFoundImage from '$lib/assets/clown_by_Jacob.png';
-	import { page } from '$app/state';
+import { page } from '$app/state';
+import NotFoundImage from '$lib/assets/clown_by_Jacob.png';
 </script>
 
 <section class="error-page">

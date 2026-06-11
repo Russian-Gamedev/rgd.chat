@@ -1,23 +1,23 @@
 <script lang="ts">
-	import type { HTMLInputAttributes } from 'svelte/elements';
+import type { HTMLInputAttributes } from 'svelte/elements';
 
-	type InputProps = HTMLInputAttributes & {
-		label?: string;
-	};
+type InputProps = HTMLInputAttributes & {
+	label?: string;
+};
 
-	let fallbackId = $props.id();
+let fallbackId = $props.id();
 
-	let {
-		type = '',
-		value = $bindable(''),
-		label = '',
-		id = fallbackId,
-		...rest
-	}: InputProps = $props();
+let {
+	type = '',
+	value = $bindable(''),
+	label = '',
+	id = fallbackId,
+	...rest
+}: InputProps = $props();
 
-	let isFocused = $state(false);
-	const hasValue = $derived(value && value.length > 0);
-	const isFloating = $derived(isFocused || hasValue);
+let isFocused = $state(false);
+const hasValue = $derived(value && value.length > 0);
+const isFloating = $derived(isFocused || hasValue);
 </script>
 
 <div class="input-wrapper">

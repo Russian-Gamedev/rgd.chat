@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap");
 
 :root {
 	/* COLORS */
@@ -11,7 +11,7 @@
 	--color-text: #fefefe;
 	--color-text-secondary: #999ca0;
 
-	font-family: 'Mulish', sans-serif;
+	font-family: "Mulish", sans-serif;
 	scroll-behavior: smooth;
 
 	line-height: 1.5;

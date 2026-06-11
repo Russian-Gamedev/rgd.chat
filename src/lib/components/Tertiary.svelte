@@ -1,6 +1,6 @@
 <script lang="ts">
-	export let label: string;
-	export let id: string = '';
+export let label: string;
+export let id: string = '';
 </script>
 
 <span class="tertiary" {id}>{label}</span>

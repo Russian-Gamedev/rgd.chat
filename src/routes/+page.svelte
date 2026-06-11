@@ -1,15 +1,16 @@
 <script lang="ts">
-	import ExternalLink from '$lib/assets/icons/external-link.svelte';
-	import Badge from '$lib/components/Badge.svelte';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-	import Button from '$lib/components/Button.svelte';
-	import Tertiary from '$lib/components/Tertiary.svelte';
-	import type { PageProps } from './$types';
+import ExternalLink from '$lib/assets/icons/external-link.svelte';
+import Badge from '$lib/components/Badge.svelte';
+import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+import Button from '$lib/components/Button.svelte';
+import Tertiary from '$lib/components/Tertiary.svelte';
 
-	let { data }: PageProps = $props();
+import type { PageProps } from './$types';
 
-	const stats = $derived(data.stats);
-	const cards = $derived(data.cards);
+let { data }: PageProps = $props();
+
+const stats = $derived(data.stats);
+const cards = $derived(data.cards);
 </script>
 
 <Breadcrumb items={[{ label: 'Главная', href: '/' }]} />
