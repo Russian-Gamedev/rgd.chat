@@ -1,9 +1,10 @@
 <script lang="ts">
 export let label: string;
 export let id: string = '';
+export let title: string | undefined = undefined;
 </script>
 
-<span class="tertiary" {id}>{label}</span>
+<span class="tertiary" {id} {title}>{label}</span>
 
 <style>
 	.tertiary {
@@ -18,8 +19,9 @@ export let id: string = '';
 		&::before {
 			content: '';
 			position: absolute;
+			top: 0;
+			bottom: 0;
 			margin-left: -0.95rem;
-			height: 1.75rem;
 			width: 0.25rem;
 			border-radius: 0.75rem;
 			background-color: var(--color-primary);
