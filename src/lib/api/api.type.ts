@@ -6,10 +6,16 @@ export interface MembersStats {
 export type Video = {
 	id: number;
 	text?: string;
-	links?: string[];
-	views?: number;
+	links?: VideoEmbed[];
 	datetime: string;
-	editir: boolean;
+};
+
+export type VideoEmbed = {
+	url: string;
+	provider: string;
+	title: string;
+	description: string;
+	thumbnail: string;
 };
 
 export type VideosPage = {
