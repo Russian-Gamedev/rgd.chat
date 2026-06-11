@@ -16,29 +16,21 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"format": "prettier --write .",
-		"lint": "prettier --check . && eslint .",
-		"lint:fix": "prettier --write . && eslint . --fix"
+		"format": "biome format --write .",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write ."
 	},
 	"devDependencies": {
-		"@eslint/compat": "^2.1.0",
-		"@eslint/js": "^10.0.1",
+		"@biomejs/biome": "^2.4.16",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.59.1",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
 		"@types/node": "^25.6.2",
-		"eslint": "^10.3.0",
-		"eslint-config-prettier": "^10.1.8",
-		"eslint-plugin-svelte": "^3.17.1",
-		"globals": "^17.6.0",
 		"mdsvex": "^0.12.7",
-		"prettier": "^3.8.3",
-		"prettier-plugin-svelte": "^3.5.1",
 		"sass-embedded": "^1.99.0",
 		"svelte": "^5.55.5",
 		"svelte-check": "^4.4.8",
 		"typescript": "^6.0.3",
-		"typescript-eslint": "^8.59.2",
 		"vite": "^8.0.11"
 	},
 	"dependencies": {
