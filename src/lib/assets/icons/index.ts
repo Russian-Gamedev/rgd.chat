@@ -1,10 +1,13 @@
+export { default as IconArrowUp } from './arrow-up.svelte';
 export { default as IconCrown } from './crown.svelte';
 export { default as IconDiscord } from './discord.svelte';
 export { default as IconExternalLink } from './external-link.svelte';
+export { default as IconEye } from './eye.svelte';
+export { default as IconFeed } from './feed.svelte';
 export { default as IconGithub } from './github.svelte';
 export { default as IconJam } from './jam.svelte';
+export { default as IconJoystick } from './joystick.svelte';
 export { default as IconRgd } from './rgd.svelte';
+export { default as IconVideo } from './video.svelte';
 export { default as IconVK } from './vk.svelte';
 export { default as IconYoutube } from './youtube.svelte';
-export { default as IconJoystick } from './joystick.svelte';
-export { default as IconFeed } from './feed.svelte';

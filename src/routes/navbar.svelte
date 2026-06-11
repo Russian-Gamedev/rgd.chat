@@ -1,81 +1,84 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { onMount } from 'svelte';
-	import {
-		IconCrown,
-		IconDiscord,
-		IconFeed,
-		IconJam,
-		IconJoystick,
-		IconRgd
-	} from '$lib/assets/icons';
-	import Button from '$lib/components/Button.svelte';
+import { onMount } from 'svelte';
 
-	const navItems = [
-		{ name: 'Игры', href: '/games', icon: IconJoystick },
-		{ name: 'Джемы', href: '/jams', icon: IconJam },
-		{ name: 'Блоги', href: '/blogs', icon: IconFeed },
-		{ name: 'Донатеры', href: '/donators', icon: IconCrown }
-	];
+import { page } from '$app/state';
+import {
+	IconCrown,
+	IconDiscord,
+	IconFeed,
+	IconJam,
+	IconJoystick,
+	IconRgd,
+	IconVideo
+} from '$lib/assets/icons';
+import Button from '$lib/components/Button.svelte';
 
-	const pathname = $derived(page.url.pathname);
-	const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+const navItems = [
+	{ name: 'Игры', href: '/games', icon: IconJoystick },
+	{ name: 'Джемы', href: '/jams', icon: IconJam },
+	{ name: 'Блоги', href: '/blogs', icon: IconFeed },
+	{ name: 'Донатеры', href: '/donators', icon: IconCrown },
+	{ name: 'Видео', href: '/videos', icon: IconVideo }
+];
 
-	let navElement: HTMLElement;
-	let canScrollLeft = $state(false);
-	let canScrollRight = $state(false);
+const pathname = $derived(page.url.pathname);
+const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
-	const updateScrollState = () => {
-		if (!navElement) return;
+let navElement: HTMLElement;
+let canScrollLeft = $state(false);
+let canScrollRight = $state(false);
 
-		canScrollLeft = navElement.scrollLeft > 1;
-	};
+const updateScrollState = () => {
+	if (!navElement) return;
 
-	onMount(() => {
-		updateScrollState();
-		requestAnimationFrame(updateScrollState);
+	canScrollLeft = navElement.scrollLeft > 1;
+};
 
-		const resizeObserver = new ResizeObserver(updateScrollState);
-		resizeObserver.observe(navElement);
+onMount(() => {
+	updateScrollState();
+	requestAnimationFrame(updateScrollState);
 
-		if (navElement.firstElementChild) {
-			resizeObserver.observe(navElement.firstElementChild);
-		}
+	const resizeObserver = new ResizeObserver(updateScrollState);
+	resizeObserver.observe(navElement);
 
-		const listElement = navElement.firstElementChild;
-		const firstItem = listElement?.firstElementChild;
-		const lastItem = listElement?.lastElementChild;
-		const intersectionObserver = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (entry.target === firstItem) {
-						canScrollLeft = !entry.isIntersecting || navElement.scrollLeft > 1;
-					}
+	if (navElement.firstElementChild) {
+		resizeObserver.observe(navElement.firstElementChild);
+	}
 
-					if (entry.target === lastItem) {
-						canScrollRight = !entry.isIntersecting;
-					}
+	const listElement = navElement.firstElementChild;
+	const firstItem = listElement?.firstElementChild;
+	const lastItem = listElement?.lastElementChild;
+	const intersectionObserver = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				if (entry.target === firstItem) {
+					canScrollLeft = !entry.isIntersecting || navElement.scrollLeft > 1;
 				}
-			},
-			{ root: navElement, threshold: 0.99 }
-		);
 
-		if (firstItem) {
-			intersectionObserver.observe(firstItem);
-		}
+				if (entry.target === lastItem) {
+					canScrollRight = !entry.isIntersecting;
+				}
+			}
+		},
+		{ root: navElement, threshold: 0.99 }
+	);
 
-		if (lastItem) {
-			intersectionObserver.observe(lastItem);
-		}
+	if (firstItem) {
+		intersectionObserver.observe(firstItem);
+	}
 
-		window.addEventListener('resize', updateScrollState);
+	if (lastItem) {
+		intersectionObserver.observe(lastItem);
+	}
 
-		return () => {
-			resizeObserver.disconnect();
-			intersectionObserver.disconnect();
-			window.removeEventListener('resize', updateScrollState);
-		};
-	});
+	window.addEventListener('resize', updateScrollState);
+
+	return () => {
+		resizeObserver.disconnect();
+		intersectionObserver.disconnect();
+		window.removeEventListener('resize', updateScrollState);
+	};
+});
 </script>
 
 <aside class="navbar">
@@ -93,7 +96,6 @@
 					<li>
 						<a
 							href={item.href}
-							rel="external"
 							aria-current={isActive(item.href) ? 'page' : undefined}
 							class:active={isActive(item.href)}
 							class="link"
