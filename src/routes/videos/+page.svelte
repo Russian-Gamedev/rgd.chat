@@ -1,20 +1,24 @@
 <script lang="ts">
-import { createApi } from '$lib/api/api';
-import { IconArrowUp, IconEye } from '$lib/assets/icons';
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import { onMount } from 'svelte';
 
-import type { PageProps } from './$types';
+import { createApi } from '$lib/api/api';
 import type { Video, VideosPage } from '$lib/api/api.type';
+import { IconArrowUp } from '$lib/assets/icons';
+import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+import Tertiary from '$lib/components/Tertiary.svelte';
+
+import type { PageProps } from './$types';
 
 type VideoCard = {
 	key: string;
 	source: Video;
 	formattedDate: string;
-	formattedViews: string;
 	videoId: string;
 	url: string;
 	thumbnailUrl: string;
+	embedTitle: string;
+	embedDescription: string;
+	truncatedText: string;
 };
 
 let { data }: PageProps = $props();
@@ -43,54 +47,37 @@ function uniqueById(videos: Video[]) {
 	});
 }
 
-function toVideoCards(video: Video): VideoCard[] {
-	return (video.links ?? []).flatMap((link) => {
-		const videoId = getYoutubeVideoId(link);
-		if (!videoId) return [];
+function truncateToPunctuation(text: string): string {
+	const match = text.match(/[.!?,;:]/);
+	return match ? text.slice(0, match.index! + 1) : text;
+}
 
+function toVideoCards(video: Video): VideoCard[] {
+	return (video.links ?? [])
+		.filter((link) => link.provider?.toLowerCase() === 'youtube')
+		.flatMap((link) => {
 		return {
-			key: `${video.id}:${videoId}`,
+			key: `${video.id}:${link.url}`,
 			source: video,
 			formattedDate: formatDate(video.datetime),
-			formattedViews: formatViews(video.views ?? 0),
-			videoId,
-			url: `https://www.youtube.com/watch?v=${videoId}`,
-			thumbnailUrl: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+			videoId: getYoutubeVideoId(link.url) ?? '',
+			url: link.url,
+			thumbnailUrl: link.thumbnail,
+			embedTitle: link.title,
+			embedDescription: link.description,
+			truncatedText: truncateToPunctuation(video.text ?? '')
 		};
 	});
 }
 
-function getYoutubeVideoId(link: string): string | null {
+function getYoutubeVideoId(url: string): string | null {
 	try {
-		const url = new URL(link);
-		const hostname = url.hostname.replace(/^www\./, '').toLowerCase();
-
-		if (hostname === 'youtu.be') {
-			return normalizeYoutubeId(url.pathname.split('/').filter(Boolean)[0]);
-		}
-
-		if (hostname === 'youtube.com' || hostname === 'm.youtube.com' || hostname === 'music.youtube.com') {
-			if (url.pathname === '/watch') {
-				return normalizeYoutubeId(url.searchParams.get('v'));
-			}
-
-			const [kind, videoId] = url.pathname.split('/').filter(Boolean);
-			if (kind === 'shorts' || kind === 'embed' || kind === 'live') {
-				return normalizeYoutubeId(videoId);
-			}
-		}
+		const u = new URL(url);
+		const id = u.searchParams.get('v') ?? u.pathname.split('/').filter(Boolean).pop();
+		return /^[a-zA-Z0-9_-]{11}$/.test(id?.trim() ?? '') ? id?.trim() ?? null : null;
 	} catch {
 		return null;
 	}
-
-	return null;
-}
-
-function normalizeYoutubeId(videoId: string | null | undefined): string | null {
-	if (!videoId) return null;
-
-	const normalized = videoId.trim();
-	return /^[a-zA-Z0-9_-]{11}$/.test(normalized) ? normalized : null;
 }
 
 function formatDate(datetime: string): string {
@@ -101,10 +88,6 @@ function formatDate(datetime: string): string {
 		dateStyle: 'medium',
 		timeStyle: 'short'
 	}).format(date);
-}
-
-function formatViews(views: number): string {
-	return new Intl.NumberFormat(userLocale, { notation: 'compact' }).format(views);
 }
 
 async function loadNextPage() {
@@ -193,17 +176,19 @@ onMount(() => {
 					data-rybbit-prop-video-id={card.videoId}
 					data-rybbit-prop-source-id={card.source.id}
 				>
-					<span class="views" aria-label={`${card.formattedViews} просмотров`}>
-						<IconEye />
-						{card.formattedViews}
-					</span>
-
-					<img
-						class="thumbnail"
-						src={card.thumbnailUrl}
-						alt={card.source.text ?? `YouTube video ${card.videoId}`}
-						loading="lazy"
-					/>
+				<img
+					class="thumbnail"
+					src={card.thumbnailUrl}
+					alt={card.embedTitle}
+					loading="lazy"
+					onerror={(e) => {
+						const img = e.currentTarget as HTMLImageElement;
+						if (!img.dataset.fallback) {
+							img.dataset.fallback = '1';
+							img.src = `https://i.ytimg.com/vi/${card.videoId}/hqdefault.jpg`;
+						}
+					}}
+				/>
 
 					<div class="video-content">
 						<div class="video-header">
@@ -211,9 +196,11 @@ onMount(() => {
 						</div>
 
 						{#if card.source.text}
-							<p class="video-text">{card.source.text}</p>
+							<Tertiary label={card.truncatedText} title={card.source.text} />
 						{/if}
 
+						<h2 class="video-title">{card.embedTitle}</h2>
+						<p class="video-description" title={card.embedDescription}>{card.embedDescription}</p>
 					</div>
 				</a>
 			</li>
@@ -286,27 +273,6 @@ onMount(() => {
 		margin-top: 1rem;
 	}
 
-	.views {
-		align-items: center;
-		background-color: rgba(17, 18, 21, 0.88);
-		border-radius: 999px;
-		color: var(--color-text);
-		display: inline-flex;
-		font-size: 0.875rem;
-		font-weight: 700;
-		gap: 0.375rem;
-		line-height: 1;
-		padding: 0.5rem 0.625rem;
-		position: absolute;
-		right: 1.5rem;
-		top: 1.5rem;
-	}
-
-	.views :global(svg) {
-		height: 1rem;
-		width: 1rem;
-	}
-
 	.video-header {
 		display: flex;
 		flex-wrap: wrap;
@@ -315,9 +281,23 @@ onMount(() => {
 		font-size: 0.875rem;
 	}
 
-	.video-text {
-		margin-top: 0.75rem;
-		white-space: pre-wrap;
+	.video-title {
+		font-size: 1.125rem;
+		font-weight: 600;
+		margin: 0.5rem 0 0.25rem;
+		line-height: 1.4;
+	}
+
+	.video-description {
+		font-size: 0.875rem;
+		color: var(--color-text-secondary);
+		margin: 0;
+		line-height: 1.5;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		line-clamp: 3;
 	}
 
 	a {
