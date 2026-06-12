@@ -1,4 +1,4 @@
-import type { MembersStats, VideosPage } from './api.type';
+import type { MembersStats, Patron, VideosPage } from './api.type';
 
 export type ApiOptions = {
 	fetch: typeof fetch;
@@ -8,6 +8,7 @@ export type ApiOptions = {
 export type ApiClient = {
 	getMembersStats(): Promise<MembersStats>;
 	getVideos(page?: number): Promise<VideosPage>;
+	getPatrons(): Promise<Patron[]>;
 };
 
 export function createApi(options: ApiOptions): ApiClient {
@@ -29,6 +30,9 @@ export function createApi(options: ApiOptions): ApiClient {
 		},
 		getVideos(page = 1, perPage = 10) {
 			return request<VideosPage>(`/videos/GameDevVideos?page=${page}&perPage=${perPage}`);
+		},
+		getPatrons() {
+			return request<Patron[]>('/patrons');
 		}
 	};
 }

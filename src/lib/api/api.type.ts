@@ -25,3 +25,13 @@ export type VideosPage = {
 	total: number;
 	totalPages: number;
 };
+
+export type Patron = {
+	value: number;
+	user: {
+		id: string;
+		username: string;
+		avatar_url: string;
+		banner: string;
+	};
+};
