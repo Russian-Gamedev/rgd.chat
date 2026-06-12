@@ -14,10 +14,10 @@ import {
 import Button from '$lib/components/Button.svelte';
 
 const navItems = [
-	{ name: 'Игры', href: '/games', icon: IconJoystick },
-	{ name: 'Джемы', href: '/jams', icon: IconJam },
-	{ name: 'Блоги', href: '/blogs', icon: IconFeed },
-	{ name: 'Донатеры', href: '/donators', icon: IconCrown },
+	// { name: "Игры", href: "/games", icon: IconJoystick },
+	// { name: "Джемы", href: "/jams", icon: IconJam },
+	// { name: "Блоги", href: "/blogs", icon: IconFeed },
+	{ name: 'Донатеры', href: '/patrons', icon: IconCrown },
 	{ name: 'Видео', href: '/videos', icon: IconVideo }
 ];
 
