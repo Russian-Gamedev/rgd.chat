@@ -1,84 +1,97 @@
 <script lang="ts">
-import { onMount } from 'svelte';
+  import { onMount } from "svelte";
 
-import { page } from '$app/state';
-import {
-	IconCrown,
-	IconDiscord,
-	IconFeed,
-	IconJam,
-	IconJoystick,
-	IconRgd,
-	IconVideo
-} from '$lib/assets/icons';
-import Button from '$lib/components/Button.svelte';
+  import { page } from "$app/state";
+  import { createApi } from "$lib/api/api";
+  import type { User } from "$lib/api/api.type";
+  import {
+    IconCrown,
+    IconDiscord,
+    IconFeed,
+    IconJam,
+    IconJoystick,
+    IconRgd,
+    IconVideo,
+  } from "$lib/assets/icons";
+  import Button from "$lib/components/Button.svelte";
 
-const navItems = [
-	// { name: "Игры", href: "/games", icon: IconJoystick },
-	// { name: "Джемы", href: "/jams", icon: IconJam },
-	// { name: "Блоги", href: "/blogs", icon: IconFeed },
-	{ name: 'Донатеры', href: '/patrons', icon: IconCrown },
-	{ name: 'Видео', href: '/videos', icon: IconVideo }
-];
+  let user = $state<User | null>(null);
 
-const pathname = $derived(page.url.pathname);
-const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const redirectToAuth = () => {
+    window.location.href = import.meta.env.VITE_AUTH_URL;
+  };
 
-let navElement: HTMLElement;
-let canScrollLeft = $state(false);
-let canScrollRight = $state(false);
+  const navItems = [
+    // { name: "Игры", href: "/games", icon: IconJoystick },
+    // { name: "Джемы", href: "/jams", icon: IconJam },
+    // { name: "Блоги", href: "/blogs", icon: IconFeed },
+    { name: "Донатеры", href: "/patrons", icon: IconCrown },
+    { name: "Видео", href: "/videos", icon: IconVideo },
+  ];
 
-const updateScrollState = () => {
-	if (!navElement) return;
+  const pathname = $derived(page.url.pathname);
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
 
-	canScrollLeft = navElement.scrollLeft > 1;
-};
+  let navElement: HTMLElement;
+  let canScrollLeft = $state(false);
+  let canScrollRight = $state(false);
 
-onMount(() => {
-	updateScrollState();
-	requestAnimationFrame(updateScrollState);
+  const updateScrollState = () => {
+    if (!navElement) return;
 
-	const resizeObserver = new ResizeObserver(updateScrollState);
-	resizeObserver.observe(navElement);
+    canScrollLeft = navElement.scrollLeft > 1;
+  };
 
-	if (navElement.firstElementChild) {
-		resizeObserver.observe(navElement.firstElementChild);
-	}
+  onMount(() => {
+    createApi({ fetch })
+      .getMe()
+      .then((u) => (user = u))
+      .catch(() => (user = null));
+    updateScrollState();
+    requestAnimationFrame(updateScrollState);
 
-	const listElement = navElement.firstElementChild;
-	const firstItem = listElement?.firstElementChild;
-	const lastItem = listElement?.lastElementChild;
-	const intersectionObserver = new IntersectionObserver(
-		(entries) => {
-			for (const entry of entries) {
-				if (entry.target === firstItem) {
-					canScrollLeft = !entry.isIntersecting || navElement.scrollLeft > 1;
-				}
+    const resizeObserver = new ResizeObserver(updateScrollState);
+    resizeObserver.observe(navElement);
 
-				if (entry.target === lastItem) {
-					canScrollRight = !entry.isIntersecting;
-				}
-			}
-		},
-		{ root: navElement, threshold: 0.99 }
-	);
+    if (navElement.firstElementChild) {
+      resizeObserver.observe(navElement.firstElementChild);
+    }
 
-	if (firstItem) {
-		intersectionObserver.observe(firstItem);
-	}
+    const listElement = navElement.firstElementChild;
+    const firstItem = listElement?.firstElementChild;
+    const lastItem = listElement?.lastElementChild;
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.target === firstItem) {
+            canScrollLeft = !entry.isIntersecting || navElement.scrollLeft > 1;
+          }
 
-	if (lastItem) {
-		intersectionObserver.observe(lastItem);
-	}
+          if (entry.target === lastItem) {
+            canScrollRight = !entry.isIntersecting;
+          }
+        }
+      },
+      { root: navElement, threshold: 0.99 },
+    );
 
-	window.addEventListener('resize', updateScrollState);
+    if (firstItem) {
+      intersectionObserver.observe(firstItem);
+    }
 
-	return () => {
-		resizeObserver.disconnect();
-		intersectionObserver.disconnect();
-		window.removeEventListener('resize', updateScrollState);
-	};
-});
+    if (lastItem) {
+      intersectionObserver.observe(lastItem);
+    }
+
+    window.addEventListener("resize", updateScrollState);
+
+    return () => {
+      resizeObserver.disconnect();
+      intersectionObserver.disconnect();
+      window.removeEventListener("resize", updateScrollState);
+    };
+  });
 </script>
 
 <aside class="navbar">
@@ -115,12 +128,23 @@ onMount(() => {
     </nav>
   </div>
   <div class="auth-slot">
-    <Button color="bg" class="auth-button">
-      <div class="auth-icon">
-        <IconDiscord />
+    {#if user}
+      <div class="user-block">
+        <img
+          class="user-avatar"
+          src={user.avatar_url}
+          alt={user.nickname ?? user.username}
+        />
+        <span class="user-username">{user.nickname ?? user.username}</span>
       </div>
-      <span>Авторизация</span>
-    </Button>
+    {:else}
+      <Button color="bg" class="auth-button" onclick={redirectToAuth}>
+        <div class="auth-icon">
+          <IconDiscord />
+        </div>
+        <span>Авторизация</span>
+      </Button>
+    {/if}
   </div>
 </aside>
 
@@ -238,6 +262,42 @@ onMount(() => {
     justify-content: center;
     width: 2.5rem;
     height: 2.5rem;
+  }
+
+  .user-block {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: content;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--color-bg);
+    cursor: pointer;
+    transition: transform 200ms ease;
+  }
+
+  .user-block:hover,
+  .user-block:focus-visible {
+    transform: scale(1.05);
+  }
+
+  .user-avatar {
+    background-color: var(--color-bg);
+    border-radius: 9px;
+    flex: 0 0 auto;
+    height: 32px;
+    width: 32px;
+    object-fit: cover;
+  }
+
+  .user-username {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--color-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   @media (max-width: 767px) {
@@ -404,6 +464,26 @@ onMount(() => {
       height: 2rem;
       padding: 0.375rem;
       border-radius: 0.625rem;
+    }
+
+    .user-block {
+      width: auto;
+      padding: 0;
+      gap: 0;
+    }
+
+    .user-avatar {
+      width: 2rem;
+      height: 2rem;
+    }
+
+    .user-username {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
     }
   }
 
