@@ -1,4 +1,4 @@
-import type { MembersStats, Patron, VideosPage } from './api.type';
+import type { MembersStats, Patron, User, VideosPage } from './api.type';
 
 export type ApiOptions = {
 	fetch: typeof fetch;
@@ -9,14 +9,18 @@ export type ApiClient = {
 	getMembersStats(): Promise<MembersStats>;
 	getVideos(page?: number): Promise<VideosPage>;
 	getPatrons(): Promise<Patron[]>;
+	getMe(): Promise<User>;
 };
 
 export function createApi(options: ApiOptions): ApiClient {
 	const baseUrl = options.baseUrl ?? import.meta.env.VITE_API_BASE_URL ?? 'https://bot.rgd.chat';
 	const fetcher = options.fetch;
 
-	async function request<T>(endpoint: string, requestOptions?: RequestInit): Promise<T> {
+	async function request<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
 		const url = `${baseUrl}${endpoint}`;
+		Object.assign(requestOptions, {
+			credentials: 'include'
+		});
 		const response = await fetcher(url, requestOptions);
 		if (!response.ok) {
 			throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -26,13 +30,21 @@ export function createApi(options: ApiOptions): ApiClient {
 
 	return {
 		getMembersStats() {
-			return request<MembersStats>('/discord/members');
+			return request('/discord/members');
 		},
 		getVideos(page = 1, perPage = 10) {
-			return request<VideosPage>(`/videos/GameDevVideos?page=${page}&perPage=${perPage}`);
+			return request(`/videos/GameDevVideos?page=${page}&perPage=${perPage}`);
 		},
 		getPatrons() {
-			return request<Patron[]>('/patrons');
+			return request('/patrons');
+		},
+		getMe() {
+			return request('/users/me');
 		}
 	};
+}
+
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+	///@ts-expect-error
+	window.api = createApi({ fetch });
 }

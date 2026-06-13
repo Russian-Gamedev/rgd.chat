@@ -35,3 +35,19 @@ export type Patron = {
 		banner: string;
 	};
 };
+
+export type User = {
+	id: string;
+	username: string;
+	nickname: string | null;
+	avatar_url: string;
+	about: string | null;
+	banner: string | null;
+	banner_alt: string | null;
+	banner_color: string;
+	birth_date: string | null;
+	first_joined_at: string;
+	last_active_at: string;
+	active_streak: number;
+	max_active_streak: number;
+};
