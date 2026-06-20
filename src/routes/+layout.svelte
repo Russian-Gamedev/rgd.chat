@@ -1,12 +1,18 @@
 <script lang="ts">
 import { deepMerge, MetaTags } from 'svelte-meta-tags';
+import { onNavigate } from '$app/navigation';
 
 import favicon from '$lib/assets/favicon.svg';
 import '../styles/globals.css';
 import { page } from '$app/state';
+import { startPageViewTransition } from '$lib/view-transition';
 
 import type { LayoutProps } from './$types';
 import Navbar from './navbar.svelte';
+
+onNavigate((navigation) => {
+	return startPageViewTransition(navigation);
+});
 
 let { children, data }: LayoutProps = $props();
 

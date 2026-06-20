@@ -54,3 +54,50 @@ p {
 	font-size: 20px;
 	font-weight: 400;
 }
+
+/* View Transitions — progressive enhancement */
+@media (prefers-reduced-motion: no-preference) {
+	::view-transition-old(root) {
+		animation:
+			page-fade-out 120ms ease both,
+			page-slide-out 180ms ease both;
+	}
+
+	::view-transition-new(root) {
+		animation:
+			page-fade-in 180ms ease both,
+			page-slide-in 220ms ease both;
+	}
+}
+
+@keyframes page-fade-out {
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes page-fade-in {
+	from {
+		opacity: 0;
+	}
+}
+
+@keyframes page-slide-out {
+	to {
+		transform: translateY(0.375rem);
+	}
+}
+
+@keyframes page-slide-in {
+	from {
+		transform: translateY(0.5rem);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-group(*),
+	::view-transition-old(*),
+	::view-transition-new(*) {
+		animation: none !important;
+	}
+}
