@@ -2,22 +2,15 @@
 import { onMount } from 'svelte';
 
 import { createApi } from '$lib/api/api';
-import type { Video, VideosPage } from '$lib/api/api.type';
+import type { VideosPage } from '$lib/api/api.type';
 import { IconArrowUp } from '$lib/assets/icons';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import SkeletonImage from '$lib/components/SkeletonImage.svelte';
 
 import type { PageProps } from './$types';
-
-type VideoCard = {
-	key: string;
-	source: Video;
-	formattedDate: string;
-	videoId: string;
-	url: string;
-	thumbnailUrl: string;
-	embedTitle: string;
-};
+import { formatAbsoluteDate, formatRelativeDateTime } from './format-date';
+import { createInfiniteScrollObserver } from './infinite-scroll';
+import { toVideoCards, uniqueById } from './video-utils';
 
 let { data }: PageProps = $props();
 
@@ -27,64 +20,32 @@ let isLoadingMore = $state(false);
 let hasLoadError = $state(false);
 let sentinel: HTMLElement | undefined = $state();
 let showScrollTop = $state(false);
-let userLocale = $state<string | undefined>();
+let userLocale = $state('ru-RU');
+let now = $state<number | null>(null);
 
 const items = $derived(
 	uniqueById([...(videos?.items ?? []), ...loadedPages.flatMap((page) => page.items)])
 );
-const videoCards = $derived(items.flatMap(toVideoCards));
+const videoCards = $derived(
+	items.flatMap((video) => toVideoCards(video, formatAbsoluteDateLocal, formatRelativeTime))
+);
 const currentPage = $derived(loadedPages.at(-1)?.page ?? videos?.page ?? 1);
 const totalPages = $derived(loadedPages.at(-1)?.totalPages ?? videos?.totalPages ?? 1);
 const hasMore = $derived(videos !== null && currentPage < totalPages);
 
-function uniqueById(videos: Video[]) {
-	const seenIds = new Set<number>();
-
-	return videos.filter((video) => {
-		if (seenIds.has(video.id)) return false;
-		seenIds.add(video.id);
-		return true;
-	});
+function formatAbsoluteDateLocal(datetime: string): string {
+	return formatAbsoluteDate(datetime, userLocale);
 }
 
-function toVideoCards(video: Video): VideoCard[] {
-	return (video.links ?? [])
-		.filter((link) => link.provider?.toLowerCase() === 'youtube')
-		.flatMap((link) => {
-			return {
-				key: `${video.id}:${link.url}`,
-				source: video,
-				formattedDate: formatDate(video.datetime),
-				videoId: getYoutubeVideoId(link.url) ?? '',
-				url: link.url,
-				thumbnailUrl: link.thumbnail,
-				embedTitle: link.title
-			};
-		});
+function formatRelativeTime(datetime: string): string {
+	if (now === null) return formatAbsoluteDateLocal(datetime);
+
+	return formatRelativeDateTime(datetime, userLocale, now);
 }
 
-function getYoutubeVideoId(url: string): string | null {
-	try {
-		const u = new URL(url);
-		const id = u.searchParams.get('v') ?? u.pathname.split('/').filter(Boolean).pop();
-		return /^[a-zA-Z0-9_-]{11}$/.test(id?.trim() ?? '') ? (id?.trim() ?? null) : null;
-	} catch {
-		return null;
-	}
-}
-
-function formatDate(datetime: string): string {
-	const date = new Date(datetime);
-	if (Number.isNaN(date.getTime())) return datetime;
-
-	return new Intl.DateTimeFormat(userLocale, {
-		dateStyle: 'medium',
-		timeStyle: 'short'
-	}).format(date);
-}
-
-async function loadNextPage() {
+async function loadNextPage(options?: { force?: boolean }) {
 	if (isLoadingMore || !hasMore) return;
+	if (hasLoadError && !options?.force) return;
 
 	isLoadingMore = true;
 	hasLoadError = false;
@@ -94,7 +55,8 @@ async function loadNextPage() {
 		const nextPage = await api.getVideos(currentPage + 1);
 
 		loadedPages = [...loadedPages, nextPage];
-	} catch {
+	} catch (error) {
+		console.error('Failed to load videos page', error);
 		hasLoadError = true;
 	} finally {
 		isLoadingMore = false;
@@ -102,29 +64,29 @@ async function loadNextPage() {
 }
 
 onMount(() => {
-	userLocale = navigator.language;
+	userLocale = navigator.language || 'ru-RU';
+	now = Date.now();
 
-	if (!sentinel) return;
+	const relativeTimeTimer = window.setInterval(() => {
+		now = Date.now();
+	}, 60_000);
 
-	const observer = new IntersectionObserver(
-		(entries) => {
-			if (entries.some((entry) => entry.isIntersecting)) {
-				void loadNextPage();
-			}
-		},
-		{ rootMargin: '400px 0px' }
-	);
+	let destroyObserver: (() => void) | undefined;
+
+	if (sentinel) {
+		destroyObserver = createInfiniteScrollObserver(sentinel, () => void loadNextPage());
+	}
 
 	const updateScrollTopVisibility = () => {
 		showScrollTop = window.scrollY > 600;
 	};
 
-	observer.observe(sentinel);
 	updateScrollTopVisibility();
 	window.addEventListener('scroll', updateScrollTopVisibility, { passive: true });
 
 	return () => {
-		observer.disconnect();
+		window.clearInterval(relativeTimeTimer);
+		destroyObserver?.();
 		window.removeEventListener('scroll', updateScrollTopVisibility);
 	};
 });
@@ -178,7 +140,7 @@ onMount(() => {
 
 					<div class="video-content">
 						<h2 class="video-title">{card.embedTitle}</h2>
-						<time datetime={card.source.datetime}>{card.formattedDate}</time>
+						<time datetime={card.source.datetime} title={card.absoluteDate}>{card.relativeTime}</time>
 					</div>
 				</a>
 			</li>
@@ -189,7 +151,7 @@ onMount(() => {
 		{#if isLoadingMore}
 			<p>Загружаем ещё видео...</p>
 		{:else if hasLoadError}
-			<button type="button" onclick={loadNextPage}>Повторить загрузку</button>
+			<button class="retry-button" type="button" onclick={() => loadNextPage({ force: true })}>Повторить загрузку</button>
 		{:else if !hasMore}
 			<p>Больше видео нет.</p>
 		{/if}
@@ -213,7 +175,8 @@ onMount(() => {
 		gap: 1.5rem 1rem;
 		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 		list-style: none;
-		margin-top: 1.5rem;
+		margin: 1.5rem 0 0;
+		padding: 0;
 	}
 
 	.video {
@@ -235,7 +198,7 @@ onMount(() => {
 		transform: translateY(-2px);
 	}
 
-	:global(.thumbnail) {
+	.video :global(.thumbnail) {
 		aspect-ratio: 16 / 9;
 		width: 100%;
 	}
@@ -289,7 +252,7 @@ onMount(() => {
 		font-size: 1rem;
 	}
 
-	button {
+	.retry-button {
 		border: 0;
 		border-radius: 0.5rem;
 		background-color: var(--color-primary);
@@ -335,6 +298,5 @@ onMount(() => {
 		.video:hover {
 			transform: none;
 		}
-
 	}
 </style>
