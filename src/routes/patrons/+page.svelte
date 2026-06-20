@@ -1,32 +1,32 @@
 <script lang="ts">
-  import patronsBanner from "$lib/assets/backgrounds/patrons-banner.webp";
-  import Breadcrumb from "$lib/components/Breadcrumb.svelte";
-  import Tertiary from "$lib/components/Tertiary.svelte";
+import patronsBanner from '$lib/assets/backgrounds/patrons-banner.webp';
+import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+import SkeletonImage from '$lib/components/SkeletonImage.svelte';
+import Tertiary from '$lib/components/Tertiary.svelte';
 
-  import type { PageProps } from "./$types";
+import type { PageProps } from './$types';
 
-  let { data }: PageProps = $props();
+let { data }: PageProps = $props();
 
-  const patrons = $derived(data.patrons);
+const patrons = $derived(data.patrons);
 
-  function formatDonation(value: number): string {
-    return new Intl.NumberFormat("ru-RU", {
-      style: "currency",
-      currency: "RUB",
-      maximumFractionDigits: 2,
-      minimumFractionDigits: 0,
-    }).format(value);
-  }
+function formatDonation(value: number): string {
+	return new Intl.NumberFormat('ru-RU', {
+		style: 'currency',
+		currency: 'RUB',
+		maximumFractionDigits: 2,
+		minimumFractionDigits: 0
+	}).format(value);
+}
 
-  function getBannerImageUrl(banner: string): string | null {
-    if (!banner.startsWith("http://") && !banner.startsWith("https://"))
-      return null;
-    return banner;
-  }
+function getBannerImageUrl(banner: string): string | null {
+	if (!banner.startsWith('http://') && !banner.startsWith('https://')) return null;
+	return banner;
+}
 
-  function getBannerColor(banner: string): string | undefined {
-    return /^#[0-9a-f]{3,8}$/i.test(banner) ? banner : undefined;
-  }
+function getBannerColor(banner: string): string | undefined {
+	return /^#[0-9a-f]{3,8}$/i.test(banner) ? banner : undefined;
+}
 </script>
 
 <Breadcrumb
@@ -58,7 +58,7 @@
 
         <article class="patron">
           {#if bannerImageUrl}
-            <img class="banner" src={bannerImageUrl} alt="" loading="lazy" />
+            <SkeletonImage class="banner" src={bannerImageUrl} alt="" />
           {:else}
             <div
               class="banner fallback-banner"
@@ -68,11 +68,10 @@
 
           <div class="content">
             <div class="identity">
-              <img
+              <SkeletonImage
                 class="avatar"
                 src={patron.user.avatar_url}
                 alt={patron.user.username}
-                loading="lazy"
               />
               <h2>{patron.user.username}</h2>
             </div>
@@ -95,11 +94,10 @@
         <article class="patron without-banner">
           <div class="content">
             <div class="identity">
-              <img
+              <SkeletonImage
                 class="avatar"
                 src={patron.user.avatar_url}
                 alt={patron.user.username}
-                loading="lazy"
               />
               <h2>{patron.user.username}</h2>
             </div>
@@ -172,10 +170,11 @@
     height: 60px;
   }
 
-  .banner {
-    aspect-ratio: 5 / 2;
-    background-color: var(--color-bg);
-    display: block;
+	.banner,
+	:global(.banner) {
+		aspect-ratio: 5 / 2;
+		background-color: var(--color-bg);
+		display: block;
     object-fit: cover;
     width: 100%;
   }
@@ -204,10 +203,10 @@
     min-width: 0;
   }
 
-  .avatar {
-    background-color: var(--color-bg);
-    border-radius: 9px;
-    flex: 0 0 auto;
+	:global(.avatar) {
+		background-color: var(--color-bg);
+		border-radius: 9px;
+		flex: 0 0 auto;
     height: 28px;
     object-fit: cover;
     width: 28px;
