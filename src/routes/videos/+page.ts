@@ -1,5 +1,6 @@
-import { createApi } from '$lib/api/api';
 import { definePageMetaTags } from 'svelte-meta-tags';
+
+import { createApi } from '$lib/api/api';
 
 import type { PageLoad } from './$types';
 
