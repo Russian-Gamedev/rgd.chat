@@ -1,103 +1,161 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+import { onMount } from 'svelte';
 
-  import { page } from "$app/state";
-  import { createApi } from "$lib/api/api";
-  import type { User } from "$lib/api/api.type";
-  import {
-    IconCrown,
-    IconDiscord,
-    IconFeed,
-    IconJam,
-    IconJoystick,
-    IconRgd,
-    IconVideo,
-  } from "$lib/assets/icons";
-  import Button from "$lib/components/Button.svelte";
+import { page } from '$app/state';
+import { createApi } from '$lib/api/api';
+import type { User } from '$lib/api/api.type';
+import {
+	IconArrowUp,
+	IconCrown,
+	IconDiscord,
+	IconFeed,
+	IconJam,
+	IconJoystick,
+	IconRgd,
+	IconVideo
+} from '$lib/assets/icons';
+import Button from '$lib/components/Button.svelte';
 
-  let user = $state<User | null>(null);
+let user = $state<User | null>(null);
+let isCollapsed = $state(false);
 
-  const redirectToAuth = () => {
-    window.location.href = import.meta.env.VITE_AUTH_URL;
-  };
+const redirectToAuth = () => {
+	window.location.href = import.meta.env.VITE_AUTH_URL;
+};
 
-  const navItems = [
-    // { name: "Игры", href: "/games", icon: IconJoystick },
-    // { name: "Джемы", href: "/jams", icon: IconJam },
-    // { name: "Блоги", href: "/blogs", icon: IconFeed },
-    { name: "Донатеры", href: "/patrons", icon: IconCrown },
-    { name: "Видео", href: "/videos", icon: IconVideo },
-  ];
+const sidebarStorageKey = 'rgd.sidebar.collapsed';
+const sidebarDesktopQuery = '(min-width: 768px)';
 
-  const pathname = $derived(page.url.pathname);
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(`${href}/`);
+const getStoredSidebarCollapsed = () => {
+	try {
+		return window.localStorage.getItem(sidebarStorageKey) === 'true';
+	} catch {
+		return false;
+	}
+};
 
-  let navElement: HTMLElement;
-  let canScrollLeft = $state(false);
-  let canScrollRight = $state(false);
+const getCurrentSidebarCollapsed = () =>
+	document.documentElement.dataset.sidebarCollapsed === 'true' || getStoredSidebarCollapsed();
 
-  const updateScrollState = () => {
-    if (!navElement) return;
+const setSidebarCollapsed = (collapsed: boolean) => {
+	document.documentElement.dataset.sidebarCollapsed = String(collapsed);
 
-    canScrollLeft = navElement.scrollLeft > 1;
-  };
+	try {
+		window.localStorage.setItem(sidebarStorageKey, String(collapsed));
+	} catch {
+		// Storage may be unavailable in restrictive browser contexts.
+	}
+};
 
-  onMount(() => {
-    createApi({ fetch })
-      .getMe()
-      .then((u) => (user = u))
-      .catch(() => (user = null));
-    updateScrollState();
-    requestAnimationFrame(updateScrollState);
+const syncCollapsedForViewport = (isDesktop: boolean) => {
+	const nextCollapsed = isDesktop ? getCurrentSidebarCollapsed() : false;
+	isCollapsed = nextCollapsed;
+	document.documentElement.dataset.sidebarCollapsed = String(nextCollapsed);
+};
 
-    const resizeObserver = new ResizeObserver(updateScrollState);
-    resizeObserver.observe(navElement);
+const toggleCollapsed = () => {
+	const nextCollapsed = !isCollapsed;
+	isCollapsed = nextCollapsed;
+	setSidebarCollapsed(nextCollapsed);
+};
 
-    if (navElement.firstElementChild) {
-      resizeObserver.observe(navElement.firstElementChild);
-    }
+const navItems = [
+	// { name: "Игры", href: "/games", icon: IconJoystick },
+	// { name: "Джемы", href: "/jams", icon: IconJam },
+	// { name: "Блоги", href: "/blogs", icon: IconFeed },
+	{ name: 'Донатеры', href: '/patrons', icon: IconCrown },
+	{ name: 'Видео', href: '/videos', icon: IconVideo }
+];
 
-    const listElement = navElement.firstElementChild;
-    const firstItem = listElement?.firstElementChild;
-    const lastItem = listElement?.lastElementChild;
-    const intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.target === firstItem) {
-            canScrollLeft = !entry.isIntersecting || navElement.scrollLeft > 1;
-          }
+const pathname = $derived(page.url.pathname);
+const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
-          if (entry.target === lastItem) {
-            canScrollRight = !entry.isIntersecting;
-          }
-        }
-      },
-      { root: navElement, threshold: 0.99 },
-    );
+let navElement: HTMLElement;
+let canScrollLeft = $state(false);
+let canScrollRight = $state(false);
 
-    if (firstItem) {
-      intersectionObserver.observe(firstItem);
-    }
+const updateScrollState = () => {
+	if (!navElement) return;
 
-    if (lastItem) {
-      intersectionObserver.observe(lastItem);
-    }
+	canScrollLeft = navElement.scrollLeft > 1;
+};
 
-    window.addEventListener("resize", updateScrollState);
+onMount(() => {
+	const desktopMediaQuery = window.matchMedia(sidebarDesktopQuery);
+	syncCollapsedForViewport(desktopMediaQuery.matches);
 
-    return () => {
-      resizeObserver.disconnect();
-      intersectionObserver.disconnect();
-      window.removeEventListener("resize", updateScrollState);
-    };
-  });
+	const onDesktopMediaQueryChange = (event: MediaQueryListEvent) => {
+		syncCollapsedForViewport(event.matches);
+	};
+
+	desktopMediaQuery.addEventListener('change', onDesktopMediaQueryChange);
+
+	createApi({ fetch })
+		.getMe()
+		.then((u) => (user = u))
+		.catch(() => (user = null));
+	updateScrollState();
+	requestAnimationFrame(updateScrollState);
+
+	const resizeObserver = new ResizeObserver(updateScrollState);
+	resizeObserver.observe(navElement);
+
+	if (navElement.firstElementChild) {
+		resizeObserver.observe(navElement.firstElementChild);
+	}
+
+	const listElement = navElement.firstElementChild;
+	const firstItem = listElement?.firstElementChild;
+	const lastItem = listElement?.lastElementChild;
+	const intersectionObserver = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				if (entry.target === firstItem) {
+					canScrollLeft = !entry.isIntersecting || navElement.scrollLeft > 1;
+				}
+
+				if (entry.target === lastItem) {
+					canScrollRight = !entry.isIntersecting;
+				}
+			}
+		},
+		{ root: navElement, threshold: 0.99 }
+	);
+
+	if (firstItem) {
+		intersectionObserver.observe(firstItem);
+	}
+
+	if (lastItem) {
+		intersectionObserver.observe(lastItem);
+	}
+
+	window.addEventListener('resize', updateScrollState);
+
+	return () => {
+		desktopMediaQuery.removeEventListener('change', onDesktopMediaQueryChange);
+		resizeObserver.disconnect();
+		intersectionObserver.disconnect();
+		window.removeEventListener('resize', updateScrollState);
+	};
+});
 </script>
 
-<aside class="navbar">
-  <a href="/" class="logo">
-    <IconRgd />
-  </a>
+<aside class:collapsed={isCollapsed} class="navbar">
+  <div class="navbar-header">
+    <a href="/" class="logo" aria-label="RGD">
+      <IconRgd />
+    </a>
+    <button
+      type="button"
+      class="collapse-button"
+      aria-label={isCollapsed ? "Развернуть меню" : "Свернуть меню"}
+      aria-pressed={isCollapsed}
+      onclick={toggleCollapsed}
+    >
+      <IconArrowUp />
+    </button>
+  </div>
   <div
     class:can-scroll-left={canScrollLeft}
     class:can-scroll-right={canScrollRight}
@@ -120,7 +178,7 @@
               <span class="link-icon" aria-hidden="true">
                 <item.icon />
               </span>
-              <span>{item.name}</span>
+              <span class="link-label">{item.name}</span>
             </a>
           </li>
         {/each}
@@ -138,11 +196,16 @@
         <span class="user-username">{user.nickname ?? user.username}</span>
       </div>
     {:else}
-      <Button color="bg" class="auth-button" onclick={redirectToAuth}>
+      <Button
+        color="bg"
+        class="auth-button"
+        aria-label="Авторизация"
+        onclick={redirectToAuth}
+      >
         <div class="auth-icon">
           <IconDiscord />
         </div>
-        <span>Авторизация</span>
+        <span class="auth-label">Авторизация</span>
       </Button>
     {/if}
   </div>
@@ -161,6 +224,13 @@
     border-right: 1px solid
       color-mix(in srgb, var(--color-text) 8%, transparent);
     z-index: 10;
+  }
+
+  .navbar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
   }
 
   nav {
@@ -197,6 +267,45 @@
       transform 200ms ease;
   }
 
+  .logo :global(svg) {
+    transition:
+      width 180ms ease,
+      height 180ms ease;
+  }
+
+  .collapse-button {
+    border: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+    border-radius: 8px;
+    background: var(--color-bg);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    transition:
+      border-color 200ms ease,
+      color 200ms ease,
+      transform 200ms ease;
+  }
+
+  .collapse-button :global(svg) {
+    width: 20px;
+    height: 20px;
+    transform: rotate(-90deg);
+    transition: transform 200ms ease;
+  }
+
+  .collapse-button:hover,
+  .collapse-button:focus-visible {
+    border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+    color: var(--color-text);
+    outline: none;
+  }
+
   .logo:hover,
   .logo:focus-visible {
     color: var(--color-primary);
@@ -225,6 +334,17 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
+  }
+
+  .link-label,
+  .auth-label,
+  .user-username {
+    max-width: 180px;
+    opacity: 1;
+    overflow: hidden;
+    transition:
+      max-width 160ms ease,
+      opacity 120ms ease;
   }
 
   .link:active,
@@ -300,6 +420,98 @@
     white-space: nowrap;
   }
 
+  @media (min-width: 768px) {
+    .navbar {
+      overflow: hidden;
+      transition:
+        width 200ms ease,
+        padding 200ms ease;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) .navbar,
+    .navbar.collapsed {
+      width: 96px;
+      padding-inline: 16px;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) .navbar-header,
+    .navbar.collapsed .navbar-header {
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) .logo :global(svg),
+    .navbar.collapsed .logo :global(svg) {
+      width: 40px;
+      height: 40px;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) .collapse-button :global(svg),
+    .navbar.collapsed .collapse-button :global(svg) {
+      transform: rotate(90deg);
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) nav,
+    .navbar.collapsed nav {
+      padding-top: 48px;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) ul,
+    .navbar.collapsed ul {
+      align-items: center;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) li,
+    :global(html[data-sidebar-collapsed="true"]) .link,
+    .navbar.collapsed li,
+    .navbar.collapsed .link {
+      width: 100%;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) .link,
+    .navbar.collapsed .link {
+      justify-content: center;
+      gap: 0;
+      padding: 10px;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) .link:hover,
+    :global(html[data-sidebar-collapsed="true"]) .link:focus-visible,
+    .navbar.collapsed .link:hover,
+    .navbar.collapsed .link:focus-visible {
+      transform: none;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) .link-label,
+    :global(html[data-sidebar-collapsed="true"]) .user-username,
+    :global(html[data-sidebar-collapsed="true"]) .auth-label,
+    .navbar.collapsed .link-label,
+    .navbar.collapsed .user-username,
+    .navbar.collapsed .auth-label {
+      max-width: 0;
+      opacity: 0;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) .auth-slot,
+    .navbar.collapsed .auth-slot {
+      justify-content: center;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) :global(.auth-button),
+    .navbar.collapsed :global(.auth-button) {
+      padding: 0.25rem;
+      gap: 0;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) .user-block,
+    .navbar.collapsed .user-block {
+      padding: 0;
+      gap: 0;
+      background: transparent;
+    }
+  }
+
   @media (max-width: 767px) {
     .navbar {
       width: 100%;
@@ -317,6 +529,10 @@
 
     .logo {
       flex: 0 0 auto;
+    }
+
+    .collapse-button {
+      display: none;
     }
 
     .logo :global(svg) {
@@ -490,6 +706,11 @@
   @media (prefers-reduced-motion: reduce) {
     .logo,
     .link,
+    .link-label,
+    .auth-label,
+    .user-username,
+    .collapse-button,
+    .collapse-button :global(svg),
     .nav-scroll::before,
     .nav-scroll::after {
       transition: none;
