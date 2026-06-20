@@ -18,7 +18,8 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "biome format --write .",
 		"lint": "biome check .",
-		"lint:fix": "biome check --write ."
+		"lint:fix": "biome check --write .",
+		"ci": "biome ci ."
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.16",
