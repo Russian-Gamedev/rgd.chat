@@ -23,6 +23,6 @@ jobs:
 
       - run: bunx biome --version
 
-      - run: bun run biome:ci
+      - run: bun run ci
 
       - run: bun run check
