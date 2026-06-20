@@ -1,4 +1,4 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg role="img" aria-label="Корона" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 	<rect x="5" y="21" width="22" height="2" fill="currentColor" />
 	<path
 		d="M11 12L4 6V24C4 26 5 27 7 27H25C27 27 28 26 28 24V6L21 12L16 6L11 12Z"

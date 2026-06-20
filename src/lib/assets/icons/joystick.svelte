@@ -1,4 +1,4 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg role="img" aria-label="Джойстик" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 	<circle cx="16" cy="10" r="5" stroke="currentColor" stroke-width="2" />
 	<path
 		d="M20.8235 15.9412H10.9412C8.21224 15.9412 6 17.0648 6 18.451V20.9608C6 22.3469 8.21224 23.4706 10.9412 23.4706H20.8235C23.5525 23.4706 25.7647 22.3469 25.7647 20.9608V18.451C25.7647 17.0648 23.5525 15.9412 20.8235 15.9412Z"
