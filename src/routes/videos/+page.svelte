@@ -5,7 +5,7 @@ import { createApi } from '$lib/api/api';
 import type { Video, VideosPage } from '$lib/api/api.type';
 import { IconArrowUp } from '$lib/assets/icons';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-import Tertiary from '$lib/components/Tertiary.svelte';
+import SkeletonImage from '$lib/components/SkeletonImage.svelte';
 
 import type { PageProps } from './$types';
 
@@ -17,8 +17,6 @@ type VideoCard = {
 	url: string;
 	thumbnailUrl: string;
 	embedTitle: string;
-	embedDescription: string;
-	truncatedText: string;
 };
 
 let { data }: PageProps = $props();
@@ -31,7 +29,9 @@ let sentinel: HTMLElement | undefined = $state();
 let showScrollTop = $state(false);
 let userLocale = $state<string | undefined>();
 
-const items = $derived(uniqueById([...(videos?.items ?? []), ...loadedPages.flatMap((page) => page.items)]));
+const items = $derived(
+	uniqueById([...(videos?.items ?? []), ...loadedPages.flatMap((page) => page.items)])
+);
 const videoCards = $derived(items.flatMap(toVideoCards));
 const currentPage = $derived(loadedPages.at(-1)?.page ?? videos?.page ?? 1);
 const totalPages = $derived(loadedPages.at(-1)?.totalPages ?? videos?.totalPages ?? 1);
@@ -47,34 +47,27 @@ function uniqueById(videos: Video[]) {
 	});
 }
 
-function truncateToPunctuation(text: string): string {
-	const match = text.match(/[.!?,;:]/);
-	return match ? text.slice(0, match.index! + 1) : text;
-}
-
 function toVideoCards(video: Video): VideoCard[] {
 	return (video.links ?? [])
 		.filter((link) => link.provider?.toLowerCase() === 'youtube')
 		.flatMap((link) => {
-		return {
-			key: `${video.id}:${link.url}`,
-			source: video,
-			formattedDate: formatDate(video.datetime),
-			videoId: getYoutubeVideoId(link.url) ?? '',
-			url: link.url,
-			thumbnailUrl: link.thumbnail,
-			embedTitle: link.title,
-			embedDescription: link.description,
-			truncatedText: truncateToPunctuation(video.text ?? '')
-		};
-	});
+			return {
+				key: `${video.id}:${link.url}`,
+				source: video,
+				formattedDate: formatDate(video.datetime),
+				videoId: getYoutubeVideoId(link.url) ?? '',
+				url: link.url,
+				thumbnailUrl: link.thumbnail,
+				embedTitle: link.title
+			};
+		});
 }
 
 function getYoutubeVideoId(url: string): string | null {
 	try {
 		const u = new URL(url);
 		const id = u.searchParams.get('v') ?? u.pathname.split('/').filter(Boolean).pop();
-		return /^[a-zA-Z0-9_-]{11}$/.test(id?.trim() ?? '') ? id?.trim() ?? null : null;
+		return /^[a-zA-Z0-9_-]{11}$/.test(id?.trim() ?? '') ? (id?.trim() ?? null) : null;
 	} catch {
 		return null;
 	}
@@ -176,31 +169,16 @@ onMount(() => {
 					data-rybbit-prop-video-id={card.videoId}
 					data-rybbit-prop-source-id={card.source.id}
 				>
-				<img
-					class="thumbnail"
-					src={card.thumbnailUrl}
-					alt={card.embedTitle}
-					loading="lazy"
-					onerror={(e) => {
-						const img = e.currentTarget as HTMLImageElement;
-						if (!img.dataset.fallback) {
-							img.dataset.fallback = '1';
-							img.src = `https://i.ytimg.com/vi/${card.videoId}/hqdefault.jpg`;
-						}
-					}}
-				/>
+					<SkeletonImage
+						class="thumbnail"
+						src={card.thumbnailUrl}
+						alt={card.embedTitle}
+						fallbackSrc={card.videoId ? `https://i.ytimg.com/vi/${card.videoId}/hqdefault.jpg` : null}
+					/>
 
 					<div class="video-content">
-						<div class="video-header">
-							<time datetime={card.source.datetime}>{card.formattedDate}</time>
-						</div>
-
-						{#if card.source.text}
-							<Tertiary label={card.truncatedText} title={card.source.text} />
-						{/if}
-
 						<h2 class="video-title">{card.embedTitle}</h2>
-						<p class="video-description" title={card.embedDescription}>{card.embedDescription}</p>
+						<time datetime={card.source.datetime}>{card.formattedDate}</time>
 					</div>
 				</a>
 			</li>
@@ -231,9 +209,9 @@ onMount(() => {
 
 <style>
 	.videos {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
+		display: grid;
+		gap: 1.5rem 1rem;
+		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 		list-style: none;
 		margin-top: 1.5rem;
 	}
@@ -242,62 +220,57 @@ onMount(() => {
 		background-color: var(--color-bg-surface);
 		border-radius: 0.5rem;
 		color: var(--color-text);
-		display: grid;
-		gap: 1rem;
-		grid-template-columns: minmax(12rem, 20rem) 1fr;
-		padding: 1rem;
-		position: relative;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		overflow: hidden;
 		text-decoration: none;
-		transition: transform 200ms;
+		transition:
+			opacity 180ms ease,
+			transform 180ms ease;
 	}
 
 	.video:hover {
-		transform: translateY(-0.125rem);
+		opacity: 0.88;
+		transform: translateY(-2px);
 	}
 
-	.thumbnail {
+	:global(.thumbnail) {
 		aspect-ratio: 16 / 9;
-		background-color: var(--color-bg);
-		border-radius: 0.375rem;
-		display: block;
-		height: auto;
-		object-fit: cover;
 		width: 100%;
 	}
 
 	.video-content {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
 		min-width: 0;
+		padding: 0.625rem;
 	}
 
 	.description + .description {
 		margin-top: 1rem;
 	}
 
-	.video-header {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.75rem;
+	time {
 		color: var(--color-text-secondary);
-		font-size: 0.875rem;
+		display: block;
+		font-size: 0.8125rem;
+		line-height: 1.4;
+		margin-top: 0.25rem;
 	}
 
 	.video-title {
-		font-size: 1.125rem;
-		font-weight: 600;
-		margin: 0.5rem 0 0.25rem;
-		line-height: 1.4;
-	}
-
-	.video-description {
-		font-size: 0.875rem;
-		color: var(--color-text-secondary);
-		margin: 0;
-		line-height: 1.5;
 		display: -webkit-box;
-		-webkit-line-clamp: 3;
-		-webkit-box-orient: vertical;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		line-height: 1.35;
+		margin: 0;
+		min-height: calc(0.9375rem * 1.35 * 2);
 		overflow: hidden;
-		line-clamp: 3;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
 	}
 
 	a {
@@ -349,8 +322,19 @@ onMount(() => {
 	}
 
 	@media (max-width: 767px) {
-		.video {
+		.videos {
 			grid-template-columns: 1fr;
 		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.video {
+			transition: none;
+		}
+
+		.video:hover {
+			transform: none;
+		}
+
 	}
 </style>
