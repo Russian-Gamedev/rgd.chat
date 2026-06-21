@@ -1,170 +1,173 @@
 <script lang="ts">
-import ExternalLink from '$lib/assets/icons/external-link.svelte';
-import Badge from '$lib/components/Badge.svelte';
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-import Button from '$lib/components/Button.svelte';
-import Tertiary from '$lib/components/Tertiary.svelte';
+  import ExternalLink from "$lib/assets/icons/external-link.svelte";
+  import Badge from "$lib/components/Badge.svelte";
+  import Breadcrumb from "$lib/components/Breadcrumb.svelte";
+  import Button from "$lib/components/Button.svelte";
+  import Tertiary from "$lib/components/Tertiary.svelte";
 
-import type { PageProps } from './$types';
+  import type { PageProps } from "./$types";
 
-let { data }: PageProps = $props();
+  let { data }: PageProps = $props();
 
-const stats = $derived(data.stats);
-const cards = $derived(data.cards);
+  const stats = $derived(data.stats);
+  const cards = $derived(data.cards);
+  const { motd } = $derived(data.motd);
 </script>
 
-<Breadcrumb items={[{ label: 'Главная', href: '/' }]} />
+<Breadcrumb items={[{ label: "Главная", href: "/" }]} />
 
 <h1>Russian Gamedev — Discord сообщество</h1>
 
 <p class="description">
-	Обитель разработчиков игр, где вы услышите экспертное мнение по поводу своих игр и идей, найдёте
-	отличных напарников которые не бросят под самый релиз, и живой войс где мы регулярно срём новых
-	участников и играем в игры.
+  Обитель разработчиков игр, где вы услышите экспертное мнение по поводу своих
+  игр и идей, найдёте отличных напарников которые не бросят под самый релиз, и
+  живой войс где мы регулярно срём новых участников и играем в игры.
 </p>
 
 <div class="badges">
-	<Badge label="Участников" count={stats?.total ?? 2263} />
-	<Badge label="Онлайн" count={stats?.online ?? 520} />
+  <Badge label="Участников" count={stats?.total ?? 2263} />
+  <Badge label="Онлайн" count={stats?.online ?? 520} />
 </div>
 
 <div class="actions">
-	<Button
-		as="a"
-		class="join-button"
-		href="https://join.rgd.chat"
-		target="_blank"
-		rel="noopener noreferrer"
-		data-rybbit-event="join_discord"
-	>
-		Присоединиться
-		<ExternalLink />
-	</Button>
+  <Button
+    as="a"
+    class="join-button"
+    href="https://join.rgd.chat"
+    target="_blank"
+    rel="noopener noreferrer"
+    data-rybbit-event="join_discord"
+  >
+    Присоединиться
+    <ExternalLink />
+  </Button>
 
-	<Button
-		as="a"
-		class="join-button"
-		href="https://discord.gg/MXWGuNtT4C"
-		target="_blank"
-		rel="noopener noreferrer"
-		data-rybbit-event="join_new_discord"
-		color="success"
-	>
-		Новый неформальный сервер
-		<ExternalLink />
-		<span class="new-badge">NEW!</span>
-	</Button>
+  <Button
+    as="a"
+    class="join-button"
+    href="https://discord.gg/MXWGuNtT4C"
+    target="_blank"
+    rel="noopener noreferrer"
+    data-rybbit-event="join_new_discord"
+    color="success"
+  >
+    Новый неформальный сервер
+    <ExternalLink />
+    <span class="new-badge">NEW!</span>
+  </Button>
 </div>
 
 <section class="links">
-	<Tertiary label="Полезные ссылки" />
-	<div class="cards">
-		{#each cards as card (card.link)}
-			<a
-				href={card.link}
-				target="_blank"
-				rel="noopener noreferrer"
-				class="card"
-				data-rybbit-event="click_card"
-				data-rybbit-prop-card={card.title}
-			>
-				<div class="card-icon">
-					<card.icon />
-				</div>
-				<h4 class="card-title">{card.title}</h4>
-				<p class="card-description">{card.description}</p>
-			</a>
-		{/each}
-	</div>
+  <Tertiary label="Полезные ссылки" />
+  <div class="cards">
+    {#each cards as card (card.link)}
+      <a
+        href={card.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="card"
+        data-rybbit-event="click_card"
+        data-rybbit-prop-card={card.title}
+      >
+        <div class="card-icon">
+          <card.icon />
+        </div>
+        <h4 class="card-title">{card.title}</h4>
+        <p class="card-description">{card.description}</p>
+      </a>
+    {/each}
+  </div>
 </section>
 
+<Tertiary title="Сообщение дня" label={motd} />
+
 <style>
-	:global(.join-button) {
-		font-weight: bold;
-		font-size: 20px;
-		margin: 24px 0;
-		position: relative;
-	}
+  :global(.join-button) {
+    font-weight: bold;
+    font-size: 20px;
+    margin: 24px 0;
+    position: relative;
+  }
 
-	.links {
-		margin-top: 48px;
-	}
+  .links {
+    margin-top: 48px;
+  }
 
-	.actions {
-		display: flex;
-		gap: 1rem;
-		flex-wrap: wrap;
-	}
+  .actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
 
-	.new-badge {
-		background-color: var(--color-error);
-		color: #fff;
-		font-size: 0.75rem;
-		font-weight: 600;
-		padding: 0.25rem 0.5rem;
-		border-radius: 0.375rem;
-		margin-left: 0.5rem;
-		line-height: 1;
-		position: absolute;
-		right: -5%;
-		top: -25%;
-	}
+  .new-badge {
+    background-color: var(--color-error);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    margin-left: 0.5rem;
+    line-height: 1;
+    position: absolute;
+    right: -5%;
+    top: -25%;
+  }
 
-	.cards {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 2rem;
-		row-gap: 2rem;
-		margin-bottom: 3rem;
-		margin-top: 1.5rem;
-	}
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    row-gap: 2rem;
+    margin-bottom: 3rem;
+    margin-top: 1.5rem;
+  }
 
-	.card {
-		padding: 1rem;
-		background-color: var(--color-bg-surface);
-		border-radius: 0.5rem;
-		display: flex;
-		align-items: flex-start;
-		flex-direction: column;
-		flex: 1;
-		text-decoration: none;
-		transition: transform 500ms;
-		color: var(--color-text);
+  .card {
+    padding: 1rem;
+    background-color: var(--color-bg-surface);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    flex: 1;
+    text-decoration: none;
+    transition: transform 500ms;
+    color: var(--color-text);
 
-		&:hover {
-			transform: translateY(-0.25rem);
-		}
-	}
+    &:hover {
+      transform: translateY(-0.25rem);
+    }
+  }
 
-	.card-icon {
-		color: #fff;
-		background-color: var(--color-primary);
-		border-radius: 0.75rem;
-		padding: 0.625rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 2.5rem;
-		height: 2.5rem;
-		margin-bottom: 1rem;
-	}
+  .card-icon {
+    color: #fff;
+    background-color: var(--color-primary);
+    border-radius: 0.75rem;
+    padding: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 1rem;
+  }
 
-	.card-title {
-		font-weight: 700;
-		font-size: 0.875rem;
-		line-height: 1.5rem;
-		margin: 0;
-	}
-	.card-description {
-		margin-top: 0.375rem;
-		font-size: 0.875rem;
-		line-height: 1.5rem;
-		margin-bottom: 0;
-	}
+  .card-title {
+    font-weight: 700;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    margin: 0;
+  }
+  .card-description {
+    margin-top: 0.375rem;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    margin-bottom: 0;
+  }
 
-	.badges {
-		display: flex;
-		gap: 1rem;
-		margin-top: 1rem;
-	}
+  .badges {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
 </style>

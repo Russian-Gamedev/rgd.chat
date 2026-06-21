@@ -10,6 +10,7 @@ export type ApiClient = {
 	getVideos(page?: number): Promise<VideosPage>;
 	getPatrons(): Promise<Patron[]>;
 	getMe(): Promise<User>;
+	getMotd(): Promise<{ motd: string }>;
 };
 
 export function createApi(options: ApiOptions): ApiClient {
@@ -40,6 +41,9 @@ export function createApi(options: ApiOptions): ApiClient {
 		},
 		getMe() {
 			return request('/users/me');
+		},
+		getMotd() {
+			return request('/motd');
 		}
 	};
 }

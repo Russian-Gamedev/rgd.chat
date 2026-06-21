@@ -9,6 +9,7 @@ export const load: PageLoad = async ({ depends, fetch }) => {
 	depends('members:stats');
 	const api = createApi({ fetch });
 	const stats = await api.getMembersStats().catch(() => null);
+	const motd = await api.getMotd().catch(() => ({ motd: '' }));
 
 	const cards = [
 		{
@@ -33,6 +34,7 @@ export const load: PageLoad = async ({ depends, fetch }) => {
 
 	return {
 		stats,
-		cards
+		cards,
+		motd
 	};
 };
