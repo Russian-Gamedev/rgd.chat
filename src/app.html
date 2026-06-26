@@ -3,7 +3,39 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<script src="%sveltekit.assets%/sidebar.js"></script>
+		<script>
+			(() => {
+				var storageKey = "rgd.sidebar.collapsed";
+				var desktopQuery = "(min-width: 768px)";
+
+				try {
+					const isDesktop = window.matchMedia(desktopQuery).matches;
+					const isCollapsed =
+						isDesktop &&
+						window.localStorage.getItem(storageKey) === "true";
+					document.documentElement.dataset.sidebarCollapsed =
+						String(isCollapsed);
+				} catch (_) {
+					document.documentElement.dataset.sidebarCollapsed = "false";
+				}
+			})();
+		</script>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="preconnect" href="https://rabbit.damirlut.dev" />
+		<link rel="preconnect" href="https://bot.rgd.chat" />
+		<link
+			rel="preload"
+			as="style"
+			href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap"
+			onload="this.onload=null;this.rel='stylesheet'"
+		/>
+		<noscript>
+			<link
+				rel="stylesheet"
+				href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap"
+			/>
+		</noscript>
 		%sveltekit.head%
 		<script
         src="https://rabbit.damirlut.dev/api/script.js"
