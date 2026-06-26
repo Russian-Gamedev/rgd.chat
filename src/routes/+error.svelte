@@ -3,6 +3,12 @@ import { page } from '$app/state';
 import NotFoundImage from '$lib/assets/clown_by_Jacob.png';
 </script>
 
+<svelte:head>
+  {#if page.status === 404}
+    <meta name="robots" content="noindex" />
+  {/if}
+</svelte:head>
+
 <section class="error-page">
 	{#if page.status === 404}
 		<h1>Такой страницы нет</h1>

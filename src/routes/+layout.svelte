@@ -1,24 +1,30 @@
 <script lang="ts">
-  import { deepMerge, MetaTags } from "svelte-meta-tags";
+import { deepMerge, MetaTags } from 'svelte-meta-tags';
 
-  import { onNavigate } from "$app/navigation";
-  import "../styles/globals.css";
-  import { page } from "$app/state";
-  import { startPageViewTransition } from "$lib/view-transition";
+import { onNavigate } from '$app/navigation';
+import '../styles/globals.css';
 
-  import type { LayoutProps } from "./$types";
-  import Navbar from "./navbar.svelte";
+import { page } from '$app/state';
+import {
+	SITE_DESCRIPTION,
+	SITE_LOGO,
+	SITE_NAME,
+	SITE_SOCIAL_LINKS,
+	SITE_URL
+} from '$lib/site-config';
+import { startPageViewTransition } from '$lib/view-transition';
 
-  onNavigate((navigation) => {
-    return startPageViewTransition(navigation);
-  });
+import type { LayoutProps } from './$types';
+import Navbar from './navbar.svelte';
 
-  let { children, data }: LayoutProps = $props();
+onNavigate((navigation) => {
+	return startPageViewTransition(navigation);
+});
 
-  const metaTags = $derived(
-    deepMerge(data.baseMetaTags, page.data.pageMetaTags),
-  );
-  const themeColor = $derived(data.themeColor);
+let { children, data }: LayoutProps = $props();
+
+const metaTags = $derived(deepMerge(data.baseMetaTags, page.data.pageMetaTags));
+const themeColor = $derived(data.themeColor);
 </script>
 
 <MetaTags {...metaTags} />
@@ -27,9 +33,22 @@
   <link rel="icon" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content={themeColor} />
-  <!-- Additional SEO -->
   <meta name="robots" content="index, follow" />
   <meta name="language" content="Russian" />
+  <link rel="alternate" href="https://rgd.chat" hreflang="ru" />
+  <link rel="alternate" href="https://rgd.chat" hreflang="x-default" />
+  <link rel="preload" as="image" href="https://assets.rgd.chat/banner.jpg" />
+  <script type="application/ld+json">
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": SITE_NAME,
+      "url": SITE_URL,
+      "logo": SITE_LOGO,
+      "description": SITE_DESCRIPTION,
+      "sameAs": SITE_SOCIAL_LINKS
+    })}
+  </script>
 </svelte:head>
 
 <div class="root">

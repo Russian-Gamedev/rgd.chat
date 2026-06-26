@@ -1,10 +1,11 @@
 import { defineBaseMetaTags } from 'svelte-meta-tags';
 
+import { SITE_DESCRIPTION, SITE_URL } from '$lib/site-config';
+
 export const load = ({ url }) => {
 	const title = 'Russian Gamedev — Discord сообщество';
-	const description =
-		'Обитель разработчиков игр, где вы услышите экспертное мнение по поводу своих игр и идей, найдёте отличных напарников которые не бросят под самый релиз, и живой войс где мы регулярно срём новых участников и играем в игры.';
-	const origin = url.origin === 'http://sveltekit-prerender' ? 'https://rgd.chat' : url.origin;
+	const description = SITE_DESCRIPTION;
+	const origin = url.origin === 'http://sveltekit-prerender' ? SITE_URL : url.origin;
 	const canonical = new URL(url.pathname, origin).href;
 
 	const baseTags = defineBaseMetaTags({
