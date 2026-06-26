@@ -1,149 +1,144 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+import { onMount } from 'svelte';
 
-  import { page } from "$app/state";
-  import { createApi } from "$lib/api/api";
-  import type { User } from "$lib/api/api.type";
-  import {
-    IconArrowUp,
-    IconCrown,
-    IconDiscord,
-    IconFeed,
-    IconJam,
-    IconJoystick,
-    IconRgd,
-    IconVideo,
-  } from "$lib/assets/icons";
-  import Button from "$lib/components/Button.svelte";
+import { page } from '$app/state';
+import { createApi } from '$lib/api/api';
+import type { User } from '$lib/api/api.type';
+import {
+	IconArrowUp,
+	IconCrown,
+	IconDiscord,
+	IconFeed,
+	IconJam,
+	IconJoystick,
+	IconRgd,
+	IconVideo
+} from '$lib/assets/icons';
+import Button from '$lib/components/Button.svelte';
 
-  let user = $state<User | null>(null);
-  let isCollapsed = $state(false);
+let user = $state<User | null>(null);
+let isCollapsed = $state(false);
 
-  const redirectToAuth = () => {
-    window.location.href = import.meta.env.VITE_AUTH_URL;
-  };
+const redirectToAuth = () => {
+	window.location.href = import.meta.env.VITE_AUTH_URL;
+};
 
-  const sidebarStorageKey = "rgd.sidebar.collapsed";
-  const sidebarDesktopQuery = "(min-width: 768px)";
+const sidebarStorageKey = 'rgd.sidebar.collapsed';
+const sidebarDesktopQuery = '(min-width: 768px)';
 
-  const getStoredSidebarCollapsed = () => {
-    try {
-      return window.localStorage.getItem(sidebarStorageKey) === "true";
-    } catch {
-      return false;
-    }
-  };
+const getStoredSidebarCollapsed = () => {
+	try {
+		return window.localStorage.getItem(sidebarStorageKey) === 'true';
+	} catch {
+		return false;
+	}
+};
 
-  const getCurrentSidebarCollapsed = () =>
-    document.documentElement.dataset.sidebarCollapsed === "true" ||
-    getStoredSidebarCollapsed();
+const getCurrentSidebarCollapsed = () =>
+	document.documentElement.dataset.sidebarCollapsed === 'true' || getStoredSidebarCollapsed();
 
-  const setSidebarCollapsed = (collapsed: boolean) => {
-    document.documentElement.dataset.sidebarCollapsed = String(collapsed);
+const setSidebarCollapsed = (collapsed: boolean) => {
+	document.documentElement.dataset.sidebarCollapsed = String(collapsed);
 
-    try {
-      window.localStorage.setItem(sidebarStorageKey, String(collapsed));
-    } catch {
-      // Storage may be unavailable in restrictive browser contexts.
-    }
-  };
+	try {
+		window.localStorage.setItem(sidebarStorageKey, String(collapsed));
+	} catch {
+		// Storage may be unavailable in restrictive browser contexts.
+	}
+};
 
-  const syncCollapsedForViewport = (isDesktop: boolean) => {
-    const nextCollapsed = isDesktop ? getCurrentSidebarCollapsed() : false;
-    isCollapsed = nextCollapsed;
-    document.documentElement.dataset.sidebarCollapsed = String(nextCollapsed);
-  };
+const syncCollapsedForViewport = (isDesktop: boolean) => {
+	const nextCollapsed = isDesktop ? getCurrentSidebarCollapsed() : false;
+	isCollapsed = nextCollapsed;
+	document.documentElement.dataset.sidebarCollapsed = String(nextCollapsed);
+};
 
-  const toggleCollapsed = () => {
-    const nextCollapsed = !isCollapsed;
-    isCollapsed = nextCollapsed;
-    setSidebarCollapsed(nextCollapsed);
-  };
+const toggleCollapsed = () => {
+	const nextCollapsed = !isCollapsed;
+	isCollapsed = nextCollapsed;
+	setSidebarCollapsed(nextCollapsed);
+};
 
-  const navItems = [
-    // { name: "Игры", href: "/games", icon: IconJoystick },
-    // { name: "Джемы", href: "/jams", icon: IconJam },
-    // { name: "Блоги", href: "/blogs", icon: IconFeed },
-    { name: "Донатеры", href: "/patrons", icon: IconCrown },
-    { name: "Видео", href: "/videos", icon: IconVideo },
-  ];
+const navItems = [
+	// { name: "Игры", href: "/games", icon: IconJoystick },
+	// { name: "Джемы", href: "/jams", icon: IconJam },
+	// { name: "Блоги", href: "/blogs", icon: IconFeed },
+	{ name: 'Донатеры', href: '/patrons', icon: IconCrown },
+	{ name: 'Видео', href: '/videos', icon: IconVideo }
+];
 
-  const pathname = $derived(page.url.pathname);
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(`${href}/`);
+const pathname = $derived(page.url.pathname);
+const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
-  let navElement: HTMLElement;
-  let canScrollLeft = $state(false);
-  let canScrollRight = $state(false);
+let navElement: HTMLElement;
+let canScrollLeft = $state(false);
+let canScrollRight = $state(false);
 
-  const updateScrollState = () => {
-    if (!navElement) return;
+const updateScrollState = () => {
+	if (!navElement) return;
 
-    canScrollLeft = navElement.scrollLeft > 1;
-  };
+	canScrollLeft = navElement.scrollLeft > 1;
+};
 
-  onMount(() => {
-    const desktopMediaQuery = window.matchMedia(sidebarDesktopQuery);
-    syncCollapsedForViewport(desktopMediaQuery.matches);
+onMount(() => {
+	const desktopMediaQuery = window.matchMedia(sidebarDesktopQuery);
+	syncCollapsedForViewport(desktopMediaQuery.matches);
 
-    const onDesktopMediaQueryChange = (event: MediaQueryListEvent) => {
-      syncCollapsedForViewport(event.matches);
-    };
+	const onDesktopMediaQueryChange = (event: MediaQueryListEvent) => {
+		syncCollapsedForViewport(event.matches);
+	};
 
-    desktopMediaQuery.addEventListener("change", onDesktopMediaQueryChange);
+	desktopMediaQuery.addEventListener('change', onDesktopMediaQueryChange);
 
-    createApi({ fetch })
-      .getMe()
-      .then((u) => (user = u))
-      .catch(() => (user = null));
-    updateScrollState();
-    requestAnimationFrame(updateScrollState);
+	createApi({ fetch })
+		.getMe()
+		.then((u) => (user = u))
+		.catch(() => (user = null));
+	updateScrollState();
+	requestAnimationFrame(updateScrollState);
 
-    const resizeObserver = new ResizeObserver(updateScrollState);
-    resizeObserver.observe(navElement);
+	const resizeObserver = new ResizeObserver(updateScrollState);
+	resizeObserver.observe(navElement);
 
-    if (navElement.firstElementChild) {
-      resizeObserver.observe(navElement.firstElementChild);
-    }
+	if (navElement.firstElementChild) {
+		resizeObserver.observe(navElement.firstElementChild);
+	}
 
-    const listElement = navElement.firstElementChild;
-    const firstItem = listElement?.firstElementChild;
-    const lastItem = listElement?.lastElementChild;
-    const intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.target === firstItem) {
-            canScrollLeft = !entry.isIntersecting || navElement.scrollLeft > 1;
-          }
+	const listElement = navElement.firstElementChild;
+	const firstItem = listElement?.firstElementChild;
+	const lastItem = listElement?.lastElementChild;
+	const intersectionObserver = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				if (entry.target === firstItem) {
+					canScrollLeft = !entry.isIntersecting || navElement.scrollLeft > 1;
+				}
 
-          if (entry.target === lastItem) {
-            canScrollRight = !entry.isIntersecting;
-          }
-        }
-      },
-      { root: navElement, threshold: 0.99 },
-    );
+				if (entry.target === lastItem) {
+					canScrollRight = !entry.isIntersecting;
+				}
+			}
+		},
+		{ root: navElement, threshold: 0.99 }
+	);
 
-    if (firstItem) {
-      intersectionObserver.observe(firstItem);
-    }
+	if (firstItem) {
+		intersectionObserver.observe(firstItem);
+	}
 
-    if (lastItem) {
-      intersectionObserver.observe(lastItem);
-    }
+	if (lastItem) {
+		intersectionObserver.observe(lastItem);
+	}
 
-    window.addEventListener("resize", updateScrollState);
+	window.addEventListener('resize', updateScrollState);
 
-    return () => {
-      desktopMediaQuery.removeEventListener(
-        "change",
-        onDesktopMediaQueryChange,
-      );
-      resizeObserver.disconnect();
-      intersectionObserver.disconnect();
-      window.removeEventListener("resize", updateScrollState);
-    };
-  });
+	return () => {
+		desktopMediaQuery.removeEventListener('change', onDesktopMediaQueryChange);
+		resizeObserver.disconnect();
+		intersectionObserver.disconnect();
+		window.removeEventListener('resize', updateScrollState);
+	};
+});
 </script>
 
 <aside class:collapsed={isCollapsed} class="navbar">
