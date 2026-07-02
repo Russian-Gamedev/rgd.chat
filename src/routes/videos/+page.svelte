@@ -5,6 +5,7 @@ import { createApi } from '$lib/api/api';
 import type { VideosPage } from '$lib/api/api.type';
 import { IconArrowUp } from '$lib/assets/icons';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+import Link from '$lib/components/Link.svelte';
 import SkeletonImage from '$lib/components/SkeletonImage.svelte';
 
 import type { PageProps } from './$types';
@@ -104,13 +105,13 @@ onMount(() => {
 
 <p class="description">
 	Новые видео появляются сначала в нашем
-	<a
+	<Link
 		href="https://t.me/GameDevVideos"
-		target="_blank"
-		rel="noopener noreferrer"
 		data-rybbit-event="click_telegram"
-		data-rybbit-prop-channel="GameDevVideos">Telegram-канале</a
-	>, там же можно найти дополнительные комментарии, мысли и заметки от автора подборки. Если хотите
+		data-rybbit-prop-channel="GameDevVideos"
+	>
+		Telegram-канале
+	</Link>, там же можно найти дополнительные комментарии, мысли и заметки от автора подборки. Если хотите
 	не пропускать обновления — подписывайтесь.
 </p>
 
