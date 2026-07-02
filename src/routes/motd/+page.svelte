@@ -14,26 +14,27 @@ let user = $state<unknown>(null);
 let motdList = $state<MotdListItem[] | null>(null);
 let isLoading = $state(true);
 
-	onMount(() => {
-		const api = createApi({ fetch });
+onMount(() => {
+	const api = createApi({ fetch });
 
-		api.getMe()
-			.then((u) => {
-				user = u;
-				return api.getMotdList();
-			})
-			.then((res) => {
-				motdList = Array.isArray(res) ? res : (res.motdList ?? null);
-			})
-			.catch(() => {
-				if (!user) {
-					window.location.href = import.meta.env.VITE_AUTH_URL;
-				}
-			})
-			.finally(() => {
-				isLoading = false;
-			});
-	});
+	api
+		.getMe()
+		.then((u) => {
+			user = u;
+			return api.getMotdList();
+		})
+		.then((res) => {
+			motdList = Array.isArray(res) ? res : (res.motdList ?? null);
+		})
+		.catch(() => {
+			if (!user) {
+				window.location.href = import.meta.env.VITE_AUTH_URL;
+			}
+		})
+		.finally(() => {
+			isLoading = false;
+		});
+});
 </script>
 
 <Breadcrumb
