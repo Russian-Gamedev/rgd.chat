@@ -8,7 +8,7 @@ const config = {
 	preprocess: [vitePreprocess(), mdsvex()],
 	kit: {
 		adapter: adapter({
-			fallback: '404.html'
+			fallback: '200.html'
 		}),
 		prerender: {
 			handleHttpError: ({ path, status, message }) => {
