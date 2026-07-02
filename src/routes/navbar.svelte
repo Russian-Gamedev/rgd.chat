@@ -9,6 +9,7 @@ import {
 	IconCrown,
 	IconDiscord,
 	IconFeed,
+	IconHash,
 	IconJam,
 	IconJoystick,
 	IconRgd,
@@ -59,13 +60,14 @@ const toggleCollapsed = () => {
 	setSidebarCollapsed(nextCollapsed);
 };
 
-const navItems = [
+const navItems = $derived([
 	// { name: "Игры", href: "/games", icon: IconJoystick },
 	// { name: "Джемы", href: "/jams", icon: IconJam },
 	// { name: "Блоги", href: "/blogs", icon: IconFeed },
 	{ name: 'Донатеры', href: '/patrons', icon: IconCrown },
-	{ name: 'Видео', href: '/videos', icon: IconVideo }
-];
+	{ name: 'Видео', href: '/videos', icon: IconVideo },
+	...(user ? [{ name: 'MOTD', href: '/motd', icon: IconHash }] : [])
+]);
 
 const pathname = $derived(page.url.pathname);
 const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);

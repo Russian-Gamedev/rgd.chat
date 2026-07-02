@@ -1,4 +1,4 @@
-import type { MembersStats, Patron, User, VideosPage } from './api.type';
+import type { MembersStats, MotdListItem, Patron, User, VideosPage } from './api.type';
 
 export type ApiOptions = {
 	fetch: typeof fetch;
@@ -36,6 +36,9 @@ export function createApi(options: ApiOptions) {
 		},
 		getMotd() {
 			return request<{ motd: string }>('/motd');
+		},
+		getMotdList() {
+			return request<{ motdList: MotdListItem[] }>('/motd/list');
 		}
 	};
 }

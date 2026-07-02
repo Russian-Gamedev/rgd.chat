@@ -51,3 +51,9 @@ export type User = {
 	active_streak: number;
 	max_active_streak: number;
 };
+
+export type MotdListItem = {
+	content: string;
+	id: number;
+	user: Pick<User, 'id' | 'avatar_url' | 'username'>;
+};
