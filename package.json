@@ -19,7 +19,8 @@
 		"format": "biome format --write .",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
-		"ci": "biome ci ."
+		"ci": "biome ci .",
+		"check:all": "bun run check && bun run lint"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.0",
