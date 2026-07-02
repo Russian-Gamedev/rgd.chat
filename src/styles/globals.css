@@ -99,3 +99,21 @@ p {
 		animation: none;
 	}
 }
+
+code {
+	background-color: var(--color-bg-surface);
+	padding: 0.1rem 0.2rem;
+	border-radius: 4px;
+}
+
+a {
+	color: var(--color-primary);
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+a > svg {
+	width: 1rem;
+	height: 1rem;
+}
