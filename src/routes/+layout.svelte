@@ -1,32 +1,30 @@
 <script lang="ts">
-  import { deepMerge, MetaTags } from "svelte-meta-tags";
+import { deepMerge, MetaTags } from 'svelte-meta-tags';
 
-  import { onNavigate } from "$app/navigation";
-  import "../styles/globals.css";
+import { onNavigate } from '$app/navigation';
+import '../styles/globals.css';
 
-  import { page } from "$app/state";
-  import {
-    SITE_DESCRIPTION,
-    SITE_LOGO,
-    SITE_NAME,
-    SITE_SOCIAL_LINKS,
-    SITE_URL,
-  } from "$lib/site-config";
-  import { startPageViewTransition } from "$lib/view-transition";
+import { page } from '$app/state';
+import {
+	SITE_DESCRIPTION,
+	SITE_LOGO,
+	SITE_NAME,
+	SITE_SOCIAL_LINKS,
+	SITE_URL
+} from '$lib/site-config';
+import { startPageViewTransition } from '$lib/view-transition';
 
-  import type { LayoutProps } from "./$types";
-  import Navbar from "./navbar.svelte";
+import type { LayoutProps } from './$types';
+import Navbar from './navbar.svelte';
 
-  onNavigate((navigation) => {
-    return startPageViewTransition(navigation);
-  });
+onNavigate((navigation) => {
+	return startPageViewTransition(navigation);
+});
 
-  let { children, data }: LayoutProps = $props();
+let { children, data }: LayoutProps = $props();
 
-  const metaTags = $derived(
-    deepMerge(data.baseMetaTags, page.data.pageMetaTags),
-  );
-  const themeColor = $derived(data.themeColor);
+const metaTags = $derived(deepMerge(data.baseMetaTags, page.data.pageMetaTags));
+const themeColor = $derived(data.themeColor);
 </script>
 
 <MetaTags {...metaTags} />
