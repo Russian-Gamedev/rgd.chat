@@ -3,7 +3,7 @@ import { resolve } from '$app/paths';
 
 interface Breadcrumb {
 	label: string;
-	href: Parameters<typeof resolve>[0];
+	href: string;
 }
 
 export let items: Breadcrumb[] = [];
@@ -14,7 +14,7 @@ export let items: Breadcrumb[] = [];
 		{#each items as item, index (item.href)}
 			<li class="breadcrumb-item">
 				{#if index < items.length - 1}
-					<a href={resolve(item.href)}>{item.label}</a>
+					<a href={resolve(item.href as any)}>{item.label}</a>
 				{:else}
 					<span aria-current="page">{item.label}</span>
 				{/if}
