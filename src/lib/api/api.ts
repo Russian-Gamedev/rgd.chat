@@ -39,6 +39,9 @@ export function createApi(options: ApiOptions) {
 		},
 		getMotdList() {
 			return request<{ motdList: MotdListItem[] }>('/motd/list');
+		},
+		logout() {
+			return request<void>('/auth/logout', { method: 'POST' });
 		}
 	};
 }

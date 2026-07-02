@@ -36,6 +36,19 @@ export type Patron = {
 	};
 };
 
+export type Permission =
+	| 'wallet:read:own'
+	| 'wallet:manage'
+	| 'guild:read'
+	| 'guild_events:read'
+	| 'read:messages'
+	| 'send:messages';
+
+export type Permissions = {
+	global: Permission[];
+	guilds: Record<string, Permission[]>;
+};
+
 export type User = {
 	id: string;
 	username: string;
@@ -50,6 +63,7 @@ export type User = {
 	last_active_at: string;
 	active_streak: number;
 	max_active_streak: number;
+	permissions: Permissions;
 };
 
 export type MotdListItem = {
