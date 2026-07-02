@@ -6,7 +6,8 @@ export const prerender = false;
 
 export const load: PageLoad = async () => {
 	const title = 'MOTD';
-	const description = 'Сообщения дня';
+	const description =
+		'Смешнявки в статусе бота, которые меняются каждую минуту. Можно добавить свои через /motd add.';
 	const pageMetaTags = definePageMetaTags({
 		title,
 		description,
