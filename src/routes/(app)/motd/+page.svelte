@@ -7,31 +7,16 @@ import { IconHash } from '$lib/assets/icons';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Link from '$lib/components/Link.svelte';
 
-import type { PageProps } from './$types';
-
-let { data }: PageProps = $props();
-
-let user = $state<unknown>(null);
 let motdList = $state<MotdListItem[] | null>(null);
 let isLoading = $state(true);
 
 onMount(() => {
-	const api = createApi({ fetch });
-
-	api
-		.getMe()
-		.then((u) => {
-			user = u;
-			return api.getMotdList();
-		})
+	createApi({ fetch })
+		.getMotdList()
 		.then((res) => {
 			motdList = Array.isArray(res) ? res : (res.motdList ?? null);
 		})
-		.catch(() => {
-			if (!user) {
-				window.location.href = import.meta.env.VITE_AUTH_URL;
-			}
-		})
+		.catch(() => {})
 		.finally(() => {
 			isLoading = false;
 		});

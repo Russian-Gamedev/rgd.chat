@@ -2,8 +2,6 @@
 import { onMount } from 'svelte';
 
 import { page } from '$app/state';
-import { createApi } from '$lib/api/api';
-import type { User } from '$lib/api/api.type';
 import {
 	IconArrowUp,
 	IconCrown,
@@ -15,9 +13,9 @@ import {
 	IconRgd,
 	IconVideo
 } from '$lib/assets/icons';
+import { auth } from '$lib/auth/auth.store.svelte';
 import Button from '$lib/components/Button.svelte';
 
-let user = $state<User | null>(null);
 let isCollapsed = $state(false);
 
 const redirectToAuth = () => {
@@ -60,13 +58,15 @@ const toggleCollapsed = () => {
 	setSidebarCollapsed(nextCollapsed);
 };
 
+const authedNavItems = [{ name: 'MOTD', href: '/motd', icon: IconHash }];
+
 const navItems = $derived([
 	// { name: "Игры", href: "/games", icon: IconJoystick },
 	// { name: "Джемы", href: "/jams", icon: IconJam },
 	// { name: "Блоги", href: "/blogs", icon: IconFeed },
 	{ name: 'Донатеры', href: '/patrons', icon: IconCrown },
 	{ name: 'Видео', href: '/videos', icon: IconVideo },
-	...(user ? [{ name: 'MOTD', href: '/motd', icon: IconHash }] : [])
+	...(auth.user ? authedNavItems : [])
 ]);
 
 const pathname = $derived(page.url.pathname);
@@ -92,10 +92,6 @@ onMount(() => {
 
 	desktopMediaQuery.addEventListener('change', onDesktopMediaQueryChange);
 
-	createApi({ fetch })
-		.getMe()
-		.then((u) => (user = u))
-		.catch(() => (user = null));
 	updateScrollState();
 	requestAnimationFrame(updateScrollState);
 
@@ -188,14 +184,16 @@ onMount(() => {
     </nav>
   </div>
   <div class="auth-slot">
-    {#if user}
+    {#if auth.user}
       <div class="user-block">
         <img
           class="user-avatar"
-          src={user.avatar_url}
-          alt={user.nickname ?? user.username}
+          src={auth.user.avatar_url}
+          alt={auth.user.nickname ?? auth.user.username}
         />
-        <span class="user-username">{user.nickname ?? user.username}</span>
+        <span class="user-username"
+          >{auth.user.nickname ?? auth.user.username}</span
+        >
       </div>
     {:else}
       <Button

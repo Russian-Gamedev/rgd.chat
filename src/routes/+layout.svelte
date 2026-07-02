@@ -1,10 +1,14 @@
 <script lang="ts">
 import { deepMerge, MetaTags } from 'svelte-meta-tags';
 
+import { onMount } from 'svelte';
+
 import { onNavigate } from '$app/navigation';
 import '../styles/globals.css';
 
 import { page } from '$app/state';
+import { createApi } from '$lib/api/api';
+import { setAuth } from '$lib/auth/auth.store.svelte';
 import {
 	SITE_DESCRIPTION,
 	SITE_LOGO,
@@ -19,6 +23,13 @@ import Navbar from './navbar.svelte';
 
 onNavigate((navigation) => {
 	return startPageViewTransition(navigation);
+});
+
+onMount(() => {
+	createApi({ fetch })
+		.getMe()
+		.then(setAuth)
+		.catch(() => setAuth(null));
 });
 
 let { children, data }: LayoutProps = $props();
