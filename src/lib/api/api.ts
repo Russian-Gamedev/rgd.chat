@@ -5,15 +5,7 @@ export type ApiOptions = {
 	baseUrl?: string;
 };
 
-export type ApiClient = {
-	getMembersStats(): Promise<MembersStats>;
-	getVideos(page?: number): Promise<VideosPage>;
-	getPatrons(): Promise<Patron[]>;
-	getMe(): Promise<User>;
-	getMotd(): Promise<{ motd: string }>;
-};
-
-export function createApi(options: ApiOptions): ApiClient {
+export function createApi(options: ApiOptions) {
 	const baseUrl = options.baseUrl ?? import.meta.env.VITE_API_BASE_URL ?? 'https://bot.rgd.chat';
 	const fetcher = options.fetch;
 
@@ -31,19 +23,19 @@ export function createApi(options: ApiOptions): ApiClient {
 
 	return {
 		getMembersStats() {
-			return request('/discord/members');
+			return request<MembersStats>('/discord/members');
 		},
 		getVideos(page = 1, perPage = 10) {
-			return request(`/videos/GameDevVideos?page=${page}&perPage=${perPage}`);
+			return request<VideosPage>(`/videos/GameDevVideos?page=${page}&perPage=${perPage}`);
 		},
 		getPatrons() {
-			return request('/patrons');
+			return request<Patron[]>('/patrons');
 		},
 		getMe() {
-			return request('/users/me');
+			return request<User>('/users/me');
 		},
 		getMotd() {
-			return request('/motd');
+			return request<{ motd: string }>('/motd');
 		}
 	};
 }
