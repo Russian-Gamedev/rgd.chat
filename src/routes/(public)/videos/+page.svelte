@@ -61,6 +61,14 @@ async function loadNextPage(options?: { force?: boolean }) {
 		hasLoadError = true;
 	} finally {
 		isLoadingMore = false;
+
+		if (hasMore && sentinel && !hasLoadError) {
+			const rect = sentinel.getBoundingClientRect();
+			const threshold = window.innerHeight + 400;
+			if (rect.top <= threshold && rect.bottom >= 0) {
+				loadNextPage();
+			}
+		}
 	}
 }
 
