@@ -206,6 +206,7 @@ onMount(() => {
   }
 
   .video {
+    align-items: stretch;
     background-color: var(--color-bg-surface);
     border-radius: 0.5rem;
     color: var(--color-text);
