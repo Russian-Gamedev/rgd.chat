@@ -268,6 +268,8 @@ onMount(() => {
   }
 
   .logo :global(svg) {
+    width: 64px;
+    height: 64px;
     transition:
       width 180ms ease,
       height 180ms ease;
@@ -537,6 +539,7 @@ onMount(() => {
 
     .logo :global(svg) {
       height: 32px;
+      width: auto;
     }
 
     .nav-scroll {
