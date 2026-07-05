@@ -56,7 +56,7 @@ function getBannerColor(banner: string): string | undefined {
         {@const bannerImageUrl = getBannerImageUrl(patron.user.banner)}
         {@const bannerColor = getBannerColor(patron.user.banner)}
 
-        <article class="patron">
+        <a href="/{patron.user.username}" class="patron">
           {#if bannerImageUrl}
             <SkeletonImage class="banner" src={bannerImageUrl} alt="" />
           {:else}
@@ -85,13 +85,13 @@ function getBannerColor(banner: string): string | undefined {
               {formatDonation(patron.value)}
             </span>
           </div>
-        </article>
+        </a>
       {/each}
     </div>
 
     <div class="regular-patrons">
       {#each patrons.slice(3) as patron (patron.user.id)}
-        <article class="patron without-banner">
+        <a href="/{patron.user.username}" class="patron without-banner">
           <div class="content">
             <div class="identity">
               <SkeletonImage
@@ -104,7 +104,7 @@ function getBannerColor(banner: string): string | undefined {
 
             <span class="value-badge">{formatDonation(patron.value)}</span>
           </div>
-        </article>
+        </a>
       {/each}
     </div>
   </section>
@@ -160,6 +160,9 @@ function getBannerColor(banner: string): string | undefined {
     border-radius: 0.5rem;
     overflow: hidden;
     transition: transform 180ms ease;
+    text-decoration: none;
+    color: inherit;
+    display: block;
   }
 
   .patron:hover {

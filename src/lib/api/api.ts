@@ -42,6 +42,9 @@ export function createApi(options: ApiOptions) {
 		},
 		logout() {
 			return request<void>('/auth/logout', { method: 'POST' });
+		},
+		getUser(user: string) {
+			return request<User>(`/users/${user}`);
 		}
 	};
 }

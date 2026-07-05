@@ -185,7 +185,7 @@ onMount(() => {
   </div>
   <div class="auth-slot">
     {#if auth.user}
-      <div class="user-block">
+      <a href="/{auth.user.username}" class="user-block">
         <img
           class="user-avatar"
           src={auth.user.avatar_url}
@@ -194,7 +194,7 @@ onMount(() => {
         <span class="user-username"
           >{auth.user.nickname ?? auth.user.username}</span
         >
-      </div>
+      </a>
     {:else}
       <Button
         color="bg"

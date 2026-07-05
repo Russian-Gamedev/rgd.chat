@@ -64,10 +64,18 @@ export type User = {
 	active_streak: number;
 	max_active_streak: number;
 	permissions: Permissions;
+	tags: UserTag[];
 };
 
 export type MotdListItem = {
 	content: string;
 	id: number;
 	user: Pick<User, 'id' | 'avatar_url' | 'username'>;
+};
+
+export type UserTag = {
+	background: string;
+	color: string;
+	name: string;
+	description: string;
 };
