@@ -8,15 +8,16 @@ const config = {
 	preprocess: [vitePreprocess(), mdsvex()],
 	kit: {
 		adapter: adapter({
-			fallback: '200.html'
+			fallback: '200.html',
+			strict: true
 		}),
 		prerender: {
 			handleHttpError: ({ path, status, message }) => {
-				const pendingRoutes = new Set(['/games', '/jams', '/blogs', '/donators']);
+				const pendingRoutes = new Set(['/games', '/jams', '/blogs']);
 				if (status === 404 && pendingRoutes.has(path)) return;
-
 				throw new Error(message);
-			}
+			},
+			origin:  'https://rgd.chat'
 		}
 	},
 	extensions: ['.svelte', '.svx']

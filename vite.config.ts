@@ -1,10 +1,11 @@
 import { sveltekit } from '@sveltejs/kit/vite';
+import { svelteSitemap } from 'svelte-sitemap/vite';
 import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, '');
 	return {
-		plugins: [sveltekit()],
+		plugins: [sveltekit(), svelteSitemap({ domain: 'https://rgd.chat' })],
 		server: {
 			host: '0.0.0.0',
 			port: 5173,
