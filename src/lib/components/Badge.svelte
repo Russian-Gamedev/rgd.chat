@@ -1,15 +1,14 @@
 <script lang="ts">
-  import type { SvelteHTMLElements } from "svelte/elements";
+import type { SvelteHTMLElements } from 'svelte/elements';
 
-  interface BadgeProps {
-    label: string;
-    count?: number;
-  }
+interface BadgeProps {
+	label: string;
+	count?: number;
+}
 
-  let { label, count, ...rest }: BadgeProps & SvelteHTMLElements["span"] =
-    $props();
+let { label, count, ...rest }: BadgeProps & SvelteHTMLElements['span'] = $props();
 
-  const classes = $derived(["badge", rest.class].filter(Boolean).join(" "));
+const classes = $derived(['badge', rest.class].filter(Boolean).join(' '));
 </script>
 
 <span {...rest} class={classes}>
