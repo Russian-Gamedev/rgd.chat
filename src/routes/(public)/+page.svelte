@@ -37,6 +37,7 @@ const { motd } = $derived(data.motd);
     target="_blank"
     rel="noopener noreferrer"
     data-rybbit-event="join_discord"
+    data-rybbit-prop-button="main"
   >
     Присоединиться
     <ExternalLink />
@@ -48,7 +49,8 @@ const { motd } = $derived(data.motd);
     href="https://discord.gg/MXWGuNtT4C"
     target="_blank"
     rel="noopener noreferrer"
-    data-rybbit-event="join_new_discord"
+    data-rybbit-event="join_discord"
+    data-rybbit-prop-button="new"
     color="success"
   >
     Новый неформальный сервер
