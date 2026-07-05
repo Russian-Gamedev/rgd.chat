@@ -4,8 +4,6 @@ import { createApi } from '$lib/api/api';
 
 import type { PageLoad } from './$types';
 
-export const prerender = true;
-
 export const load: PageLoad = async ({ depends, fetch }) => {
 	depends('patrons:list');
 
@@ -21,7 +19,7 @@ export const load: PageLoad = async ({ depends, fetch }) => {
 	});
 
 	const api = createApi({ fetch });
-	const patrons = await api.getPatrons().catch(() => null);
+	const patrons = await api.getPatrons();
 
 	return {
 		...pageMetaTags,
