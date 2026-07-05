@@ -8,6 +8,8 @@ import Tertiary from '$lib/components/Tertiary.svelte';
 const iconEntries = Object.entries(icons).sort(([a], [b]) => a.localeCompare(b));
 </script>
 
+<div class="page-content">
+
 <section>
 	<Tertiary label="Typography" id="typography" />
 
@@ -105,8 +107,10 @@ const iconEntries = Object.entries(icons).sort(([a], [b]) => a.localeCompare(b))
 	</div>
 </section>
 
+</div>
+
 <style>
-	:global(main) {
+	.page-content {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
