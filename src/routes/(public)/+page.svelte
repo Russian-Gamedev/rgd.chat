@@ -1,8 +1,5 @@
 <script lang="ts">
 import ExternalLink from '$lib/assets/icons/external-link.svelte';
-import IconJam from '$lib/assets/icons/jam.svelte';
-import IconVK from '$lib/assets/icons/vk.svelte';
-import IconYoutube from '$lib/assets/icons/youtube.svelte';
 import Badge from '$lib/components/Badge.svelte';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Button from '$lib/components/Button.svelte';
@@ -13,28 +10,8 @@ import type { PageProps } from './$types';
 let { data }: PageProps = $props();
 
 const stats = $derived(data.stats);
+const cards = $derived(data.cards);
 const { motd } = $derived(data.motd);
-
-const cards = [
-	{
-		icon: IconVK,
-		title: 'ВКонтакте',
-		description: 'Наше сообщество',
-		link: 'https://vk.com/rgd_discord'
-	},
-	{
-		icon: IconYoutube,
-		title: 'YouTube',
-		description: 'Записи подведения итогов джемов',
-		link: 'https://www.youtube.com/channel/UCZq4wK7UprpSiJRQLIjtbqw'
-	},
-	{
-		icon: IconJam,
-		title: 'Последний джем',
-		description: '35 игр, 5 часов прохождения',
-		link: 'https://youtu.be/bDBhfamPtvo'
-	}
-];
 </script>
 
 <Breadcrumb items={[{ label: "Главная", href: "/" }]} />
