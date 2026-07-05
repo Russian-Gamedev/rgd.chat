@@ -2,7 +2,9 @@ import { defineBaseMetaTags } from 'svelte-meta-tags';
 
 import { SITE_DESCRIPTION, SITE_URL } from '$lib/site-config';
 
-export const load = ({ url }) => {
+import type { LayoutServerLoad } from './$types';
+
+export const load: LayoutServerLoad = ({ url }) => {
 	const title = 'Russian Gamedev — Discord сообщество';
 	const description = SITE_DESCRIPTION;
 	const origin = url.origin === 'http://sveltekit-prerender' ? SITE_URL : url.origin;

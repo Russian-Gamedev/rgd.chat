@@ -1,5 +1,5 @@
 <script lang="ts">
-import { deepMerge, MetaTags } from 'svelte-meta-tags';
+import { deepMerge, JsonLd, MetaTags } from 'svelte-meta-tags';
 
 import { onMount } from 'svelte';
 
@@ -49,18 +49,16 @@ const themeColor = $derived(data.themeColor);
   <link rel="alternate" href="https://rgd.chat" hreflang="ru" />
   <link rel="alternate" href="https://rgd.chat" hreflang="x-default" />
   <link rel="preload" as="image" href="https://assets.rgd.chat/banner.jpg" />
-  <script type="application/ld+json">
-    {JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": SITE_NAME,
-      "url": SITE_URL,
-      "logo": SITE_LOGO,
-      "description": SITE_DESCRIPTION,
-      "sameAs": SITE_SOCIAL_LINKS
-    })}
-  </script>
 </svelte:head>
+
+<JsonLd schema={{
+  "@type": "Organization",
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: SITE_LOGO,
+  description: SITE_DESCRIPTION,
+  sameAs: SITE_SOCIAL_LINKS
+}} />
 
 <div class="root">
   <Navbar />
