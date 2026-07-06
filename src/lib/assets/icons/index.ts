@@ -1,10 +1,12 @@
 export { default as IconArrowUp } from './arrow-up.svelte';
+export { default as IconCalendar } from './calendar.svelte';
 export { default as IconCrown } from './crown.svelte';
 export { default as IconDiscord } from './discord.svelte';
 export { default as IconExternalLink } from './external-link.svelte';
 export { default as IconEye } from './eye.svelte';
 export { default as IconFeed } from './feed.svelte';
 export { default as IconGithub } from './github.svelte';
+export { default as IconGlobe } from './globe.svelte';
 export { default as IconHash } from './hash.svelte';
 export { default as IconJam } from './jam.svelte';
 export { default as IconJoystick } from './joystick.svelte';
