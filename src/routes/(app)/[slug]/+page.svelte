@@ -13,7 +13,11 @@
   const bannerImage = $derived(user?.banner_alt ?? user?.banner);
   const bannerColor = $derived(user?.banner_color ?? "var(--color-surface)");
 
-const tags = $derived(user.tags ?? []);
+  const tags = $derived(user.tags ?? []);
+  const links = []; /// TODO: Fetch links
+  const projects = []; /// TODO: Fetch projects
+  const blogs = []; /// TODO: Fetch blogs
+  const other = []; /// TODO: Fetch other
 </script>
 
 <Breadcrumb
@@ -24,69 +28,61 @@ const tags = $derived(user.tags ?? []);
 />
 
 <div class="page-content">
-
-<div
-  style:background-image={`url(${bannerImage})`}
-  style:background-color={bannerColor}
-  class="header"
->
-  <img
-    src={user.avatar_url}
-    alt={user.nickname ?? user.username}
-    class="avatar"
-  />
-  <div class="info">
-    <div class="tags">
-      {#each tags as tag}
-        <Badge
-          label={tag.name}
-          class="tag"
-          title={tag.description}
-          style={`background-color: ${tag.background}; color: ${tag.color};`}
-        />
-      {/each}
+  <div
+    style:background-image={`url(${bannerImage})`}
+    style:background-color={bannerColor}
+    class="header"
+  >
+    <img
+      src={user.avatar_url}
+      alt={user.nickname ?? user.username}
+      class="avatar"
+    />
+    <div class="info">
+      <div class="tags">
+        {#each tags as tag}
+          <Badge
+            label={tag.name}
+            class="tag"
+            title={tag.description}
+            style={`background-color: ${tag.background}; color: ${tag.color};`}
+          />
+        {/each}
+      </div>
+      <h1>{user.nickname ?? user.username}</h1>
+      <p>
+        {user.about}
+      </p>
     </div>
-    <h1>{user.nickname ?? user.username}</h1>
-    <p>
-      {user.about}
-    </p>
+    {#if isOwnProfile}
+      <div class="button-group">Редактировать</div>
+    {/if}
   </div>
-  {#if isOwnProfile}
-    <div class="button-group">Редактировать</div>
+
+  {#if links.length > 0}
+    <section>
+      <Tertiary label="Ссылки" id="links" />
+      <div></div>
+    </section>
   {/if}
-</div>
-
-<section>
-  <Tertiary label="Ссылки" id="links" />
-  <div></div>
-</section>
-<section>
-  <Tertiary label="Игры" id="games" />
-  <div></div>
-</section>
-<section>
-  <Tertiary label="Блоги" id="blogs" />
-  <div></div>
-</section>
-<section>
-  <Tertiary label="Прочее" id="other" />
-  <div>
-    <p>ID: {user.id}</p>
-    <p>Username: {user.username}</p>
-    <p>Nickname: {user.nickname}</p>
-    <p>About: {user.about}</p>
-    <p>Avatar URL: {user.avatar_url}</p>
-    <p>Banner: {user.banner}</p>
-    <p>Banner Alt: {user.banner_alt}</p>
-    <p>Banner Color: {user.banner_color}</p>
-    <p>Birth Date: {user.birth_date}</p>
-    <p>First Joined: {user.first_joined_at}</p>
-    <p>Last Active: {user.last_active_at}</p>
-    <p>Active Streak: {user.active_streak}</p>
-    <p>Max Active Streak: {user.max_active_streak}</p>
-  </div>
-</section>
-
+  {#if projects.length > 0}
+    <section>
+      <Tertiary label="Проекты" id="projects" />
+      <div></div>
+    </section>
+  {/if}
+  {#if blogs.length > 0}
+    <section>
+      <Tertiary label="Блоги" id="blogs" />
+      <div></div>
+    </section>
+  {/if}
+  {#if other.length > 0}
+    <section>
+      <Tertiary label="Прочее" id="other" />
+      <div></div>
+    </section>
+  {/if}
 </div>
 
 <style>
@@ -94,6 +90,7 @@ const tags = $derived(user.tags ?? []);
     display: flex;
     flex-direction: column;
     gap: 48px;
+    margin-top: 20px;
   }
 
   section {
