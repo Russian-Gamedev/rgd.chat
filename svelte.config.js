@@ -17,7 +17,7 @@ const config = {
 				if (status === 404 && pendingRoutes.has(path)) return;
 				throw new Error(message);
 			},
-			origin:  'https://rgd.chat'
+			origin: 'https://rgd.chat'
 		}
 	},
 	extensions: ['.svelte', '.svx']
