@@ -2,10 +2,15 @@
 import * as icons from '$lib/assets/icons';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Button from '$lib/components/Button.svelte';
+import IconPicker from '$lib/components/IconPicker.svelte';
 import Input from '$lib/components/Input.svelte';
+import { Popout, type PopoutApi } from '$lib/components/popout';
 import Tertiary from '$lib/components/Tertiary.svelte';
 
 const iconEntries = Object.entries(icons).sort(([a], [b]) => a.localeCompare(b));
+
+let manualPopout: PopoutApi | undefined = $state();
+let selectedIcon = $state('IconGlobe');
 </script>
 
 <div class="page-content">
@@ -93,6 +98,99 @@ const iconEntries = Object.entries(icons).sort(([a], [b]) => a.localeCompare(b))
 </section>
 
 <section>
+	<Tertiary label="Icon Picker" id="icon-picker" />
+
+	<div class="picker-demo">
+		<IconPicker bind:value={selectedIcon} />
+	</div>
+</section>
+
+<section>
+	<Tertiary label="Popout" id="popout" />
+
+	<div class="inline-buttons">
+		<Popout mode="hover" placement="top" role="tooltip">
+			{#snippet trigger()}
+				<Button variant="outline">Hover tooltip</Button>
+			{/snippet}
+
+			{#snippet content()}
+				<span>Short contextual hint with focus and hover support.</span>
+			{/snippet}
+		</Popout>
+
+		<Popout mode="click" placement="bottom-start" role="dialog" interactive>
+			{#snippet trigger()}
+				<Button>Click popover</Button>
+			{/snippet}
+
+			{#snippet content()}
+				<div class="popout-demo-card">
+					<strong>Popover content</strong>
+					<p>Any Svelte content can live here: text, controls, links, lists.</p>
+					<Button variant="ghost" color="success">Action</Button>
+				</div>
+			{/snippet}
+		</Popout>
+
+		<Popout mode="always" placement="right" collisionPadding={16}>
+			{#snippet trigger()}
+				<Button variant="ghost" color="warning">Always open</Button>
+			{/snippet}
+
+			{#snippet content()}
+				<span>Permanent popout, useful for pinned UI or visual debugging.</span>
+			{/snippet}
+		</Popout>
+	</div>
+
+	<div class="inline-buttons">
+		<Popout bind:api={manualPopout} mode="manual" placement="top-end" interactive>
+			{#snippet trigger()}
+				<Button variant="outline" color="success">Manual anchor</Button>
+			{/snippet}
+
+			{#snippet content()}
+				<div class="popout-demo-card">
+					<strong>Manual API</strong>
+					<p>Opened by function calls through bind:api.</p>
+				</div>
+			{/snippet}
+		</Popout>
+
+		<Button variant="ghost" onclick={() => manualPopout?.open()}>Open</Button>
+		<Button variant="ghost" onclick={() => manualPopout?.close()}>Close</Button>
+		<Button variant="ghost" onclick={() => manualPopout?.toggle()}>Toggle</Button>
+	</div>
+
+	<div class="inline-buttons">
+		<Popout mode="hover" placement="bottom" tailSize={12} tailPadding={8}>
+			{#snippet trigger()}
+				<Button variant="outline" color="warning">Custom tail</Button>
+			{/snippet}
+
+			{#snippet tail({ side })}
+				<span class="custom-tail" data-side={side}></span>
+			{/snippet}
+
+			{#snippet content()}
+				<span>The tail snippet receives the actual flipped side.</span>
+			{/snippet}
+		</Popout>
+
+		<Popout mode="hover" placement="left" tail={false}>
+			{#snippet trigger()}
+				<Button variant="outline" color="error">No tail</Button>
+			{/snippet}
+
+			{#snippet content()}
+				<span>Tail can be disabled for compact overlays.</span>
+			{/snippet}
+		</Popout>
+	</div>
+</section>
+
+<section>
 	<Tertiary label="Icons" id="icons" />
 
 	<div class="icon-grid">
@@ -133,6 +231,30 @@ const iconEntries = Object.entries(icons).sort(([a], [b]) => a.localeCompare(b))
 		display: flex;
 		flex-wrap: wrap;
 		gap: 1rem;
+	}
+
+	.picker-demo {
+		width: min(220px, 100%);
+	}
+
+	.popout-demo-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		width: min(260px, calc(100vw - 48px));
+
+		p {
+			margin: 0;
+			color: var(--color-text-secondary);
+		}
+	}
+
+	.custom-tail {
+		display: block;
+		width: 100%;
+		height: 100%;
+		border-radius: 2px;
+		background: var(--color-primary);
 	}
 
 	.icon-grid {
