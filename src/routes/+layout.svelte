@@ -9,6 +9,7 @@ import '../styles/globals.css';
 import { page } from '$app/state';
 import { createApi } from '$lib/api/api';
 import { setAuth } from '$lib/auth/auth.store.svelte';
+import SnackbarViewport from '$lib/components/snackbar/SnackbarViewport.svelte';
 import {
 	SITE_DESCRIPTION,
 	SITE_LOGO,
@@ -66,6 +67,7 @@ const organizationSchema = {
   <main>
     {@render children()}
   </main>
+  <SnackbarViewport />
 </div>
 
 <style>
