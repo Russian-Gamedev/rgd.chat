@@ -27,6 +27,10 @@ export const load = ({ url }) => {
 					alt: 'Russian Gamedev Banner'
 				}
 			]
+		},
+		twitter: {
+			cardType: 'summary_large_image',
+			image: 'https://assets.rgd.chat/banner.jpg'
 		}
 	});
 

@@ -46,6 +46,10 @@ export const load: PageLoad = async ({ params, depends, fetch }) => {
 					height: 152
 				}
 			]
+		},
+		twitter: {
+			cardType: 'summary_large_image',
+			image: `${import.meta.env.VITE_EMBED_URL}/users/${user.username}/card`
 		}
 	});
 
