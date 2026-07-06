@@ -1,17 +1,17 @@
 <script lang="ts">
-import Badge from '$lib/components/Badge.svelte';
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-import Tertiary from '$lib/components/Tertiary.svelte';
+  import Badge from "$lib/components/Badge.svelte";
+  import Breadcrumb from "$lib/components/Breadcrumb.svelte";
+  import Tertiary from "$lib/components/Tertiary.svelte";
 
-import type { PageProps } from './$types';
+  import type { PageProps } from "./$types";
 
-let { data }: PageProps = $props();
+  let { data }: PageProps = $props();
 
-const user = $derived(data.user);
-const isOwnProfile = $derived(data.currentUser?.id === user?.id);
+  const user = $derived(data.user);
+  const isOwnProfile = $derived(data.currentUser?.id === user?.id);
 
-const bannerImage = $derived(user?.banner_alt ?? user?.banner);
-const bannerColor = $derived(user?.banner_color ?? 'var(--color-surface)');
+  const bannerImage = $derived(user?.banner_alt ?? user?.banner);
+  const bannerColor = $derived(user?.banner_color ?? "var(--color-surface)");
 
 const tags = $derived(user.tags ?? []);
 </script>
