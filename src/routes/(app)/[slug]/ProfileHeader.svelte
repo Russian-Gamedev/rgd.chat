@@ -1,0 +1,135 @@
+<script lang="ts">
+import type { User } from '$lib/api/api.type';
+import { IconLogout } from '$lib/assets/icons';
+import { logout } from '$lib/auth/auth.actions';
+import Badge from '$lib/components/Badge.svelte';
+
+type ProfileHeaderProps = {
+	user: User;
+	isOwnProfile: boolean;
+	onEdit: () => void;
+};
+
+let { user, isOwnProfile, onEdit }: ProfileHeaderProps = $props();
+
+const bannerImage = $derived(user.bannerAlt ?? user.banner);
+const bannerColor = $derived(user.bannerColor ?? 'var(--color-surface)');
+const tags = $derived(user.tags ?? []);
+</script>
+
+<div style:background-image={`url(${bannerImage})`} style:background-color={bannerColor} class="header">
+	<img src={user.avatarUrl} alt={user.nickname ?? user.username} class="avatar" />
+	<div class="info">
+		<div class="tags">
+			{#each tags as tag}
+				<Badge
+					class="tag"
+					title={tag.description}
+					style={`background-color: ${tag.background}; color: ${tag.color};`}
+				>
+					{tag.name}
+				</Badge>
+			{/each}
+		</div>
+		<h1>{user.nickname ?? user.username}</h1>
+		<p>
+			{user.about}
+		</p>
+	</div>
+	{#if isOwnProfile}
+		<div class="button-group">
+			<Badge as="button" class="button-edit" onclick={onEdit}>Редактировать</Badge>
+			<Badge as="button" class="button-exit" onclick={logout}>
+				<IconLogout />
+			</Badge>
+		</div>
+	{/if}
+</div>
+
+<style>
+	.header {
+		position: relative;
+		width: 100%;
+		background-size: cover;
+		background-position: center;
+		padding: 16px;
+		border-radius: 8px;
+		display: flex;
+	}
+
+	.header::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+		border-radius: 8px;
+		pointer-events: none;
+	}
+
+	.header > * {
+		position: relative;
+		z-index: 1;
+	}
+
+	.avatar {
+		width: 120px;
+		height: 120px;
+		border-radius: 12px;
+	}
+
+	.info {
+		display: flex;
+		flex-direction: column;
+		margin-left: 16px;
+
+		& .tags {
+			display: flex;
+			gap: 8px;
+			margin-bottom: 8px;
+		}
+
+		& h1 {
+			margin: 0;
+			font-size: 24px;
+		}
+
+		& p {
+			margin: 4px 0 0 0;
+			font-size: 14px;
+			color: var(--color-text-secondary);
+		}
+	}
+
+	:global(.tags .tag) {
+		font-size: 12px;
+	}
+
+	.button-group {
+		margin-left: auto;
+		height: 20px;
+
+		:global(& button) {
+			height: 100%;
+			cursor: pointer;
+			transition:
+				filter 200ms ease,
+				transform 200ms ease;
+
+			&:active {
+				filter: brightness(0.95);
+				transform: scale(0.98);
+			}
+		}
+
+		:global(.button-edit) {
+			background-color: var(--color-primary);
+		}
+
+		:global(.button-exit) {
+			background-color: var(--color-error);
+		}
+	}
+</style>

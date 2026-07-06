@@ -1,25 +1,32 @@
 <script lang="ts">
-  import { IconLogout } from "$lib/assets/icons";
-  import { logout } from "$lib/auth/auth.actions";
-  import Badge from "$lib/components/Badge.svelte";
-  import Breadcrumb from "$lib/components/Breadcrumb.svelte";
-  import Tertiary from "$lib/components/Tertiary.svelte";
+import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
-  import type { PageProps } from "./$types";
+import type { PageProps } from './$types';
+import EditProfileModal from './EditProfileModal.svelte';
+import ProfileHeader from './ProfileHeader.svelte';
+import ProfileLinks from './ProfileLinks.svelte';
+import ProfileSection from './ProfileSection.svelte';
 
-  let { data }: PageProps = $props();
+let { data }: PageProps = $props();
 
-  const user = $derived(data.user);
-  const isOwnProfile = $derived(data.currentUser?.id === user?.id);
+let savedUser = $state<typeof data.user | null>(null);
+let isEditProfileOpen = $state(false);
 
-  const bannerImage = $derived(user?.banner_alt ?? user?.banner);
-  const bannerColor = $derived(user?.banner_color ?? "var(--color-surface)");
+const routeUser = $derived(data.user);
+const user = $derived(savedUser ?? routeUser);
 
-  const tags = $derived(user.tags ?? []);
-  const links = []; /// TODO: Fetch links
-  const projects = []; /// TODO: Fetch projects
-  const blogs = []; /// TODO: Fetch blogs
-  const other = []; /// TODO: Fetch other
+$effect(() => {
+	if (savedUser && savedUser.id !== routeUser.id) {
+		savedUser = null;
+	}
+});
+
+const isOwnProfile = $derived(data.currentUser?.id === user?.id);
+
+const links = $derived(user.info?.links ?? []);
+const projects = []; /// TODO: Fetch projects
+const blogs = []; /// TODO: Fetch blogs
+const other = []; /// TODO: Fetch other
 </script>
 
 <Breadcrumb
@@ -30,68 +37,38 @@
 />
 
 <div class="page-content">
-  <div
-    style:background-image={`url(${bannerImage})`}
-    style:background-color={bannerColor}
-    class="header"
-  >
-    <img
-      src={user.avatar_url}
-      alt={user.nickname ?? user.username}
-      class="avatar"
-    />
-    <div class="info">
-      <div class="tags">
-        {#each tags as tag}
-          <Badge
-            class="tag"
-            title={tag.description}
-            style={`background-color: ${tag.background}; color: ${tag.color};`}
-          >
-            {tag.name}
-          </Badge>
-        {/each}
-      </div>
-      <h1>{user.nickname ?? user.username}</h1>
-      <p>
-        {user.about}
-      </p>
-    </div>
-    {#if isOwnProfile}
-      <div class="button-group">
-        <Badge as="button" class="button-edit">Редатировать</Badge>
-        <Badge as="button" class="button-exit" onclick={logout}>
-          <IconLogout />
-        </Badge>
-      </div>
-    {/if}
-  </div>
+  <ProfileHeader
+    {user}
+    {isOwnProfile}
+    onEdit={() => (isEditProfileOpen = true)}
+  />
 
-  {#if links.length > 0}
-    <section>
-      <Tertiary label="Ссылки" id="links" />
-      <div></div>
-    </section>
-  {/if}
+  <ProfileLinks {links} />
   {#if projects.length > 0}
-    <section>
-      <Tertiary label="Проекты" id="projects" />
+    <ProfileSection label="Проекты" id="projects">
       <div></div>
-    </section>
+    </ProfileSection>
   {/if}
   {#if blogs.length > 0}
-    <section>
-      <Tertiary label="Блоги" id="blogs" />
+    <ProfileSection label="Блоги" id="blogs">
       <div></div>
-    </section>
+    </ProfileSection>
   {/if}
   {#if other.length > 0}
-    <section>
-      <Tertiary label="Прочее" id="other" />
+    <ProfileSection label="Прочее" id="other">
       <div></div>
-    </section>
+    </ProfileSection>
   {/if}
 </div>
+
+{#if isOwnProfile}
+  <EditProfileModal
+    open={isEditProfileOpen}
+    {user}
+    onClose={() => (isEditProfileOpen = false)}
+    onSaved={(updatedUser) => (savedUser = updatedUser)}
+  />
+{/if}
 
 <style>
   .page-content {
@@ -101,92 +78,4 @@
     margin-top: 20px;
   }
 
-  section {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .header {
-    position: relative;
-    width: 100%;
-    background-size: cover;
-    background-position: center;
-    padding: 16px;
-    border-radius: 8px;
-    display: flex;
-  }
-  .header::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
-    border-radius: 8px;
-    pointer-events: none;
-  }
-
-  .header > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  .avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 12px;
-  }
-
-  .info {
-    display: flex;
-    flex-direction: column;
-    margin-left: 16px;
-
-    & .tags {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    & h1 {
-      margin: 0;
-      font-size: 24px;
-    }
-
-    & p {
-      margin: 4px 0 0 0;
-      font-size: 14px;
-      color: var(--color-text-secondary);
-    }
-  }
-
-  :global(.tags .tag) {
-    font-size: 12px;
-  }
-
-  .button-group {
-    margin-left: auto;
-    height: 20px;
-
-    :global(& button) {
-      height: 100%;
-      cursor: pointer;
-      transition:
-        filter 200ms ease,
-        transform 200ms ease;
-      &:active {
-        filter: brightness(0.95);
-        transform: scale(0.98);
-      }
-    }
-    :global(.button-edit) {
-      background-color: var(--color-primary);
-    }
-
-    :global(.button-exit) {
-      background-color: var(--color-error);
-    }
-  }
 </style>

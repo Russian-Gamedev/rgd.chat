@@ -55,6 +55,7 @@ export type User = {
 	nickname: string | null;
 	avatarUrl: string;
 	about: string | null;
+	info?: ProfileInfo | null;
 	banner: string | null;
 	bannerAlt: string | null;
 	bannerColor: string;
@@ -80,3 +81,21 @@ export type UserTag = {
 	description: string;
 };
 
+export type ProfileLink = {
+	label: string;
+	icon: string;
+	url: string;
+};
+
+export type ProfileInfo = {
+	about: string | null;
+	links: ProfileLink[];
+};
+
+export type UpdateProfileInfo = ProfileInfo;
+
+export type UpdateProfilePayload = {
+	bannerAlt?: string | null;
+	birthDate?: string | null;
+	info?: UpdateProfileInfo;
+};
