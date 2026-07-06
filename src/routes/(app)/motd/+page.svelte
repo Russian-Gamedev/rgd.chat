@@ -78,7 +78,7 @@ onMount(() => {
               <div class="user-cell">
                 <img
                   class="user-avatar"
-                  src={item.user.avatarUrl}
+                  src={item.user.avatar_url}
                   alt={item.user.username}
                 />
                 <span>{item.user.username}</span>

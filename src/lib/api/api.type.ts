@@ -71,7 +71,11 @@ export type User = {
 export type MotdListItem = {
 	content: string;
 	id: number;
-	user: Pick<User, 'id' | 'avatarUrl' | 'username'>;
+	user: {
+		id: string,
+		username: string,
+		avatar_url: string,
+	};
 };
 
 export type UserTag = {
