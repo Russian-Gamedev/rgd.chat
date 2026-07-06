@@ -8,6 +8,7 @@ export { default as IconGithub } from './github.svelte';
 export { default as IconHash } from './hash.svelte';
 export { default as IconJam } from './jam.svelte';
 export { default as IconJoystick } from './joystick.svelte';
+export { default as IconLogout } from './logout.svelte';
 export { default as IconRgd } from './rgd.svelte';
 export { default as IconVideo } from './video.svelte';
 export { default as IconVK } from './vk.svelte';

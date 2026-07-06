@@ -15,7 +15,7 @@ export async function logout() {
 	}
 
 	await invalidate('auth:me');
-	window.location.href = import.meta.env.VITE_AUTH_URL;
+	window.location.href = '/';
 }
 
 export async function refreshAuth() {

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { IconLogout } from "$lib/assets/icons";
+  import { logout } from "$lib/auth/auth.actions";
   import Badge from "$lib/components/Badge.svelte";
   import Breadcrumb from "$lib/components/Breadcrumb.svelte";
   import Tertiary from "$lib/components/Tertiary.svelte";
@@ -56,7 +58,12 @@
       </p>
     </div>
     {#if isOwnProfile}
-      <div class="button-group">Редактировать</div>
+      <div class="button-group">
+        <Badge as="button" class="button-edit">Редатировать</Badge>
+        <Badge as="button" class="button-exit" onclick={logout}>
+          <IconLogout />
+        </Badge>
+      </div>
     {/if}
   </div>
 
@@ -118,6 +125,7 @@
     height: 100%;
     background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
     border-radius: 8px;
+    pointer-events: none;
   }
 
   .header > * {
@@ -160,5 +168,25 @@
 
   .button-group {
     margin-left: auto;
+    height: 20px;
+
+    :global(& button) {
+      height: 100%;
+      cursor: pointer;
+      transition:
+        filter 200ms ease,
+        transform 200ms ease;
+      &:active {
+        filter: brightness(0.95);
+        transform: scale(0.98);
+      }
+    }
+    :global(.button-edit) {
+      background-color: var(--color-primary);
+    }
+
+    :global(.button-exit) {
+      background-color: var(--color-error);
+    }
   }
 </style>
