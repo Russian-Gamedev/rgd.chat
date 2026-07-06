@@ -1,17 +1,17 @@
 <script lang="ts">
-import ExternalLink from '$lib/assets/icons/external-link.svelte';
-import Badge from '$lib/components/Badge.svelte';
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-import Button from '$lib/components/Button.svelte';
-import Tertiary from '$lib/components/Tertiary.svelte';
+  import ExternalLink from "$lib/assets/icons/external-link.svelte";
+  import BadgeCounter from "$lib/components/BadgeCounter.svelte";
+  import Breadcrumb from "$lib/components/Breadcrumb.svelte";
+  import Button from "$lib/components/Button.svelte";
+  import Tertiary from "$lib/components/Tertiary.svelte";
 
-import type { PageProps } from './$types';
+  import type { PageProps } from "./$types";
 
-let { data }: PageProps = $props();
+  let { data }: PageProps = $props();
 
-const stats = $derived(data.stats);
-const cards = $derived(data.cards);
-const { motd } = $derived(data.motd);
+  const stats = $derived(data.stats);
+  const cards = $derived(data.cards);
+  const { motd } = $derived(data.motd);
 </script>
 
 <Breadcrumb items={[{ label: "Главная", href: "/" }]} />
@@ -25,8 +25,8 @@ const { motd } = $derived(data.motd);
 </p>
 
 <div class="badges">
-  <Badge label="Участников" count={stats?.total ?? 2263} />
-  <Badge label="Онлайн" count={stats?.online ?? 520} />
+  <BadgeCounter label="Участников" count={stats?.total ?? 2263} />
+  <BadgeCounter label="Онлайн" count={stats?.online ?? 520} />
 </div>
 
 <div class="actions">
