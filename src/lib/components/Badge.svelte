@@ -1,22 +1,20 @@
-<script lang="ts">
-import type { SvelteHTMLElements } from 'svelte/elements';
+<script lang="ts" generics="Element extends keyof SvelteHTMLElements">
+  import type { SvelteHTMLElements } from "svelte/elements";
 
-interface BadgeProps {
-	label: string;
-	count?: number;
-}
+  interface BadgeProps {
+    as?: Element;
+  }
 
-let { label, count, ...rest }: BadgeProps & SvelteHTMLElements['span'] = $props();
-
-const classes = $derived(['badge', rest.class].filter(Boolean).join(' '));
+  let {
+    as = "span" as Element,
+    children,
+    ...rest
+  }: BadgeProps & SvelteHTMLElements[Element] = $props();
 </script>
 
-<span {...rest} class={classes}>
-  {label}{count !== undefined ? ":" : ""}
-  {#if count !== undefined}
-    <span class="count">{count}</span>
-  {/if}
-</span>
+<svelte:element this={as} {...rest} class={["badge", rest.class]}>
+  {@render children?.()}
+</svelte:element>
 
 <style>
   .badge {
@@ -31,9 +29,8 @@ const classes = $derived(['badge', rest.class].filter(Boolean).join(' '));
     text-transform: uppercase;
     gap: 0.25rem;
     user-select: none;
-  }
-
-  .count {
-    color: var(--color-primary);
+    height: fit-content;
+    border: none;
+    outline: none;
   }
 </style>

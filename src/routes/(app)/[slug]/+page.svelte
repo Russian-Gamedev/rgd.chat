@@ -42,11 +42,12 @@
       <div class="tags">
         {#each tags as tag}
           <Badge
-            label={tag.name}
             class="tag"
             title={tag.description}
             style={`background-color: ${tag.background}; color: ${tag.color};`}
-          />
+          >
+            {tag.name}
+          </Badge>
         {/each}
       </div>
       <h1>{user.nickname ?? user.username}</h1>
