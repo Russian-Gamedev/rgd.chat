@@ -36,7 +36,17 @@ export const load: PageLoad = async ({ params, depends, fetch }) => {
 	const pageMetaTags = definePageMetaTags({
 		title,
 		description,
-		openGraph: { title, description }
+		openGraph: {
+			title,
+			description,
+			images: [
+				{
+					url: `${import.meta.env.VITE_EMBED_URL}/users/${user.username}/card`,
+					width: 1200,
+					height: 152
+				}
+			]
+		}
 	});
 
 	return {
