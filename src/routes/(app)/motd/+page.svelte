@@ -1,11 +1,15 @@
 <script lang="ts">
 import { onMount } from 'svelte';
+import { page } from '$app/state';
+import { requireAuth } from '$lib/auth/auth.actions';
 
 import { createApi } from '$lib/api/api';
 import type { MotdListItem } from '$lib/api/api.type';
 import { IconHash } from '$lib/assets/icons';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Link from '$lib/components/Link.svelte';
+
+requireAuth(page.data.auth);
 
 let motdList = $state<MotdListItem[] | null>(null);
 let isLoading = $state(true);

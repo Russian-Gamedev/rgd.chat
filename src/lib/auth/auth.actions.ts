@@ -21,3 +21,9 @@ export async function logout() {
 export async function refreshAuth() {
 	await invalidate('auth:me');
 }
+
+export function requireAuth(user: unknown | null) {
+	if (typeof window !== 'undefined' && !user) {
+		window.location.href = import.meta.env.VITE_AUTH_URL;
+	}
+}
