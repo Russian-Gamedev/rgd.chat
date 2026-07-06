@@ -188,7 +188,7 @@ onMount(() => {
       <a href="/{auth.user.username}" class="user-block">
         <img
           class="user-avatar"
-          src={auth.user.avatar_url}
+          src={auth.user.avatarUrl}
           alt={auth.user.nickname ?? auth.user.username}
         />
         <span class="user-username"
