@@ -8,6 +8,7 @@ import type { PageLoad } from './$types';
 
 export const ssr = true;
 export const prerender = true;
+export const csr = true;
 
 export const entries = async () => {
 	const api = createApi({ fetch });
