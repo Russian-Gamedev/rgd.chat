@@ -1,4 +1,11 @@
-import type { MembersStats, MotdListItem, Patron, User, VideosPage } from './api.type';
+import type {
+	MembersStats,
+	MotdListItem,
+	Patron,
+	UpdateProfilePayload,
+	User,
+	VideosPage
+} from './api.type';
 
 export type ApiOptions = {
 	fetch: typeof fetch;
@@ -45,6 +52,13 @@ export function createApi(options: ApiOptions) {
 		},
 		getUser(user: string) {
 			return request<User>(`/users/${user}`);
+		},
+		updateMe(payload: UpdateProfilePayload) {
+			return request<User>('/users/me', {
+				method: 'PATCH',
+				body: JSON.stringify(payload),
+				headers: { 'Content-Type': 'application/json' }
+			});
 		}
 	};
 }

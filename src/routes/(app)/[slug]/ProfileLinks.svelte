@@ -11,6 +11,7 @@ type ProfileLinksProps = {
 let { links }: ProfileLinksProps = $props();
 
 function getIcon(icon: string) {
+	// biome-ignore lint/performance/noDynamicNamespaceImportAccess: icon key is user-selected, cannot be statically determined
 	return icon in Icons ? Icons[icon as keyof typeof Icons] : Icons.IconGlobe;
 }
 </script>
