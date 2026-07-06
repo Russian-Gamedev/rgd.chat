@@ -1,21 +1,21 @@
 <script lang="ts" generics="Element extends keyof SvelteHTMLElements">
-  import type { SvelteHTMLElements } from "svelte/elements";
+import type { SvelteHTMLElements } from 'svelte/elements';
 
-  import type { Colors } from "$lib";
+import type { Colors } from '$lib';
 
-  type ButtonProps = {
-    color?: Colors;
-    variant?: "solid" | "outline" | "ghost";
-    as?: Element;
-  };
+type ButtonProps = {
+	color?: Colors;
+	variant?: 'solid' | 'outline' | 'ghost';
+	as?: Element;
+};
 
-  let {
-    color = "primary",
-    variant = "solid",
-    as = "button" as Element,
-    children,
-    ...rest
-  }: ButtonProps & SvelteHTMLElements[Element] = $props();
+let {
+	color = 'primary',
+	variant = 'solid',
+	as = 'button' as Element,
+	children,
+	...rest
+}: ButtonProps & SvelteHTMLElements[Element] = $props();
 </script>
 
 <svelte:element

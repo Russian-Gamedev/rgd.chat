@@ -1,15 +1,15 @@
 <script lang="ts" generics="Element extends keyof SvelteHTMLElements">
-  import type { SvelteHTMLElements } from "svelte/elements";
+import type { SvelteHTMLElements } from 'svelte/elements';
 
-  interface BadgeProps {
-    as?: Element;
-  }
+interface BadgeProps {
+	as?: Element;
+}
 
-  let {
-    as = "span" as Element,
-    children,
-    ...rest
-  }: BadgeProps & SvelteHTMLElements[Element] = $props();
+let {
+	as = 'span' as Element,
+	children,
+	...rest
+}: BadgeProps & SvelteHTMLElements[Element] = $props();
 </script>
 
 <svelte:element this={as} {...rest} class={["badge", rest.class]}>

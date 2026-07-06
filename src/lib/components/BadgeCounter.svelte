@@ -1,15 +1,14 @@
 <script lang="ts">
-  import type { SvelteHTMLElements } from "svelte/elements";
+import type { SvelteHTMLElements } from 'svelte/elements';
 
-  import Badge from "./Badge.svelte";
+import Badge from './Badge.svelte';
 
-  interface BadgeProps {
-    label: string;
-    count?: number;
-  }
+interface BadgeProps {
+	label: string;
+	count?: number;
+}
 
-  let { label, count, ...rest }: BadgeProps & SvelteHTMLElements["span"] =
-    $props();
+let { label, count, ...rest }: BadgeProps & SvelteHTMLElements['span'] = $props();
 </script>
 
 <Badge {...rest}>

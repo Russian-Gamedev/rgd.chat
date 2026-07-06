@@ -1,30 +1,30 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+import { onMount } from 'svelte';
 
-  import { page } from "$app/state";
-  import { createApi } from "$lib/api/api";
-  import type { MotdListItem } from "$lib/api/api.type";
-  import { IconHash } from "$lib/assets/icons";
-  import { requireAuth } from "$lib/auth/auth.actions";
-  import Breadcrumb from "$lib/components/Breadcrumb.svelte";
-  import Link from "$lib/components/Link.svelte";
+import { page } from '$app/state';
+import { createApi } from '$lib/api/api';
+import type { MotdListItem } from '$lib/api/api.type';
+import { IconHash } from '$lib/assets/icons';
+import { requireAuth } from '$lib/auth/auth.actions';
+import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+import Link from '$lib/components/Link.svelte';
 
-  requireAuth(page.data.auth);
+requireAuth(page.data.auth);
 
-  let motdList = $state<MotdListItem[] | null>(null);
-  let isLoading = $state(true);
+let motdList = $state<MotdListItem[] | null>(null);
+let isLoading = $state(true);
 
-  onMount(() => {
-    createApi({ fetch })
-      .getMotdList()
-      .then((res) => {
-        motdList = Array.isArray(res) ? res : (res.motdList ?? null);
-      })
-      .catch(() => {})
-      .finally(() => {
-        isLoading = false;
-      });
-  });
+onMount(() => {
+	createApi({ fetch })
+		.getMotdList()
+		.then((res) => {
+			motdList = Array.isArray(res) ? res : (res.motdList ?? null);
+		})
+		.catch(() => {})
+		.finally(() => {
+			isLoading = false;
+		});
+});
 </script>
 
 <Breadcrumb
