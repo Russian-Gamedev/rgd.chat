@@ -72,9 +72,9 @@ export type MotdListItem = {
 	content: string;
 	id: number;
 	user: {
-		id: string,
-		username: string,
-		avatar_url: string,
+		id: string;
+		username: string;
+		avatar_url: string;
 	};
 };
 
