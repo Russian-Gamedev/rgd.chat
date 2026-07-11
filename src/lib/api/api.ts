@@ -17,7 +17,8 @@ export function createApi(options: ApiOptions) {
 	const fetcher = options.fetch;
 
 	async function request<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
-		const url = `${baseUrl}${endpoint}`;
+		const url = endpoint.startsWith('/') ? `${baseUrl}${endpoint}` : endpoint;
+
 		Object.assign(requestOptions, {
 			credentials: 'include'
 		});
@@ -36,7 +37,7 @@ export function createApi(options: ApiOptions) {
 			return request<VideosPage>(`/videos/GameDevVideos?page=${page}&perPage=${perPage}`);
 		},
 		getPatrons() {
-			return request<Patron[]>('/patrons');
+			return request<Patron[]>('https://thanks.rgd.chat/api/supporters');
 		},
 		getMe() {
 			return request<User>('/users/me');
