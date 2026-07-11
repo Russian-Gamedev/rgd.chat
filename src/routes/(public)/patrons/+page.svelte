@@ -173,11 +173,11 @@ function getBannerColor(banner: string): string | undefined {
     height: 60px;
   }
 
-	.banner,
-	:global(.banner) {
-		aspect-ratio: 5 / 2;
-		background-color: var(--color-bg);
-		display: block;
+  .banner,
+  :global(.banner) {
+    aspect-ratio: 5 / 2;
+    background-color: var(--color-bg);
+    display: block;
     object-fit: cover;
     width: 100%;
   }
@@ -206,10 +206,10 @@ function getBannerColor(banner: string): string | undefined {
     min-width: 0;
   }
 
-	:global(.avatar) {
-		background-color: var(--color-bg);
-		border-radius: 9px;
-		flex: 0 0 auto;
+  :global(.avatar) {
+    background-color: var(--color-bg);
+    border-radius: 9px;
+    flex: 0 0 auto;
     height: 28px;
     object-fit: cover;
     width: 28px;
