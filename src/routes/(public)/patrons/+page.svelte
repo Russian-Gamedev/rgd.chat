@@ -20,7 +20,7 @@ function formatDonation(value: number): string {
 }
 
 function getBannerImageUrl(banner: string): string | null {
-	if (!banner.startsWith('http://') && !banner.startsWith('https://')) return null;
+	if (!banner?.startsWith('http://') && !banner?.startsWith('https://')) return null;
 	return banner;
 }
 
