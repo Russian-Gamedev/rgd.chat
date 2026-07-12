@@ -2,18 +2,17 @@ import { definePageMetaTags } from 'svelte-meta-tags';
 
 import { error } from '@sveltejs/kit';
 
-import { createApi } from '$lib/api/api';
+import { ApiHttpError, createApi } from '$lib/api/api';
+import { getKnownProfileEntries } from '$lib/api/prerender-entries';
 
 import type { PageLoad } from './$types';
 
 export const ssr = true;
-export const prerender = true;
+export const prerender = 'auto';
 export const csr = true;
 
 export const entries = async () => {
-	const api = createApi({ fetch });
-	const patrons = await api.getPatrons();
-	return patrons.map((patron) => ({ slug: patron.user.username }));
+	return getKnownProfileEntries(fetch);
 };
 
 export const load: PageLoad = async ({ params, depends, fetch }) => {
@@ -21,8 +20,12 @@ export const load: PageLoad = async ({ params, depends, fetch }) => {
 
 	const api = createApi({ fetch });
 
-	const user = await api.getUser(params.slug).catch(() => {
-		throw error(404, 'Пользователь не найден');
+	const user = await api.getUser(params.slug).catch((err: unknown) => {
+		if (err instanceof ApiHttpError && err.status === 404) {
+			throw error(404, 'Пользователь не найден');
+		}
+
+		throw err;
 	});
 
 	let currentUser: typeof user | null = null;

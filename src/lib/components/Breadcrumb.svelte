@@ -11,7 +11,7 @@ export let items: Breadcrumb[] = [];
 
 <nav aria-label="Breadcrumb">
 	<ol class="breadcrumb">
-		{#each items as item, index (item.href)}
+		{#each items as item, index}
 			<li class="breadcrumb-item">
 				{#if index < items.length - 1}
 					<a href={resolve(item.href as any)}>{item.label}</a>
