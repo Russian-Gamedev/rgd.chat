@@ -61,7 +61,7 @@ const toggleCollapsed = () => {
 const authedNavItems = [{ name: 'MOTD', href: '/motd', icon: IconHash }];
 
 const navItems = $derived([
-	// { name: "Игры", href: "/games", icon: IconJoystick },
+	{ name: "Игры", href: "/games", icon: IconJoystick },
 	// { name: "Джемы", href: "/jams", icon: IconJam },
 	// { name: "Блоги", href: "/blogs", icon: IconFeed },
 	{ name: 'Донатеры', href: '/patrons', icon: IconCrown },

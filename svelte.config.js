@@ -13,7 +13,7 @@ const config = {
 		}),
 		prerender: {
 			handleHttpError: ({ path, status, message }) => {
-				const pendingRoutes = new Set(['/games', '/jams', '/blogs']);
+				const pendingRoutes = new Set(['/jams', '/blogs']);
 				if (status === 404 && pendingRoutes.has(path)) return;
 				throw new Error(message);
 			},
