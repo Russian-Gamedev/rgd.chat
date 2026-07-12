@@ -61,10 +61,10 @@ function getAuthorName(author: { type: string; name?: string; discord_user_id?: 
               <span class="game-likes">♥ {game.likes_count}</span>
             </div>
 
-            {#if game.genres.length > 0}
-              <div class="game-genres">
-                {#each game.genres as genre}
-                  <span class="genre-tag">{genre.name}</span>
+            {#if game.tags.length > 0}
+              <div class="game-tags">
+                {#each game.tags as tag}
+                  <span class="tag-badge">{tag.name}</span>
                 {/each}
               </div>
             {/if}
@@ -184,13 +184,13 @@ function getAuthorName(author: { type: string; name?: string; discord_user_id?: 
     color: var(--color-text-secondary);
   }
 
-  .game-genres {
+  .game-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
   }
 
-  .genre-tag {
+  .tag-badge {
     background-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
     color: var(--color-primary);
     border-radius: 0.25rem;
