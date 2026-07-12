@@ -1,7 +1,20 @@
 import type {
+	CreateGameDto,
+	CreateGenreDto,
+	GameDetailsDto,
+	GameEditorDto,
+	GameGenreDto,
+	GameListQueryDto,
+	GameListResponseDto,
+	LikeStateDto,
 	MembersStats,
+	MineGamesQueryDto,
+	MineGamesResponseDto,
 	MotdListItem,
 	Patron,
+	ReviewListResponseDto,
+	UpdateGameDto,
+	UpdateGenreDto,
 	UpdateProfilePayload,
 	User,
 	VideosPage
@@ -11,6 +24,17 @@ export type ApiOptions = {
 	fetch: typeof fetch;
 	baseUrl?: string;
 };
+
+export class ApiHttpError extends Error {
+	constructor(
+		public readonly status: number,
+		public readonly statusText: string,
+		public readonly details?: unknown
+	) {
+		super(`HTTP ${status}: ${statusText}`);
+		this.name = 'ApiHttpError';
+	}
+}
 
 export function createApi(options: ApiOptions) {
 	const baseUrl = options.baseUrl ?? import.meta.env.VITE_API_BASE_URL ?? 'https://bot.rgd.chat';
@@ -24,9 +48,22 @@ export function createApi(options: ApiOptions) {
 		});
 		const response = await fetcher(url, requestOptions);
 		if (!response.ok) {
-			throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			let details: unknown;
+			try {
+				details = await response.json();
+			} catch {
+				details = undefined;
+			}
+			throw new ApiHttpError(response.status, response.statusText, details);
 		}
+		if (response.status === 204) return undefined as T;
 		return await (response.json() as Promise<T>);
+	}
+
+	function toQueryString(params: Record<string, string | number | undefined | null>): string {
+		const entries = Object.entries(params).filter(([, v]) => v !== undefined && v !== null);
+		if (entries.length === 0) return '';
+		return `?${entries.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`).join('&')}`;
 	}
 
 	return {
@@ -54,12 +91,112 @@ export function createApi(options: ApiOptions) {
 		getUser(user: string) {
 			return request<User>(`/users/${user}`);
 		},
+		getUserGames(user: string) {
+			return request<GameListResponseDto>(`/users/${user}/games`);
+		},
 		updateMe(payload: UpdateProfilePayload) {
 			return request<User>('/users/me', {
 				method: 'PATCH',
 				body: JSON.stringify(payload),
 				headers: { 'Content-Type': 'application/json' }
 			});
+		},
+
+		// --- Games Module ---
+
+		listPublishedGames(query: GameListQueryDto = {}) {
+			return request<GameListResponseDto>(
+				`/games${toQueryString(query as Record<string, string | number | undefined>)}`
+			);
+		},
+		getPublishedGame(id: string) {
+			return request<GameDetailsDto>(`/games/${id}`);
+		},
+		createGameDraft(payload: CreateGameDto) {
+			return request<GameEditorDto>('/games', {
+				method: 'POST',
+				body: JSON.stringify(payload),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		updateGameDraft(id: string, payload: UpdateGameDto) {
+			return request<GameEditorDto>(`/games/${id}`, {
+				method: 'PATCH',
+				body: JSON.stringify(payload),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		deleteGame(id: string) {
+			return request<void>(`/games/${id}`, { method: 'DELETE' });
+		},
+		getMyGames(query: MineGamesQueryDto = {}) {
+			return request<MineGamesResponseDto>(
+				`/games/mine${toQueryString(query as Record<string, string | number | undefined>)}`
+			);
+		},
+		getGameEditor(id: string) {
+			return request<GameEditorDto>(`/games/${id}/editor`);
+		},
+		submitForReview(id: string) {
+			return request<GameEditorDto>(`/games/${id}/submit-review`, { method: 'POST' });
+		},
+		listReviewGames(query: GameListQueryDto & MineGamesQueryDto = {}) {
+			return request<ReviewListResponseDto>(
+				`/games/review${toQueryString(query as Record<string, string | number | undefined>)}`
+			);
+		},
+		getReviewGame(id: string) {
+			return request<GameEditorDto>(`/games/${id}/review`);
+		},
+		publishReview(id: string, comment?: string) {
+			return request<GameEditorDto>(`/games/${id}/review/publish`, {
+				method: 'POST',
+				body: comment ? JSON.stringify({ comment }) : undefined,
+				headers: comment ? { 'Content-Type': 'application/json' } : undefined
+			});
+		},
+		requestChanges(id: string, comment: string) {
+			return request<GameEditorDto>(`/games/${id}/review/request-changes`, {
+				method: 'POST',
+				body: JSON.stringify({ comment }),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		transferOwner(id: string, owner_id: string) {
+			return request<GameEditorDto>(`/games/${id}/review/owner`, {
+				method: 'PATCH',
+				body: JSON.stringify({ owner_id }),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		listGenres() {
+			return request<GameGenreDto[]>('/games/genres');
+		},
+		createGenre(payload: CreateGenreDto) {
+			return request<GameGenreDto>('/games/genres', {
+				method: 'POST',
+				body: JSON.stringify(payload),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		updateGenre(id: string, payload: UpdateGenreDto) {
+			return request<GameGenreDto>(`/games/genres/${id}`, {
+				method: 'PATCH',
+				body: JSON.stringify(payload),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		deleteGenre(id: string) {
+			return request<void>(`/games/genres/${id}`, { method: 'DELETE' });
+		},
+		getLikeState(id: string) {
+			return request<LikeStateDto>(`/games/${id}/like`);
+		},
+		likeGame(id: string) {
+			return request<LikeStateDto>(`/games/${id}/like`, { method: 'PUT' });
+		},
+		unlikeGame(id: string) {
+			return request<LikeStateDto>(`/games/${id}/like`, { method: 'DELETE' });
 		}
 	};
 }
