@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { GameAuthorInputDto, GameGenreDto } from '$lib/api/api.type';
+import type { GameAuthorInputDto, GameTagDto } from '$lib/api/api.type';
 import Button from '$lib/components/Button.svelte';
 import IconPicker from '$lib/components/IconPicker.svelte';
 
@@ -9,17 +9,20 @@ import MarkdownPreview from './MarkdownPreview.svelte';
 
 let {
 	form = $bindable(),
-	genres,
+	tagOptions,
 	errors = {},
 	readonly = false
 }: {
 	form: GameFormState;
-	genres: GameGenreDto[];
+	tagOptions: GameTagDto[];
 	errors?: GameFormErrors;
 	readonly?: boolean;
 } = $props();
 
 let descriptionMode = $state<'editor' | 'preview'>('editor');
+let tagInput = $state('');
+let showTagDropdown = $state(false);
+let tagInputRef: HTMLInputElement | undefined = $state();
 
 function updateAuthor(index: number, author: GameAuthorInputDto) {
 	form.authors[index] = author;
@@ -29,11 +32,68 @@ function removeAt(key: 'authors' | 'links' | 'attachments', index: number) {
 	form[key].splice(index, 1);
 }
 
-function toggleGenre(id: string) {
-	const index = form.genreIds.indexOf(id);
-	if (index === -1) form.genreIds.push(id);
-	else form.genreIds.splice(index, 1);
+function normalizeTag(value: string): string | null {
+	const trimmed = value.trim().replace(/\s+/g, ' ');
+	if (!trimmed || trimmed.length > 80) return null;
+	return trimmed;
 }
+
+function addTag(value: string) {
+	const tag = normalizeTag(value);
+	if (!tag) return;
+	if (form.tags.some((t) => t.toLowerCase() === tag.toLowerCase())) return;
+	if (form.tags.length >= 10) return;
+	form.tags = [...form.tags, tag];
+	tagInput = '';
+	showTagDropdown = false;
+}
+
+function removeTag(index: number) {
+	form.tags = form.tags.filter((_, i) => i !== index);
+}
+
+function handleTagKeydown(event: KeyboardEvent) {
+	if (event.key === 'Enter' || event.key === ',') {
+		event.preventDefault();
+		if (tagInput.trim()) {
+			addTag(tagInput);
+		}
+	} else if (event.key === 'Backspace' && !tagInput && form.tags.length > 0) {
+		removeTag(form.tags.length - 1);
+	} else if (event.key === 'Escape') {
+		showTagDropdown = false;
+		tagInputRef?.blur();
+	}
+}
+
+function handleTagInput() {
+	showTagDropdown = tagInput.trim().length > 0;
+}
+
+function selectTagOption(name: string) {
+	addTag(name);
+	tagInputRef?.focus();
+}
+
+function onTagInputBlur() {
+	setTimeout(() => (showTagDropdown = false), 200);
+}
+
+function onTagInputFocus() {
+	if (tagInput.trim()) showTagDropdown = true;
+}
+
+const filteredTagOptions = $derived(
+	tagInput.trim()
+		? tagOptions.filter(
+				(t) =>
+					t.name.toLowerCase().includes(tagInput.toLowerCase()) &&
+					!form.tags.some((tag) => tag.toLowerCase() === t.name.toLowerCase())
+			)
+		: tagOptions.filter(
+				(t) => !form.tags.some((tag) => tag.toLowerCase() === t.name.toLowerCase())
+			)
+);
 </script>
 
 <fieldset disabled={readonly}>
@@ -77,22 +137,44 @@ function toggleGenre(id: string) {
     </section>
 
     <section class="field-section">
-      <span class="field-label">Жанры <span>{form.genreIds.length}/10</span></span>
-      <div class="genres">
-        {#each genres as genre (genre.id)}
-          <label class="genre">
-            <input
-              type="checkbox"
-              checked={form.genreIds.includes(genre.id)}
-              disabled={readonly || (!form.genreIds.includes(genre.id) && form.genreIds.length >= 10)}
-              onchange={() => toggleGenre(genre.id)}
-            />
-            {genre.name}
-          </label>
+      <span class="field-label">Теги <span>{form.tags.length}/10</span></span>
+      <div class="tags-input" class:focus={showTagDropdown}>
+        {#each form.tags as tag, index (tag)}
+          <span class="tag-pill">
+            {tag}
+            {#if !readonly}
+              <button type="button" class="tag-remove" onclick={() => removeTag(index)} aria-label="Удалить тег {tag}">×</button>
+            {/if}
+          </span>
         {/each}
+        {#if !readonly}
+          <input
+            bind:this={tagInputRef}
+            class="tag-autocomplete"
+            type="text"
+            placeholder={form.tags.length < 10 ? 'Введите тег…' : ''}
+            bind:value={tagInput}
+            oninput={handleTagInput}
+            onkeydown={handleTagKeydown}
+            onblur={onTagInputBlur}
+            onfocus={onTagInputFocus}
+            disabled={form.tags.length >= 10}
+          />
+        {/if}
       </div>
-      {#if genres.length === 0}<p class="muted">Справочник жанров недоступен.</p>{/if}
-      {#if errors.genreIds}<p class="error">{errors.genreIds}</p>{/if}
+      {#if showTagDropdown && tagInput.trim() && filteredTagOptions.length > 0}
+        <div class="tag-dropdown" role="listbox">
+          {#each filteredTagOptions as option (option.id)}
+            <button
+              type="button"
+              class="tag-option"
+              onclick={() => selectTagOption(option.name)}
+            >{option.name}</button>
+          {/each}
+        </div>
+      {/if}
+      {#if tagOptions.length === 0}<p class="muted">Справочник тегов недоступен.</p>{/if}
+      {#if errors.tags}<p class="error">{errors.tags}</p>{/if}
     </section>
   </div>
 
@@ -302,27 +384,81 @@ function toggleGenre(id: string) {
     grid-template-columns: minmax(12rem, 0.65fr) minmax(18rem, 1.35fr);
   }
 
-  .genres {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-  }
-
-  .genre {
+  .tags-input {
     align-items: center;
     background: var(--color-bg-surface);
     border: 1px solid #303238;
-    border-radius: 999px;
-    cursor: pointer;
+    border-radius: 0.5rem;
     display: flex;
-    font-weight: 400;
-    gap: 0.4rem;
-    margin: 0;
-    padding: 0.4rem 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    padding: 0.4rem;
   }
 
-  .genre input {
-    width: auto;
+  .tags-input.focus {
+    border-color: var(--color-primary);
+  }
+
+  .tag-pill {
+    align-items: center;
+    background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+    border-radius: 0.25rem;
+    color: var(--color-primary);
+    display: flex;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    gap: 0.2rem;
+    padding: 0.2rem 0.35rem;
+  }
+
+  .tag-remove {
+    background: transparent;
+    border: 0;
+    color: var(--color-primary);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+  }
+
+  .tag-autocomplete {
+    background: transparent;
+    border: 0 !important;
+    flex: 1;
+    min-width: 120px;
+    padding: 0.3rem 0.5rem !important;
+  }
+
+  .tag-autocomplete:focus {
+    border-color: transparent !important;
+    outline: none;
+  }
+
+  .tag-dropdown {
+    background: var(--color-bg-surface);
+    border: 1px solid #303238;
+    border-radius: 0.5rem;
+    margin-top: 0.25rem;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    z-index: 10;
+  }
+
+  .tag-option {
+    background: transparent;
+    border: 0;
+    color: var(--color-text);
+    cursor: pointer;
+    display: block;
+    font: inherit;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    width: 100%;
+  }
+
+  .tag-option:hover {
+    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
   }
 
   .section-header {
