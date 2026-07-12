@@ -1,11 +1,10 @@
 import type {
 	CreateGameDto,
-	CreateGenreDto,
 	GameDetailsDto,
 	GameEditorDto,
-	GameGenreDto,
 	GameListQueryDto,
 	GameListResponseDto,
+	GameTagDto,
 	LikeStateDto,
 	MembersStats,
 	MineGamesQueryDto,
@@ -14,7 +13,6 @@ import type {
 	Patron,
 	ReviewListResponseDto,
 	UpdateGameDto,
-	UpdateGenreDto,
 	UpdateProfilePayload,
 	User,
 	VideosPage
@@ -169,25 +167,8 @@ export function createApi(options: ApiOptions) {
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},
-		listGenres() {
-			return request<GameGenreDto[]>('/games/genres');
-		},
-		createGenre(payload: CreateGenreDto) {
-			return request<GameGenreDto>('/games/genres', {
-				method: 'POST',
-				body: JSON.stringify(payload),
-				headers: { 'Content-Type': 'application/json' }
-			});
-		},
-		updateGenre(id: string, payload: UpdateGenreDto) {
-			return request<GameGenreDto>(`/games/genres/${id}`, {
-				method: 'PATCH',
-				body: JSON.stringify(payload),
-				headers: { 'Content-Type': 'application/json' }
-			});
-		},
-		deleteGenre(id: string) {
-			return request<void>(`/games/genres/${id}`, { method: 'DELETE' });
+		listTags() {
+			return request<GameTagDto[]>('/games/tags');
 		},
 		getLikeState(id: string) {
 			return request<LikeStateDto>(`/games/${id}/like`);

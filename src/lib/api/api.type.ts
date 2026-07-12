@@ -124,7 +124,7 @@ export type GameListSort =
 export type GameListQueryDto = {
 	limit?: number;
 	offset?: number;
-	genre?: string;
+	tag?: string;
 	author_id?: string;
 	search?: string;
 	release_from?: string;
@@ -147,7 +147,7 @@ export type GameListItemDto = {
 	id: string;
 	title: string;
 	release_date: string;
-	genres: { id: string; slug: string; name: string }[];
+	tags: { id: string; slug: string; name: string }[];
 	authors: GameAuthor[];
 	image: string | null;
 	likes_count: number;
@@ -177,7 +177,7 @@ export type CreateGameDto = {
 	title: string;
 	description: string;
 	release_date: string;
-	genre_ids: string[];
+	tags: string[];
 	authors: GameAuthorInputDto[];
 	links?: GameLinkInputDto[];
 	attachments?: GameAttachmentInputDto[];
@@ -252,18 +252,11 @@ export type ReviewListResponseDto = {
 	offset: number;
 };
 
-export type GameGenreDto = {
+export type GameTagDto = {
 	id: string;
 	slug: string;
 	name: string;
 };
-
-export type CreateGenreDto = {
-	name: string;
-	slug: string;
-};
-
-export type UpdateGenreDto = Partial<CreateGenreDto>;
 
 export type LikeStateDto = {
 	liked: boolean;
