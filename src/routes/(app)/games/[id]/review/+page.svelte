@@ -4,7 +4,7 @@ import { onMount } from 'svelte';
 import { invalidate } from '$app/navigation';
 import { page } from '$app/state';
 import { ApiHttpError, createApi } from '$lib/api/api';
-import type { GameEditorDto, GameGenreDto } from '$lib/api/api.type';
+import type { GameEditorDto, GameTagDto } from '$lib/api/api.type';
 import { requireAuth } from '$lib/auth/auth.actions';
 import { hasGlobalPermission } from '$lib/auth/permissions';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
@@ -23,7 +23,7 @@ const canReview = $derived(
 const gameId = $derived(page.params.id as string);
 let game = $state<GameEditorDto | null>(null);
 let form = $state(emptyGameForm());
-let genres = $state<GameGenreDto[]>([]);
+let tagOptions = $state<GameTagDto[]>([]);
 let loadState = $state<'loading' | 'ready' | 'not-found' | 'forbidden' | 'error'>('loading');
 let comment = $state('');
 let isMutating = $state(false);
@@ -93,8 +93,8 @@ onMount(() => {
 	Promise.all([
 		loadReview(),
 		api
-			.listGenres()
-			.then((value) => (genres = value))
+			.listTags()
+			.then((value) => (tagOptions = value))
 			.catch(() => undefined)
 	]);
 });
@@ -120,7 +120,7 @@ onMount(() => {
     <span>Владелец: {game.owner_id}</span>
   </div>
 
-  <GameEditorForm bind:form {genres} readonly />
+  <GameEditorForm bind:form tagOptions={tagOptions} readonly />
 
   {#if game.status === 'review'}
     <section class="decision">

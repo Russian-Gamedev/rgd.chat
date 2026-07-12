@@ -4,7 +4,7 @@ import { onMount } from 'svelte';
 import { beforeNavigate, goto, invalidate } from '$app/navigation';
 import { page } from '$app/state';
 import { ApiHttpError, createApi } from '$lib/api/api';
-import type { GameEditorDto, GameGenreDto } from '$lib/api/api.type';
+import type { GameEditorDto, GameTagDto } from '$lib/api/api.type';
 import { requireAuth } from '$lib/auth/auth.actions';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Button from '$lib/components/Button.svelte';
@@ -28,7 +28,7 @@ requireAuth(page.data.auth);
 
 const api = createApi({ fetch });
 let editor = $state<GameEditorDto | null>(null);
-let genres = $state<GameGenreDto[]>([]);
+let tagOptions = $state<GameTagDto[]>([]);
 let form = $state(emptyGameForm());
 let savedSnapshot = $state(formSnapshot(emptyGameForm()));
 let errors = $state<GameFormErrors>({});
@@ -111,6 +111,7 @@ async function saveDraft(forReview = false): Promise<boolean> {
 		applyEditor(next);
 		await Promise.all([
 			invalidate('games:mine'),
+			invalidate('games:tags'),
 			gameId ? invalidate(`games:editor:${gameId}`) : Promise.resolve()
 		]);
 		showSnackbar({ message: 'Черновик сохранён.', variant: 'success' });
@@ -137,7 +138,7 @@ async function submitReview() {
 	isMutating = true;
 	try {
 		applyEditor(await api.submitForReview(gameId));
-		await Promise.all([invalidate('games:mine'), invalidate(`games:editor:${gameId}`)]);
+		await Promise.all([invalidate('games:mine'), invalidate('games:tags'), invalidate(`games:editor:${gameId}`)]);
 		showSnackbar({ message: 'Редакция отправлена на ревью.', variant: 'success' });
 		if (wasNew) await goto(`/games/editor/${gameId}`, { replaceState: true });
 	} catch (error) {
@@ -186,9 +187,9 @@ onMount(() => {
 
 	Promise.all([
 		api
-			.listGenres()
-			.then((value) => (genres = value))
-			.catch(() => showSnackbar({ message: 'Не удалось загрузить жанры.', variant: 'error' })),
+			.listTags()
+			.then((value) => (tagOptions = value))
+			.catch(() => showSnackbar({ message: 'Не удалось загрузить теги.', variant: 'error' })),
 		gameId ? loadEditor({ replaceDirty: true }) : Promise.resolve()
 	]);
 
@@ -251,7 +252,7 @@ onMount(() => {
     </section>
   {/if}
 
-  <GameEditorForm bind:form {genres} {errors} readonly={isReview} />
+  <GameEditorForm bind:form tagOptions={tagOptions} {errors} readonly={isReview} />
 
   <div class="actions">
     {#if !isReview}
