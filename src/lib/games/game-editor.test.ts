@@ -19,7 +19,7 @@ const editor: GameEditorDto = {
 	title: 'Игра',
 	description: 'Описание',
 	release_date: '2026-07-12',
-	genres: [{ id: 'genre-1', slug: 'action', name: 'Экшен' }],
+	tags: [{ id: 'tag-1', slug: 'action', name: 'Экшен' }],
 	authors: [
 		{ type: 'discord', discord_user_id: '123456789012345678' },
 		{ type: 'text', name: 'Команда' }
@@ -43,7 +43,7 @@ describe('game editor normalization', () => {
 			title: 'Игра',
 			description: 'Описание',
 			releaseDate: '2026-07-12',
-			genreIds: ['genre-1'],
+			tags: ['Экшен'],
 			authors: editor.authors,
 			links: editor.links,
 			attachments: editor.attachments
@@ -62,12 +62,12 @@ describe('game editor normalization', () => {
 
 	test('fully replaces and clears array payloads', () => {
 		const form = editorToForm(editor);
-		form.genreIds = [];
+		form.tags = [];
 		form.authors = [];
 		form.links = [];
 		form.attachments = [];
 		expect(formToPayload(form)).toMatchObject({
-			genre_ids: [],
+			tags: [],
 			authors: [],
 			links: [],
 			attachments: []
@@ -107,16 +107,16 @@ describe('game editor validation', () => {
 		expect(validateGameForm(form).releaseDate).toBeDefined();
 	});
 
-	test('requires at least one genre for review', () => {
+	test('requires at least one tag for review', () => {
 		const form = editorToForm(editor);
-		form.genreIds = [];
-		expect(validateGameForm(form, false).genreIds).toBeUndefined();
-		expect(validateGameForm(form, true).genreIds).toBeDefined();
+		form.tags = [];
+		expect(validateGameForm(form, false).tags).toBeUndefined();
+		expect(validateGameForm(form, true).tags).toBeDefined();
 	});
 
 	test('enforces collection limits', () => {
 		const form = editorToForm(editor);
-		form.genreIds = Array.from({ length: 11 }, (_, index) => String(index));
+		form.tags = Array.from({ length: 11 }, (_, index) => String(index));
 		form.authors = Array.from({ length: 21 }, () => ({ type: 'text' as const, name: 'A' }));
 		form.links = Array.from({ length: 6 }, () => ({
 			icon: 'x',
@@ -128,7 +128,7 @@ describe('game editor validation', () => {
 			url: 'https://x.dev/a.png'
 		}));
 		const errors = validateGameForm(form, true);
-		expect(errors.genreIds).toBeDefined();
+		expect(errors.tags).toBeDefined();
 		expect(errors.authors).toBeDefined();
 		expect(errors.links).toBeDefined();
 		expect(errors.attachments).toBeDefined();
@@ -172,6 +172,6 @@ describe('game editor validation', () => {
 		expect(errors.title).toBeDefined();
 		expect(errors.description).toBeDefined();
 		expect(errors.releaseDate).toBeDefined();
-		expect(errors.genreIds).toBeDefined();
+		expect(errors.tags).toBeDefined();
 	});
 });

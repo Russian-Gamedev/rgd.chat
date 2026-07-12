@@ -11,7 +11,7 @@ export type GameFormState = {
 	title: string;
 	description: string;
 	releaseDate: string;
-	genreIds: string[];
+	tags: string[];
 	authors: GameAuthorInputDto[];
 	links: GameLinkInputDto[];
 	attachments: GameAttachmentInputDto[];
@@ -40,7 +40,7 @@ export function emptyGameForm(): GameFormState {
 		title: '',
 		description: '',
 		releaseDate: '',
-		genreIds: [],
+		tags: [],
 		authors: [],
 		links: [],
 		attachments: []
@@ -52,7 +52,7 @@ export function editorToForm(editor: GameEditorDto): GameFormState {
 		title: editor.title,
 		description: editor.description,
 		releaseDate: editor.release_date,
-		genreIds: editor.genres.map((genre) => genre.id),
+		tags: editor.tags.map((tag) => tag.name),
 		authors: editor.authors.map((author) => ({ ...author })),
 		links: editor.links.map((link) => ({ ...link, icon: normalizeLinkIcon(link.icon) })),
 		attachments: editor.attachments.map((attachment) => ({ ...attachment }))
@@ -64,7 +64,7 @@ export function formToPayload(form: GameFormState): CreateGameDto {
 		title: form.title.trim(),
 		description: form.description,
 		release_date: form.releaseDate,
-		genre_ids: [...form.genreIds],
+		tags: [...form.tags],
 		authors: form.authors.map((author) =>
 			author.type === 'discord'
 				? { type: 'discord', discord_user_id: String(author.discord_user_id).trim() }
@@ -117,8 +117,8 @@ export function validateGameForm(form: GameFormState, forReview = false): GameFo
 
 	if (!isIsoDate(form.releaseDate))
 		errors.releaseDate = 'Укажите корректную дату в формате ГГГГ-ММ-ДД.';
-	if (form.genreIds.length > 10) errors.genreIds = 'Можно выбрать не более 10 жанров.';
-	else if (forReview && form.genreIds.length === 0) errors.genreIds = 'Выберите хотя бы один жанр.';
+	if (form.tags.length > 10) errors.tags = 'Можно добавить не более 10 тегов.';
+	else if (forReview && form.tags.length === 0) errors.tags = 'Добавьте хотя бы один тег.';
 
 	if (form.authors.length > 20) errors.authors = 'Можно добавить не более 20 авторов.';
 	else if (
