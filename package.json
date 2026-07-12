@@ -20,7 +20,8 @@
 		"lint": "biome check .",
 		"lint:fix": "biome check --write . --unsafe",
 		"ci": "biome ci .",
-		"check:all": "bun run check && bun run lint"
+		"check:all": "bun run check && bun run lint",
+		"test": "bun test"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.0",
@@ -38,6 +39,7 @@
 	},
 	"dependencies": {
 		"@floating-ui/dom": "^1.7.6",
+		"@humanspeak/svelte-markdown": "^1.7.10",
 		"svelte-meta-tags": "^4.7.0"
 	}
 }
