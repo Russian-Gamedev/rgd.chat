@@ -6,8 +6,9 @@ import type { PageLoad } from './$types';
 
 export const prerender = true;
 
-export const load: PageLoad = async ({ depends, fetch }) => {
+export const load: PageLoad = async ({ depends, fetch, url }) => {
 	depends('games:list');
+	const tag = url.searchParams.get('tag') || undefined;
 
 	const title = 'Игры';
 	const description =
@@ -22,7 +23,7 @@ export const load: PageLoad = async ({ depends, fetch }) => {
 	});
 
 	const api = createApi({ fetch });
-	const games = await api.listPublishedGames({ limit: 20 }).catch(() => null);
+	const games = await api.listPublishedGames({ limit: 20, tag }).catch(() => null);
 
 	return {
 		...pageMetaTags,

@@ -2,7 +2,7 @@ import { definePageMetaTags } from 'svelte-meta-tags';
 
 import { error } from '@sveltejs/kit';
 
-import { ApiHttpError, createApi } from '$lib/api/api';
+import { ApiHttpError, createApi, gameDetailsQueryKey } from '$lib/api/api';
 import { getPublishedGameEntries } from '$lib/api/prerender-entries';
 
 import type { PageLoad } from './$types';
@@ -15,7 +15,8 @@ export const entries = async () => {
 	return getPublishedGameEntries(fetch);
 };
 
-export const load: PageLoad = async ({ params, fetch }) => {
+export const load: PageLoad = async ({ params, depends, fetch }) => {
+	depends(`games:details:${gameDetailsQueryKey(params.id).at(-1)}`);
 	const api = createApi({ fetch });
 	const game = await api.getPublishedGame(params.id).catch((err: unknown) => {
 		if (err instanceof ApiHttpError && err.status === 404) {
@@ -31,6 +32,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
 	const pageMetaTags = definePageMetaTags({
 		title,
 		description,
+		canonical: `/games/${game.slug}`,
 		openGraph: {
 			title,
 			description,

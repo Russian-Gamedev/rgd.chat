@@ -1,7 +1,9 @@
 <script lang="ts">
 import { IconCalendar, IconExternalLink, IconEye } from '$lib/assets/icons';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+import GameAuthorsIdentity from '$lib/components/GameAuthorsIdentity.svelte';
 import SkeletonImage from '$lib/components/SkeletonImage.svelte';
+import UserIdentity from '$lib/components/UserIdentity.svelte';
 import { formatGameDate } from '$lib/games/format-game-date';
 import MarkdownPreview from '$lib/games/MarkdownPreview.svelte';
 
@@ -10,11 +12,6 @@ import type { PageProps } from './$types';
 let { data }: PageProps = $props();
 
 const game = $derived(data.game);
-
-function getAuthorName(author: { type: string; name?: string; discord_user_id?: string }): string {
-	if (author.type === 'text' && author.name) return author.name;
-	return 'Discord';
-}
 </script>
 
 <Breadcrumb
@@ -50,6 +47,8 @@ function getAuthorName(author: { type: string; name?: string; discord_user_id?: 
       </span>
     </div>
 
+    <div class="game-owner"><strong>Владелец:</strong> <UserIdentity id={game.owner_id} compact /></div>
+
     {#if game.tags.length > 0}
       <div class="game-tags">
         {#each game.tags as tag}
@@ -59,9 +58,7 @@ function getAuthorName(author: { type: string; name?: string; discord_user_id?: 
     {/if}
 
     {#if game.authors.length > 0}
-      <div class="game-authors">
-        <strong>Авторы:</strong> {game.authors.map(getAuthorName).join(', ')}
-      </div>
+      <div class="game-authors"><strong>Авторы:</strong> <GameAuthorsIdentity authors={game.authors} /></div>
     {/if}
 
     {#if game.description}

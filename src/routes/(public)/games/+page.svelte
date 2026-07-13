@@ -5,7 +5,10 @@ import { createApi } from '$lib/api/api';
 import type { GameListResponseDto } from '$lib/api/api.type';
 import { IconJoystick } from '$lib/assets/icons';
 import { auth } from '$lib/auth/auth.store.svelte';
+import { hasGlobalPermission } from '$lib/auth/permissions';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+import Button from '$lib/components/Button.svelte';
+import GameAuthorsIdentity from '$lib/components/GameAuthorsIdentity.svelte';
 import SkeletonImage from '$lib/components/SkeletonImage.svelte';
 import { formatGameDate } from '$lib/games/format-game-date';
 
@@ -24,11 +27,6 @@ const currentOffset = $derived(loadedPages.at(-1)?.offset ?? games?.offset ?? 0)
 const total = $derived(loadedPages.at(-1)?.total ?? games?.total ?? 0);
 const limit = $derived(loadedPages.at(-1)?.limit ?? games?.limit ?? 20);
 const hasMore = $derived(games !== null && currentOffset + limit < total);
-
-function getAuthorName(author: { type: string; name?: string; discord_user_id?: string }): string {
-	if (author.type === 'text' && author.name) return author.name;
-	return 'Discord';
-}
 
 async function loadNextPage(options?: { force?: boolean }) {
 	if (isLoadingMore || !hasMore) return;
@@ -104,6 +102,9 @@ onMount(() => {
   <div class="actions">
     <a href="/games/mine" class="button">Мои проекты</a>
     <a href="/games/editor/new" class="button">Создать игру</a>
+    {#if hasGlobalPermission(auth.user, 'games:review')}
+      <Button as="a" href="/admin/games" color="error" variant="ghost">Админка игр</Button>
+    {/if}
   </div>
 {/if}
 
@@ -115,7 +116,7 @@ onMount(() => {
   <ul class="games">
     {#each items as game (game.id)}
       <li>
-        <a class="game" href="/games/{game.id}">
+        <a class="game" href="/games/{game.slug}">
           <SkeletonImage
             class="game-image"
             src={game.image ?? ''}
@@ -133,14 +134,14 @@ onMount(() => {
             {#if game.tags.length > 0}
               <div class="game-tags">
                 {#each game.tags as tag}
-                  <span class="tag-badge">{tag.name}</span>
+                  <a class="tag-badge" href="/games?tag={tag.slug}">{tag.name}</a>
                 {/each}
               </div>
             {/if}
 
             {#if game.authors.length > 0}
               <div class="game-authors">
-                {game.authors.map(getAuthorName).join(', ')}
+              <GameAuthorsIdentity authors={game.authors} />
               </div>
             {/if}
           </div>

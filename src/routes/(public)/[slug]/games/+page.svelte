@@ -46,7 +46,7 @@ function getAuthorName(author: { type: string; name?: string; discord_user_id?: 
   <ul class="games">
     {#each games.items as game (game.id)}
       <li>
-        <a class="game" href="/games/{game.id}">
+        <a class="game" href="/games/{game.slug}">
           <SkeletonImage
             class="game-image"
             src={game.image ?? ''}
@@ -64,7 +64,7 @@ function getAuthorName(author: { type: string; name?: string; discord_user_id?: 
             {#if game.tags.length > 0}
               <div class="game-tags">
                 {#each game.tags as tag}
-                  <span class="tag-badge">{tag.name}</span>
+                  <a class="tag-badge" href="/games?tag={tag.slug}">{tag.name}</a>
                 {/each}
               </div>
             {/if}

@@ -73,7 +73,7 @@ function pageHref(offset: number): string {
             <Button as="a" href={`/games/editor/${game.id}`}>Создать новую редакцию</Button>
           {/if}
           {#if game.has_published_version || game.status === 'published'}
-            <Button as="a" href={`/games/${game.id}`} variant="ghost">Публичная версия</Button>
+            <Button as="a" href={`/games/${game.slug}`} variant="ghost">Публичная версия</Button>
           {/if}
         </div>
       </li>
