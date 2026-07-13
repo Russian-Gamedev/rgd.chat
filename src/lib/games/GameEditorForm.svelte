@@ -4,7 +4,7 @@ import Button from '$lib/components/Button.svelte';
 import IconPicker from '$lib/components/IconPicker.svelte';
 
 import type { GameFormErrors, GameFormState } from './game-editor';
-import { moveItem, youtubeEmbedUrl } from './game-editor';
+import { moveItem, normalizeGameSlug, slugifyGameTitle, youtubeEmbedUrl } from './game-editor';
 import MarkdownPreview from './MarkdownPreview.svelte';
 
 let {
@@ -29,6 +29,10 @@ function updateAuthor(index: number, author: GameAuthorInputDto) {
 }
 
 function removeAt(key: 'authors' | 'links' | 'attachments', index: number) {
+	if (key === 'attachments' && form.attachments[index]?.type === 'image') {
+		const imageCount = form.attachments.filter((attachment) => attachment.type === 'image').length;
+		if (imageCount === 1) return;
+	}
 	form[key].splice(index, 1);
 }
 
@@ -41,15 +45,29 @@ function normalizeTag(value: string): string | null {
 function addTag(value: string) {
 	const tag = normalizeTag(value);
 	if (!tag) return;
-	if (form.tags.some((t) => t.toLowerCase() === tag.toLowerCase())) return;
+	if (form.tags.some((t) => t.name.toLowerCase() === tag.toLowerCase())) return;
 	if (form.tags.length >= 10) return;
-	form.tags = [...form.tags, tag];
+	const option = tagOptions.find((item) => item.name.toLowerCase() === tag.toLowerCase());
+	form.tags = [
+		...form.tags,
+		option
+			? { id: option.id, name: option.name, slug: option.slug }
+			: { id: null, name: tag, slug: null }
+	];
 	tagInput = '';
 	showTagDropdown = false;
 }
 
 function removeTag(index: number) {
 	form.tags = form.tags.filter((_, i) => i !== index);
+}
+
+function handleTitleInput() {
+	if (!form.slugManuallyEdited) form.slug = slugifyGameTitle(form.title);
+}
+
+function normalizeSlugInput() {
+	form.slug = normalizeGameSlug(form.slug);
 }
 
 function handleTagKeydown(event: KeyboardEvent) {
@@ -88,10 +106,10 @@ const filteredTagOptions = $derived(
 		? tagOptions.filter(
 				(t) =>
 					t.name.toLowerCase().includes(tagInput.toLowerCase()) &&
-					!form.tags.some((tag) => tag.toLowerCase() === t.name.toLowerCase())
+					!form.tags.some((tag) => tag.name.toLowerCase() === t.name.toLowerCase())
 			)
 		: tagOptions.filter(
-				(t) => !form.tags.some((tag) => tag.toLowerCase() === t.name.toLowerCase())
+				(t) => !form.tags.some((tag) => tag.name.toLowerCase() === t.name.toLowerCase())
 			)
 );
 </script>
@@ -99,8 +117,15 @@ const filteredTagOptions = $derived(
 <fieldset disabled={readonly}>
   <section class="field-section">
     <label for="game-title">Название <span>{form.title.length}/120</span></label>
-    <input id="game-title" bind:value={form.title} maxlength="120" required />
+    <input id="game-title" bind:value={form.title} oninput={handleTitleInput} maxlength="120" required />
     {#if errors.title}<p class="error">{errors.title}</p>{/if}
+  </section>
+
+  <section class="field-section">
+    <label for="game-slug">Публичный адрес <span>{form.slug.length}/120</span></label>
+    <input id="game-slug" bind:value={form.slug} oninput={() => (form.slugManuallyEdited = true)} onblur={normalizeSlugInput} maxlength="120" placeholder="my-game" />
+    <p class="muted">Публичная ссылка: /games/{form.slug || '…'}</p>
+    {#if errors.slug}<p class="error">{errors.slug}</p>{/if}
   </section>
 
   <section class="field-section">
@@ -139,9 +164,9 @@ const filteredTagOptions = $derived(
     <section class="field-section">
       <span class="field-label">Теги <span>{form.tags.length}/10</span></span>
       <div class="tags-input" class:focus={showTagDropdown}>
-        {#each form.tags as tag, index (tag)}
+        {#each form.tags as tag, index (tag.id ?? `${tag.name}-${index}`)}
           <span class="tag-pill">
-            {tag}
+            {tag.name}
             {#if !readonly}
               <button type="button" class="tag-remove" onclick={() => removeTag(index)} aria-label="Удалить тег {tag}">×</button>
             {/if}
@@ -251,6 +276,9 @@ const filteredTagOptions = $derived(
     {#each form.attachments as attachment, index (`${index}-${attachment.type}`)}
       <div class="attachment">
         <div class="collection-row attachment-row">
+          {#if attachment.type === 'image' && form.attachments.findIndex((item) => item.type === 'image') === index}
+            <span class="cover-label">Обложка</span>
+          {/if}
           <select bind:value={attachment.type} aria-label="Тип вложения">
             <option value="image">Изображение</option>
             <option value="external_video">Внешнее видео</option>
@@ -259,12 +287,12 @@ const filteredTagOptions = $derived(
           <div class="row-actions">
             <button type="button" aria-label="Переместить выше" disabled={readonly || index === 0} onclick={() => (form.attachments = moveItem(form.attachments, index, -1))}>↑</button>
             <button type="button" aria-label="Переместить ниже" disabled={readonly || index === form.attachments.length - 1} onclick={() => (form.attachments = moveItem(form.attachments, index, 1))}>↓</button>
-            <button type="button" aria-label="Удалить вложение" onclick={() => removeAt('attachments', index)}>×</button>
+            <button type="button" aria-label="Удалить вложение" disabled={attachment.type === 'image' && form.attachments.filter((item) => item.type === 'image').length === 1} onclick={() => removeAt('attachments', index)}>×</button>
           </div>
         </div>
         {#if attachment.url.startsWith('https://')}
           {#if attachment.type === 'image'}
-            <img src={attachment.url} alt="Предпросмотр вложения" />
+            <img src={attachment.url} alt="Предпросмотр вложения" onerror={(event) => (event.currentTarget.hidden = true)} />
           {:else if youtubeEmbedUrl(attachment.url)}
             <iframe
               src={youtubeEmbedUrl(attachment.url) ?? ''}

@@ -5,9 +5,13 @@ import {
 	emptyGameForm,
 	formSnapshot,
 	formToPayload,
+	formToUpdatePayload,
 	isAbsoluteHttpsUrl,
 	isEditorReadonly,
+	isValidGameSlug,
 	moveItem,
+	normalizeGameSlug,
+	slugifyGameTitle,
 	validateGameForm,
 	youtubeEmbedUrl
 } from './game-editor';
@@ -15,6 +19,7 @@ import { describe, expect, test } from 'bun:test';
 
 const editor: GameEditorDto = {
 	id: 'game-1',
+	slug: 'igra',
 	owner_id: 'owner-1',
 	title: 'Игра',
 	description: 'Описание',
@@ -41,9 +46,11 @@ describe('game editor normalization', () => {
 	test('loads an existing draft into form state', () => {
 		expect(editorToForm(editor)).toEqual({
 			title: 'Игра',
+			slug: 'igra',
+			slugManuallyEdited: true,
 			description: 'Описание',
 			releaseDate: '2026-07-12',
-			tags: ['Экшен'],
+			tags: [{ id: 'tag-1', name: 'Экшен', slug: 'action' }],
 			authors: editor.authors,
 			links: editor.links,
 			attachments: editor.attachments
@@ -53,6 +60,7 @@ describe('game editor normalization', () => {
 	test('preserves both author union variants and snowflake as a string', () => {
 		const payload = formToPayload(editorToForm(editor));
 		expect(payload.authors).toEqual(editor.authors);
+		expect(payload.tags).toEqual(['Экшен']);
 		const author = payload.authors[0];
 		expect(author.type).toBe('discord');
 		expect(author.type === 'discord' ? typeof author.discord_user_id : 'wrong variant').toBe(
@@ -116,7 +124,11 @@ describe('game editor validation', () => {
 
 	test('enforces collection limits', () => {
 		const form = editorToForm(editor);
-		form.tags = Array.from({ length: 11 }, (_, index) => String(index));
+		form.tags = Array.from({ length: 11 }, (_, index) => ({
+			id: null,
+			name: String(index),
+			slug: null
+		}));
 		form.authors = Array.from({ length: 21 }, () => ({ type: 'text' as const, name: 'A' }));
 		form.links = Array.from({ length: 6 }, () => ({
 			icon: 'x',
@@ -165,6 +177,21 @@ describe('game editor validation', () => {
 			'https://www.youtube-nocookie.com/embed/abcdefghijk'
 		);
 		expect(youtubeEmbedUrl('https://example.com/video')).toBeNull();
+	});
+
+	test('requires a photograph and protects unchanged attachments in patch', () => {
+		const form = editorToForm(editor);
+		form.attachments = [{ type: 'external_video', url: 'https://example.com/video' }];
+		expect(validateGameForm(form).attachments).toBe('Добавьте хотя бы одну фотографию игры.');
+		form.attachments = editor.attachments.map((attachment) => ({ ...attachment }));
+		expect(formToUpdatePayload(form, editor.attachments).attachments).toBeUndefined();
+	});
+
+	test('normalizes title suggestions and validates slug format', () => {
+		expect(slugifyGameTitle('Моя новая игра')).toBe('моя-новая-игра');
+		expect(normalizeGameSlug(' Моя новая игра! ')).toBe('моя-новая-игра');
+		expect(isValidGameSlug('my-game-2')).toBeTrue();
+		expect(isValidGameSlug('My Game')).toBeFalse();
 	});
 
 	test('empty form fails required fields', () => {

@@ -4,14 +4,22 @@ import type {
 	GameAuthorInputDto,
 	GameEditorDto,
 	GameLinkInputDto,
-	GameRevisionStatus
+	GameRevisionStatus,
+	GameTagDto
 } from '$lib/api/api.type';
+
+export type GameFormTag = Pick<GameTagDto, 'name'> & {
+	slug: string | null;
+	id: string | null;
+};
 
 export type GameFormState = {
 	title: string;
+	slug: string;
+	slugManuallyEdited: boolean;
 	description: string;
 	releaseDate: string;
-	tags: string[];
+	tags: GameFormTag[];
 	authors: GameAuthorInputDto[];
 	links: GameLinkInputDto[];
 	attachments: GameAttachmentInputDto[];
@@ -38,6 +46,8 @@ function normalizeLinkIcon(value: string): string {
 export function emptyGameForm(): GameFormState {
 	return {
 		title: '',
+		slug: '',
+		slugManuallyEdited: false,
 		description: '',
 		releaseDate: '',
 		tags: [],
@@ -50,9 +60,11 @@ export function emptyGameForm(): GameFormState {
 export function editorToForm(editor: GameEditorDto): GameFormState {
 	return {
 		title: editor.title,
+		slug: editor.slug ?? '',
+		slugManuallyEdited: true,
 		description: editor.description,
 		releaseDate: editor.release_date,
-		tags: editor.tags.map((tag) => tag.name),
+		tags: editor.tags.map((tag) => ({ id: tag.id, name: tag.name, slug: tag.slug })),
 		authors: editor.authors.map((author) => ({ ...author })),
 		links: editor.links.map((link) => ({ ...link, icon: normalizeLinkIcon(link.icon) })),
 		attachments: editor.attachments.map((attachment) => ({ ...attachment }))
@@ -62,9 +74,10 @@ export function editorToForm(editor: GameEditorDto): GameFormState {
 export function formToPayload(form: GameFormState): CreateGameDto {
 	return {
 		title: form.title.trim(),
+		slug: form.slug?.trim() || undefined,
 		description: form.description,
 		release_date: form.releaseDate,
-		tags: [...form.tags],
+		tags: form.tags.map((tag) => tag.name),
 		authors: form.authors.map((author) =>
 			author.type === 'discord'
 				? { type: 'discord', discord_user_id: String(author.discord_user_id).trim() }
@@ -80,6 +93,38 @@ export function formToPayload(form: GameFormState): CreateGameDto {
 			url: attachment.url.trim()
 		}))
 	};
+}
+
+export function formToUpdatePayload(
+	form: GameFormState,
+	savedAttachments: GameAttachmentInputDto[]
+): Partial<CreateGameDto> {
+	const current = form.attachments.map((attachment) => ({
+		type: attachment.type,
+		url: attachment.url.trim()
+	}));
+	const payload: Partial<CreateGameDto> = formToPayload(form);
+	if (JSON.stringify(current) === JSON.stringify(savedAttachments)) delete payload.attachments;
+	return payload;
+}
+
+export function normalizeGameSlug(value: string): string {
+	return value
+		.normalize('NFKC')
+		.toLocaleLowerCase('ru-RU')
+		.replace(/[^\p{L}\p{N}]+/gu, '-')
+		.replace(/^-|-$/g, '')
+		.slice(0, 120);
+}
+
+export const slugifyGameTitle = normalizeGameSlug;
+
+export function isValidGameSlug(value: string): boolean {
+	return (
+		value.length <= 120 &&
+		value === normalizeGameSlug(value) &&
+		/^[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*$/u.test(value)
+	);
 }
 
 export function formSnapshot(form: GameFormState): string {
@@ -138,9 +183,16 @@ export function validateGameForm(form: GameFormState, forReview = false): GameFo
 		errors.links = 'Для каждой ссылки заполните иконку, подпись и абсолютный HTTPS URL.';
 	}
 
-	if (form.attachments.length > 20) errors.attachments = 'Можно добавить не более 20 вложений.';
+	if (!form.attachments.some((attachment) => attachment.type === 'image')) {
+		errors.attachments = 'Добавьте хотя бы одну фотографию игры.';
+	} else if (form.attachments.length > 20)
+		errors.attachments = 'Можно добавить не более 20 вложений.';
 	else if (form.attachments.some((attachment) => !isAbsoluteHttpsUrl(attachment.url.trim()))) {
 		errors.attachments = 'Каждое вложение должно содержать абсолютный HTTPS URL.';
+	}
+
+	if (form.slug?.trim() && !isValidGameSlug(form.slug.trim())) {
+		errors.slug = 'Адрес должен содержать только lowercase-буквы, цифры и дефисы.';
 	}
 
 	return errors;

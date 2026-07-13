@@ -9,6 +9,7 @@ import { requireAuth } from '$lib/auth/auth.actions';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Button from '$lib/components/Button.svelte';
 import { showSnackbar } from '$lib/components/snackbar';
+import UserIdentity from '$lib/components/UserIdentity.svelte';
 
 import GameEditorForm from './GameEditorForm.svelte';
 import type { GameFormErrors } from './game-editor';
@@ -17,6 +18,7 @@ import {
 	emptyGameForm,
 	formSnapshot,
 	formToPayload,
+	formToUpdatePayload,
 	hasErrors,
 	validateGameForm
 } from './game-editor';
@@ -35,6 +37,7 @@ let errors = $state<GameFormErrors>({});
 let loadState = $state<'loading' | 'ready' | 'not-found' | 'forbidden' | 'error'>('loading');
 let isMutating = $state(false);
 let conflict = $state(false);
+let savedAttachments = $state<GameEditorDto['attachments']>([]);
 
 const isReview = $derived(editor?.status === 'review');
 const isDirty = $derived(loadState === 'ready' && formSnapshot(form) !== savedSnapshot);
@@ -55,6 +58,7 @@ const submittedAt = $derived(
 function applyEditor(next: GameEditorDto) {
 	editor = next;
 	form = editorToForm(next);
+	savedAttachments = next.attachments.map((attachment) => ({ ...attachment }));
 	savedSnapshot = formSnapshot(form);
 	errors = {};
 	conflict = false;
@@ -66,8 +70,11 @@ function errorMessage(error: unknown): string {
 	if (error.status === 401) return 'Для этого действия требуется войти.';
 	if (error.status === 403) return 'У вас нет доступа к этой игре.';
 	if (error.status === 404) return 'Игра не найдена.';
-	if (error.status === 409)
+	if (error.status === 409) {
+		const message = (error.details as { message?: string } | undefined)?.message;
+		if (message === 'Game slug is already in use.') return 'Этот адрес уже занят.';
 		return 'Состояние игры изменилось на сервере. Загрузите актуальную редакцию.';
+	}
 	return `Ошибка сервера (${error.status}).`;
 }
 
@@ -105,13 +112,19 @@ async function saveDraft(forReview = false): Promise<boolean> {
 
 	isMutating = true;
 	try {
+		const previousSlug = editor?.slug;
 		const next = gameId
-			? await api.updateGameDraft(gameId, formToPayload(form))
+			? await api.updateGameDraft(gameId, formToUpdatePayload(form, savedAttachments))
 			: await api.createGameDraft(formToPayload(form));
 		applyEditor(next);
 		await Promise.all([
 			invalidate('games:mine'),
 			invalidate('games:tags'),
+			invalidate('games/tags'),
+			invalidate(`games:details:${next.slug}`),
+			previousSlug && previousSlug !== next.slug
+				? invalidate(`games:details:${previousSlug}`)
+				: Promise.resolve(),
 			gameId ? invalidate(`games:editor:${gameId}`) : Promise.resolve()
 		]);
 		showSnackbar({ message: 'Черновик сохранён.', variant: 'success' });
@@ -123,7 +136,11 @@ async function saveDraft(forReview = false): Promise<boolean> {
 		return true;
 	} catch (error) {
 		if (error instanceof ApiHttpError && error.status === 409) conflict = true;
-		showSnackbar({ message: errorMessage(error), variant: 'error', duration: 7000 });
+		showSnackbar({
+			message: errorMessage(error),
+			variant: 'error',
+			duration: 7000
+		});
 		return false;
 	} finally {
 		isMutating = false;
@@ -138,12 +155,23 @@ async function submitReview() {
 	isMutating = true;
 	try {
 		applyEditor(await api.submitForReview(gameId));
-		await Promise.all([invalidate('games:mine'), invalidate('games:tags'), invalidate(`games:editor:${gameId}`)]);
-		showSnackbar({ message: 'Редакция отправлена на ревью.', variant: 'success' });
+		await Promise.all([
+			invalidate('games:mine'),
+			invalidate('games:tags'),
+			invalidate(`games:editor:${gameId}`)
+		]);
+		showSnackbar({
+			message: 'Редакция отправлена на ревью.',
+			variant: 'success'
+		});
 		if (wasNew) await goto(`/games/editor/${gameId}`, { replaceState: true });
 	} catch (error) {
 		if (error instanceof ApiHttpError && error.status === 409) conflict = true;
-		showSnackbar({ message: errorMessage(error), variant: 'error', duration: 7000 });
+		showSnackbar({
+			message: errorMessage(error),
+			variant: 'error',
+			duration: 7000
+		});
 	} finally {
 		isMutating = false;
 	}
@@ -165,7 +193,11 @@ async function deleteGame() {
 		showSnackbar({ message: 'Проект удалён.', variant: 'success' });
 		await goto('/games/mine');
 	} catch (error) {
-		showSnackbar({ message: errorMessage(error), variant: 'error', duration: 7000 });
+		showSnackbar({
+			message: errorMessage(error),
+			variant: 'error',
+			duration: 7000
+		});
 	} finally {
 		isMutating = false;
 	}
@@ -189,7 +221,12 @@ onMount(() => {
 		api
 			.listTags()
 			.then((value) => (tagOptions = value))
-			.catch(() => showSnackbar({ message: 'Не удалось загрузить теги.', variant: 'error' })),
+			.catch(() =>
+				showSnackbar({
+					message: 'Не удалось загрузить теги.',
+					variant: 'error'
+				})
+			),
 		gameId ? loadEditor({ replaceDirty: true }) : Promise.resolve()
 	]);
 
@@ -199,70 +236,111 @@ onMount(() => {
 
 <Breadcrumb
   items={[
-    { label: 'Главная', href: '/' },
-    { label: 'Игры', href: '/games' },
-    { label: 'Мои проекты', href: '/games/mine' },
-    { label: gameId ? 'Редактор' : 'Новая игра', href: '' }
+    { label: "Главная", href: "/" },
+    { label: "Игры", href: "/games" },
+    { label: "Мои проекты", href: "/games/mine" },
+    { label: gameId ? "Редактор" : "Новая игра", href: "" },
   ]}
 />
 
 <div class="page-header">
   <div>
-    <h1>{gameId ? 'Редактор игры' : 'Новая игра'}</h1>
+    <h1>{gameId ? "Редактор игры" : "Новая игра"}</h1>
     {#if editor}
       <p class="status">Версия {editor.version} · {editor.status}</p>
+      <UserIdentity id={editor.owner_id} compact />
     {/if}
   </div>
   {#if editor?.has_published_version}
-    <Button as="a" href={`/games/${editor.id}`} variant="outline">Публичная версия</Button>
+    <Button as="a" href={`/games/${editor.slug}`} variant="outline"
+      >Публичная версия</Button
+    >
   {/if}
 </div>
 
-{#if loadState === 'loading'}
+{#if loadState === "loading"}
   <p>Загрузка редактора…</p>
-{:else if loadState === 'not-found'}
-  <section class="state"><h2>Игра не найдена</h2><p>Редактор для указанной игры недоступен.</p></section>
-{:else if loadState === 'forbidden'}
-  <section class="state"><h2>Нет доступа</h2><p>Редактировать эту игру может только её владелец.</p></section>
-{:else if loadState === 'error'}
-  <section class="state"><h2>Не удалось загрузить редактор</h2><Button type="button" onclick={() => loadEditor()}>Повторить</Button></section>
+{:else if loadState === "not-found"}
+  <section class="state">
+    <h2>Игра не найдена</h2>
+    <p>Редактор для указанной игры недоступен.</p>
+  </section>
+{:else if loadState === "forbidden"}
+  <section class="state">
+    <h2>Нет доступа</h2>
+    <p>Редактировать эту игру может только её владелец.</p>
+  </section>
+{:else if loadState === "error"}
+  <section class="state">
+    <h2>Не удалось загрузить редактор</h2>
+    <Button type="button" onclick={() => loadEditor()}>Повторить</Button>
+  </section>
 {:else}
   {#if isReview}
     <section class="notice review-notice">
       <strong>Редакция находится на ревью.</strong>
-      <p>Редактирование заблокировано до решения ревьюера{#if submittedAt} с {new Date(submittedAt).toLocaleString('ru-RU')}{/if}.</p>
+      <p>
+        Редактирование заблокировано до решения модератора {#if submittedAt}
+          с {new Date(submittedAt).toLocaleString("ru-RU")}{/if}.
+      </p>
     </section>
   {:else if latestChangesRequest}
     <section class="notice changes-notice">
       <strong>Ревьюер запросил изменения</strong>
-      <p>{latestChangesRequest.comment ?? 'Комментарий не указан.'}</p>
+      <p>{latestChangesRequest.comment ?? "Комментарий не указан."}</p>
     </section>
-  {:else if editor?.status === 'published'}
+  {:else if editor?.status === "published"}
     <section class="notice">
       <strong>Версия опубликована.</strong>
-      <p>Измените данные и сохраните: backend создаст новую черновую редакцию.</p>
+      <p>
+        Измените данные и сохраните: backend создаст новую черновую редакцию.
+      </p>
     </section>
   {/if}
 
   {#if conflict}
     <section class="notice conflict-notice">
       <strong>Конфликт состояния</strong>
-      <p>Локальные данные не перезаписаны. Загрузите актуальную редакцию с сервера.</p>
-      <Button type="button" variant="outline" onclick={() => loadEditor()}>Перезагрузить редакцию</Button>
+      <p>
+        Локальные данные не перезаписаны. Загрузите актуальную редакцию с
+        сервера.
+      </p>
+      <Button type="button" variant="outline" onclick={() => loadEditor()}
+        >Перезагрузить редакцию</Button
+      >
     </section>
   {/if}
 
-  <GameEditorForm bind:form tagOptions={tagOptions} {errors} readonly={isReview} />
+  <GameEditorForm bind:form {tagOptions} {errors} readonly={isReview} />
 
   <div class="actions">
     {#if !isReview}
-      <Button type="button" disabled={isMutating || (!isDirty && Boolean(gameId))} onclick={() => saveDraft()}>
-        {isMutating ? 'Сохранение…' : isDirty || !gameId ? 'Сохранить черновик' : 'Сохранено'}
+      <Button
+        type="button"
+        disabled={isMutating || (!isDirty && Boolean(gameId))}
+        onclick={() => saveDraft()}
+      >
+        {isMutating
+          ? "Сохранение…"
+          : isDirty || !gameId
+            ? "Сохранить черновик"
+            : "Сохранено"}
       </Button>
-      <Button type="button" variant="outline" disabled={isMutating} onclick={submitReview}>Отправить на ревью</Button>
+      <Button
+        type="button"
+        variant="outline"
+        disabled={isMutating}
+        onclick={submitReview}>Отправить на ревью</Button
+      >
     {/if}
     {#if canDelete}
-      <Button type="button" color="error" variant="outline" disabled={isMutating} onclick={deleteGame}>Удалить проект</Button>
+      <Button
+        type="button"
+        color="error"
+        variant="outline"
+        disabled={isMutating}
+        onclick={deleteGame}>Удалить проект</Button
+      >
     {/if}
     {#if isDirty}<span class="dirty">Есть несохранённые изменения</span>{/if}
   </div>
