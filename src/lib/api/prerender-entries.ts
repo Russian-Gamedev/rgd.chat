@@ -26,7 +26,7 @@ export async function getPublishedGameEntries(fetcher: typeof fetch) {
 				offset: page * publishedGamesEntryLimit
 			});
 
-			entries.push(...games.items.map((game) => ({ id: game.id })));
+			entries.push(...games.items.map((game) => ({ id: game.slug })));
 
 			if (games.offset + games.limit >= games.total) break;
 		}

@@ -145,6 +145,7 @@ export type GameAuthor = GameAuthorDiscord | GameAuthorText;
 
 export type GameListItemDto = {
 	id: string;
+	slug: string;
 	title: string;
 	release_date: string;
 	tags: { id: string; slug: string; name: string }[];
@@ -153,6 +154,8 @@ export type GameListItemDto = {
 	likes_count: number;
 	published_at: string;
 };
+
+export type GameListItem = GameListItemDto;
 
 export type GameDetailsDto = GameListItemDto & {
 	description: string;
@@ -175,12 +178,13 @@ export type GameAttachmentInputDto = {
 
 export type CreateGameDto = {
 	title: string;
+	slug?: string;
 	description: string;
 	release_date: string;
 	tags: string[];
 	authors: GameAuthorInputDto[];
 	links?: GameLinkInputDto[];
-	attachments?: GameAttachmentInputDto[];
+	attachments: GameAttachmentInputDto[];
 };
 
 export type UpdateGameDto = Partial<CreateGameDto>;
@@ -213,6 +217,7 @@ export type MineGamesQueryDto = {
 
 export type MineGameItem = {
 	id: string;
+	slug: string;
 	owner_id: string;
 	revision_id: string;
 	title: string;
@@ -235,6 +240,7 @@ export type GameReviewListQueryDto = MineGamesQueryDto & {
 
 export type ReviewListItem = {
 	id: string;
+	slug: string;
 	owner_id: string;
 	revision_id: string;
 	version: number;
@@ -252,11 +258,21 @@ export type ReviewListResponseDto = {
 	offset: number;
 };
 
+export type ReviewListQueryDto = {
+	limit?: number;
+	offset?: number;
+	status?: GameRevisionStatus;
+	owner_id?: string;
+	search?: string;
+};
+
 export type GameTagDto = {
 	id: string;
 	slug: string;
 	name: string;
 };
+
+export type GameTag = GameTagDto;
 
 export type LikeStateDto = {
 	liked: boolean;

@@ -11,6 +11,7 @@ import type {
 	MineGamesResponseDto,
 	MotdListItem,
 	Patron,
+	ReviewListQueryDto,
 	ReviewListResponseDto,
 	UpdateGameDto,
 	UpdateProfilePayload,
@@ -22,6 +23,8 @@ export type ApiOptions = {
 	fetch: typeof fetch;
 	baseUrl?: string;
 };
+
+export const gameDetailsQueryKey = (idOrSlug: string) => ['games', 'details', idOrSlug] as const;
 
 export class ApiHttpError extends Error {
 	constructor(
@@ -107,8 +110,8 @@ export function createApi(options: ApiOptions) {
 				`/games${toQueryString(query as Record<string, string | number | undefined>)}`
 			);
 		},
-		getPublishedGame(id: string) {
-			return request<GameDetailsDto>(`/games/${id}`);
+		getPublishedGame(idOrSlug: string) {
+			return request<GameDetailsDto>(`/games/${encodeURIComponent(idOrSlug)}`);
 		},
 		createGameDraft(payload: CreateGameDto) {
 			return request<GameEditorDto>('/games', {
@@ -138,7 +141,7 @@ export function createApi(options: ApiOptions) {
 		submitForReview(id: string) {
 			return request<GameEditorDto>(`/games/${id}/submit-review`, { method: 'POST' });
 		},
-		listReviewGames(query: GameListQueryDto & MineGamesQueryDto = {}) {
+		listReviewGames(query: ReviewListQueryDto = {}) {
 			return request<ReviewListResponseDto>(
 				`/games/review${toQueryString(query as Record<string, string | number | undefined>)}`
 			);
@@ -169,6 +172,23 @@ export function createApi(options: ApiOptions) {
 		},
 		listTags() {
 			return request<GameTagDto[]>('/games/tags');
+		},
+		createTag(name: string) {
+			return request<GameTagDto>('/games/tags', {
+				method: 'POST',
+				body: JSON.stringify({ name }),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		updateTag(id: string, name: string) {
+			return request<GameTagDto>(`/games/tags/${encodeURIComponent(id)}`, {
+				method: 'PATCH',
+				body: JSON.stringify({ name }),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		deleteTag(id: string) {
+			return request<void>(`/games/tags/${encodeURIComponent(id)}`, { method: 'DELETE' });
 		},
 		getLikeState(id: string) {
 			return request<LikeStateDto>(`/games/${id}/like`);
