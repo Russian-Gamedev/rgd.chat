@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { GameReviewEvent } from '$lib/api/api.type';
+import UserIdentity from '$lib/components/UserIdentity.svelte';
 
 let { events }: { events: GameReviewEvent[] } = $props();
 
@@ -26,7 +27,7 @@ const labels = {
           </div>
           <div class="event-meta">
             {#if event.version !== undefined}<span>Версия {event.version}</span>{/if}
-            <span>Actor: {event.actor_id}</span>
+			<span class="actor">{event.action === 'submitted' ? 'Автор' : 'Модератор'}: <UserIdentity id={event.actor_id} compact /></span>
           </div>
           {#if event.comment}<p>{event.comment}</p>{/if}
         </li>
