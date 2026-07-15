@@ -1,10 +1,10 @@
 import type {
 	GameAttachmentInputDto,
 	GameAuthor,
-	GameDetailsDto,
-	GameEditorDto,
+	GameDetails,
+	GameEditor,
 	GameLinkInputDto,
-	GameTagDto
+	GamePublicTag
 } from '$lib/api/api.type';
 
 export type ReviewFilters = {
@@ -83,8 +83,8 @@ export function safeLinkHost(value: string): string {
 }
 
 type Revision = Pick<
-	GameEditorDto,
-	'id' | 'title' | 'description' | 'release_date' | 'tags' | 'authors' | 'links' | 'attachments'
+	GameEditor,
+	'title' | 'description' | 'tags' | 'credits' | 'resources' | 'metadata'
 >;
 
 export type RevisionDiff = {
@@ -94,7 +94,9 @@ export type RevisionDiff = {
 	changed: boolean;
 };
 
-function names(items: Array<GameTagDto | GameAuthor | GameLinkInputDto | GameAttachmentInputDto>) {
+function names(
+	items: Array<GamePublicTag | GameAuthor | GameLinkInputDto | GameAttachmentInputDto>
+) {
 	return items.map((item) => {
 		if ('slug' in item) return item.slug;
 		if ('type' in item && item.type === 'discord') return `discord:${item.discord_user_id}`;
@@ -104,19 +106,20 @@ function names(items: Array<GameTagDto | GameAuthor | GameLinkInputDto | GameAtt
 	});
 }
 
-export function compareRevisions(
-	working: Revision,
-	published: GameDetailsDto | null
-): RevisionDiff[] {
+export function compareRevisions(working: Revision, published: GameDetails | null): RevisionDiff[] {
 	if (!published) return [];
 	const fields: Array<[string, string, string]> = [
 		['Название', working.title, published.title],
 		['Описание', working.description, published.description],
-		['Дата релиза', working.release_date, published.release_date],
+		['Дата релиза', working.metadata.release_date, published.metadata.release_date],
 		['Теги', names(working.tags).join(', '), names(published.tags).join(', ')],
-		['Авторы', names(working.authors).join(', '), names(published.authors).join(', ')],
-		['Ссылки', names(working.links).join(', '), names(published.links).join(', ')],
-		['Вложения', names(working.attachments).join(', '), names(published.attachments).join(', ')]
+		['Авторы', names(working.credits.authors).join(', '), names(published.credits.authors).join(', ')],
+		['Ссылки', names(working.resources.links).join(', '), names(published.resources.links).join(', ')],
+		[
+			'Вложения',
+			names(working.resources.attachments).join(', '),
+			names(published.resources.attachments).join(', ')
+		]
 	];
 	return fields.map(([field, next, old]) => ({
 		field,

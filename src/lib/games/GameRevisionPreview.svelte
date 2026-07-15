@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { GameDetailsDto, GameEditorDto } from '$lib/api/api.type';
+import type { GameEditor } from '$lib/api/api.type';
 import Button from '$lib/components/Button.svelte';
 import GameAuthorsIdentity from '$lib/components/GameAuthorsIdentity.svelte';
 import IconPreview from '$lib/components/IconPreview.svelte';
@@ -8,7 +8,7 @@ import UserIdentity from '$lib/components/UserIdentity.svelte';
 import MarkdownPreview from './MarkdownPreview.svelte';
 import { isAllowedIcon, safeExternalVideoUrl, safeLinkHost } from './review-utils';
 
-let { game }: { game: GameEditorDto | GameDetailsDto } = $props();
+let { game }: { game: GameEditor } = $props();
 let markdownMode = $state<'preview' | 'source'>('preview');
 let failedImages = $state<string[]>([]);
 
@@ -22,11 +22,11 @@ function markImageFailed(url: string) {
 	<section><div class="section-header"><h3>Описание</h3><div class="switch" role="group" aria-label="Режим описания"><Button type="button" variant={markdownMode === 'preview' ? 'solid' : 'outline'} aria-pressed={markdownMode === 'preview'} onclick={() => (markdownMode = 'preview')}>Preview</Button><Button type="button" variant={markdownMode === 'source' ? 'solid' : 'outline'} aria-pressed={markdownMode === 'source'} onclick={() => (markdownMode = 'source')}>Markdown</Button></div></div>
 		{#if markdownMode === 'preview'}<MarkdownPreview source={game.description} />{:else}<pre class="source">{game.description}</pre>{/if}
 	</section>
-	<section class="facts"><div><strong>Дата релиза</strong><span>{game.release_date}</span></div><div><strong>Теги</strong><span class="tags">{#each game.tags as tag (tag.id)}<span class="tag">{tag.name}</span>{/each}</span></div></section>
-	<section><h3>Владелец</h3><UserIdentity id={game.owner_id} /></section>
-	<section><h3>Авторы</h3><GameAuthorsIdentity authors={game.authors} /></section>
-	<section><h3>Ссылки</h3><ul class="links-list">{#each game.links as item (item.link)}<li><span class="link-icon"><IconPreview name={isAllowedIcon(item.icon) ? item.icon : 'IconExternalLink'} /></span><span class="link-label">{item.label}</span><a href={item.link} target="_blank" rel="noopener noreferrer">{safeLinkHost(item.link)}</a></li>{/each}</ul></section>
-	<section><h3>Вложения</h3><div class="attachments">{#each game.attachments as item (item.type + item.url)}
+	<section class="facts"><div><strong>Дата релиза</strong><span>{game.metadata.release_date}</span></div><div><strong>Теги</strong><span class="tags">{#each game.tags as tag (tag.slug)}<span class="tag">{tag.name}</span>{/each}</span></div></section>
+	<section><h3>Владелец</h3><UserIdentity id={game.credits.owner_id} /></section>
+	<section><h3>Авторы</h3><GameAuthorsIdentity authors={game.credits.authors} /></section>
+	<section><h3>Ссылки</h3><ul class="links-list">{#each game.resources.links as item (item.link)}<li><span class="link-icon"><IconPreview name={isAllowedIcon(item.icon) ? item.icon : 'IconExternalLink'} /></span><span class="link-label">{item.label}</span><a href={item.link} target="_blank" rel="noopener noreferrer">{safeLinkHost(item.link)}</a></li>{/each}</ul></section>
+	<section><h3>Вложения</h3><div class="attachments">{#each game.resources.attachments as item (item.type + item.url)}
 		{#if item.type === 'image'}<figure>{#if failedImages.includes(item.url)}<span>Изображение недоступно</span>{:else}<a href={item.url} target="_blank" rel="noopener noreferrer"><img src={item.url} alt="Открыть изображение" onerror={() => markImageFailed(item.url)} /></a>{/if}<figcaption>{item.url}</figcaption></figure>
 		{:else if safeExternalVideoUrl(item.url)}{@const embedUrl = safeExternalVideoUrl(item.url)}<iframe title="Внешнее видео" src={embedUrl} loading="lazy" allowfullscreen></iframe>
 		{:else}<a href={item.url} target="_blank" rel="noopener noreferrer">Открыть видео: {item.url}</a>{/if}

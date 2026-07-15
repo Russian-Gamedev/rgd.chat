@@ -1,9 +1,9 @@
 <script lang="ts">
-import type { GameDetailsDto, GameEditorDto } from '$lib/api/api.type';
+import type { GameDetails, GameEditor } from '$lib/api/api.type';
 
 import { compareRevisions } from './review-utils';
 
-let { working, published }: { working: GameEditorDto; published: GameDetailsDto | null } = $props();
+let { working, published }: { working: GameEditor; published: GameDetails | null } = $props();
 const rows = $derived(compareRevisions(working, published));
 </script>
 

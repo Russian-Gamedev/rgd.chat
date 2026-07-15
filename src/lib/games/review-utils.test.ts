@@ -40,18 +40,30 @@ describe('game review helpers', () => {
 			id: 'g',
 			title: 'New',
 			description: 'D',
-			release_date: '2026-01-01',
-			tags: [{ id: 'tag', slug: 'tag', name: 'Tag' }],
-			authors: [{ type: 'discord' as const, discord_user_id: '123' }],
-			links: [{ icon: 'IconGlobe', label: 'Site', link: 'https://example.com' }],
-			attachments: [{ type: 'image' as const, url: 'https://example.com/a.png' }]
+			tags: [{ slug: 'tag', name: 'Tag' }],
+			credits: { owner_id: 'owner', authors: [{ type: 'discord' as const, discord_user_id: '123' }] },
+			resources: {
+				links: [{ icon: 'IconGlobe', label: 'Site', link: 'https://example.com' }],
+				attachments: [{ type: 'image' as const, url: 'https://example.com/a.png' }]
+			},
+			metadata: { release_date: '2026-01-01', published_at: '', updated_at: '' }
 		};
 		const published = {
-			...base,
+			id: 'g',
+			slug: 'old',
 			title: 'Old',
-			tags: [{ id: 'tag', slug: 'tag', name: 'Tag' }],
-			description: 'D'
-		} as never;
+			description: 'D',
+			thumbnail: null,
+			tags: [{ slug: 'tag', name: 'Tag' }],
+			credits: base.credits,
+			resources: base.resources,
+			metadata: {
+				release_date: '2026-01-01',
+				published_at: '2026-01-02',
+				updated_at: '2026-01-03'
+			},
+			stats: { likes_count: 0 }
+		};
 		const rows = compareRevisions(base, published);
 		expect(rows.find((row) => row.field === 'Название')?.changed).toBeTrue();
 		expect(rows.find((row) => row.field === 'Теги')?.changed).toBeFalse();
