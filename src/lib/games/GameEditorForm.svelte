@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { GameAuthorInputDto, GameTagDto } from '$lib/api/api.type';
+import type { GameAuthorInputDto, GamePublicTag } from '$lib/api/api.type';
 import Button from '$lib/components/Button.svelte';
 import IconPicker from '$lib/components/IconPicker.svelte';
 
@@ -14,7 +14,7 @@ let {
 	readonly = false
 }: {
 	form: GameFormState;
-	tagOptions: GameTagDto[];
+	tagOptions: GamePublicTag[];
 	errors?: GameFormErrors;
 	readonly?: boolean;
 } = $props();
@@ -50,9 +50,7 @@ function addTag(value: string) {
 	const option = tagOptions.find((item) => item.name.toLowerCase() === tag.toLowerCase());
 	form.tags = [
 		...form.tags,
-		option
-			? { id: option.id, name: option.name, slug: option.slug }
-			: { id: null, name: tag, slug: null }
+		option ? { name: option.name, slug: option.slug } : { name: tag, slug: null }
 	];
 	tagInput = '';
 	showTagDropdown = false;
@@ -164,7 +162,7 @@ const filteredTagOptions = $derived(
     <section class="field-section">
       <span class="field-label">Теги <span>{form.tags.length}/10</span></span>
       <div class="tags-input" class:focus={showTagDropdown}>
-        {#each form.tags as tag, index (tag.id ?? `${tag.name}-${index}`)}
+        {#each form.tags as tag, index (`${tag.slug ?? tag.name}-${index}`)}
           <span class="tag-pill">
             {tag.name}
             {#if !readonly}
@@ -189,7 +187,7 @@ const filteredTagOptions = $derived(
       </div>
       {#if showTagDropdown && tagInput.trim() && filteredTagOptions.length > 0}
         <div class="tag-dropdown" role="listbox">
-          {#each filteredTagOptions as option (option.id)}
+			{#each filteredTagOptions as option (option.slug)}
             <button
               type="button"
               class="tag-option"
@@ -292,7 +290,7 @@ const filteredTagOptions = $derived(
         </div>
         {#if attachment.url.startsWith('https://')}
           {#if attachment.type === 'image'}
-            <img src={attachment.url} alt="Предпросмотр вложения" onerror={(event) => (event.currentTarget.hidden = true)} />
+            <img src={attachment.url} alt="Предпросмотр вложения" onerror={(event) => ((event.currentTarget as HTMLImageElement).hidden = true)} />
           {:else if youtubeEmbedUrl(attachment.url)}
             <iframe
               src={youtubeEmbedUrl(attachment.url) ?? ''}

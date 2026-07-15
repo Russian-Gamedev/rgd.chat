@@ -2,15 +2,14 @@ import type {
 	CreateGameDto,
 	GameAttachmentInputDto,
 	GameAuthorInputDto,
-	GameEditorDto,
+	GameEditor,
 	GameLinkInputDto,
-	GameRevisionStatus,
-	GameTagDto
+	GamePublicTag,
+	GameRevisionStatus
 } from '$lib/api/api.type';
 
-export type GameFormTag = Pick<GameTagDto, 'name'> & {
+export type GameFormTag = Pick<GamePublicTag, 'name'> & {
 	slug: string | null;
-	id: string | null;
 };
 
 export type GameFormState = {
@@ -57,17 +56,17 @@ export function emptyGameForm(): GameFormState {
 	};
 }
 
-export function editorToForm(editor: GameEditorDto): GameFormState {
+export function editorToForm(editor: GameEditor): GameFormState {
 	return {
 		title: editor.title,
 		slug: editor.slug ?? '',
 		slugManuallyEdited: true,
 		description: editor.description,
-		releaseDate: editor.release_date,
-		tags: editor.tags.map((tag) => ({ id: tag.id, name: tag.name, slug: tag.slug })),
-		authors: editor.authors.map((author) => ({ ...author })),
-		links: editor.links.map((link) => ({ ...link, icon: normalizeLinkIcon(link.icon) })),
-		attachments: editor.attachments.map((attachment) => ({ ...attachment }))
+		releaseDate: editor.metadata.release_date,
+		tags: editor.tags.map((tag) => ({ name: tag.name, slug: tag.slug })),
+		authors: editor.credits.authors.map((author) => ({ ...author })),
+		links: editor.resources.links.map((link) => ({ ...link, icon: normalizeLinkIcon(link.icon) })),
+		attachments: editor.resources.attachments.map((attachment) => ({ ...attachment }))
 	};
 }
 
@@ -207,9 +206,9 @@ export function isEditorReadonly(status: GameRevisionStatus): boolean {
 }
 
 export function canDeleteUnpublished(
-	editor: Pick<GameEditorDto, 'has_published_version'>
+	editor: Pick<GameEditor, 'workflow'>
 ): boolean {
-	return !editor.has_published_version;
+	return !editor.workflow.has_published_version;
 }
 
 export function moveItem<T>(items: T[], index: number, direction: -1 | 1): T[] {

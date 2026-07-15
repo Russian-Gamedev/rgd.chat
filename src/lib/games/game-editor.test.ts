@@ -1,4 +1,4 @@
-import type { GameEditorDto } from '../api/api.type';
+import type { GameEditor } from '../api/api.type';
 import {
 	canDeleteUnpublished,
 	editorToForm,
@@ -17,29 +17,37 @@ import {
 } from './game-editor';
 import { describe, expect, test } from 'bun:test';
 
-const editor: GameEditorDto = {
+const editor: GameEditor = {
 	id: 'game-1',
 	slug: 'igra',
-	owner_id: 'owner-1',
 	title: 'Игра',
 	description: 'Описание',
-	release_date: '2026-07-12',
-	tags: [{ id: 'tag-1', slug: 'action', name: 'Экшен' }],
-	authors: [
-		{ type: 'discord', discord_user_id: '123456789012345678' },
-		{ type: 'text', name: 'Команда' }
-	],
-	image: null,
-	likes_count: 0,
-	published_at: '',
-	links: [{ icon: 'IconGlobe', label: 'Сайт', link: 'https://example.com' }],
-	attachments: [{ type: 'image', url: 'https://example.com/image.png' }],
-	updated_at: '2026-07-12T00:00:00Z',
-	status: 'draft',
-	version: 3,
-	has_published_version: true,
-	published_version: 2,
-	review_events: []
+	tags: [{ slug: 'action', name: 'Экшен' }],
+	thumbnail: null,
+	credits: {
+		owner_id: 'owner-1',
+		authors: [
+			{ type: 'discord', discord_user_id: '123456789012345678' },
+			{ type: 'text', name: 'Команда' }
+		]
+	},
+	resources: {
+		links: [{ icon: 'IconGlobe', label: 'Сайт', link: 'https://example.com' }],
+		attachments: [{ type: 'image', url: 'https://example.com/image.png' }]
+	},
+	metadata: {
+		release_date: '2026-07-12',
+		published_at: '',
+		updated_at: '2026-07-12T00:00:00Z'
+	},
+	stats: { likes_count: 0 },
+	workflow: {
+		status: 'draft',
+		version: 3,
+		has_published_version: true,
+		published_version: 2,
+		review_events: []
+	}
 };
 
 describe('game editor normalization', () => {
@@ -50,16 +58,16 @@ describe('game editor normalization', () => {
 			slugManuallyEdited: true,
 			description: 'Описание',
 			releaseDate: '2026-07-12',
-			tags: [{ id: 'tag-1', name: 'Экшен', slug: 'action' }],
-			authors: editor.authors,
-			links: editor.links,
-			attachments: editor.attachments
+			tags: [{ name: 'Экшен', slug: 'action' }],
+			authors: editor.credits.authors,
+			links: editor.resources.links,
+			attachments: editor.resources.attachments
 		});
 	});
 
 	test('preserves both author union variants and snowflake as a string', () => {
 		const payload = formToPayload(editorToForm(editor));
-		expect(payload.authors).toEqual(editor.authors);
+		expect(payload.authors).toEqual(editor.credits.authors);
 		expect(payload.tags).toEqual(['Экшен']);
 		const author = payload.authors[0];
 		expect(author.type).toBe('discord');
@@ -83,8 +91,8 @@ describe('game editor normalization', () => {
 	});
 
 	test('takes version and status only from the editor DTO', () => {
-		const next = { ...editor, version: 4, status: 'review' as const };
-		expect(next.version).toBe(4);
+		const next = { ...editor, workflow: { ...editor.workflow, version: 4, status: 'review' as const } };
+		expect(next.workflow.version).toBe(4);
 		expect(editorToForm(next)).toEqual(editorToForm(editor));
 	});
 
@@ -125,7 +133,6 @@ describe('game editor validation', () => {
 	test('enforces collection limits', () => {
 		const form = editorToForm(editor);
 		form.tags = Array.from({ length: 11 }, (_, index) => ({
-			id: null,
 			name: String(index),
 			slug: null
 		}));
@@ -168,8 +175,8 @@ describe('game editor validation', () => {
 	});
 
 	test('allows deletion only when no version was ever published', () => {
-		expect(canDeleteUnpublished({ has_published_version: false })).toBeTrue();
-		expect(canDeleteUnpublished({ has_published_version: true })).toBeFalse();
+		expect(canDeleteUnpublished({ workflow: { has_published_version: false } } as GameEditor)).toBeTrue();
+		expect(canDeleteUnpublished({ workflow: { has_published_version: true } } as GameEditor)).toBeFalse();
 	});
 
 	test('uses embeds only for supported YouTube URLs', () => {
@@ -183,8 +190,8 @@ describe('game editor validation', () => {
 		const form = editorToForm(editor);
 		form.attachments = [{ type: 'external_video', url: 'https://example.com/video' }];
 		expect(validateGameForm(form).attachments).toBe('Добавьте хотя бы одну фотографию игры.');
-		form.attachments = editor.attachments.map((attachment) => ({ ...attachment }));
-		expect(formToUpdatePayload(form, editor.attachments).attachments).toBeUndefined();
+		form.attachments = editor.resources.attachments.map((attachment) => ({ ...attachment }));
+		expect(formToUpdatePayload(form, editor.resources.attachments).attachments).toBeUndefined();
 	});
 
 	test('normalizes title suggestions and validates slug format', () => {

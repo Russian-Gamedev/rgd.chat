@@ -4,7 +4,7 @@ import { onMount } from 'svelte';
 import { beforeNavigate, goto, invalidate } from '$app/navigation';
 import { page } from '$app/state';
 import { ApiHttpError, createApi } from '$lib/api/api';
-import type { GameEditorDto, GameTagDto } from '$lib/api/api.type';
+import type { GameEditor, GamePublicTag } from '$lib/api/api.type';
 import { requireAuth } from '$lib/auth/auth.actions';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Button from '$lib/components/Button.svelte';
@@ -29,36 +29,36 @@ let { gameId = null }: { gameId?: string | null } = $props();
 requireAuth(page.data.auth);
 
 const api = createApi({ fetch });
-let editor = $state<GameEditorDto | null>(null);
-let tagOptions = $state<GameTagDto[]>([]);
+let editor = $state<GameEditor | null>(null);
+let tagOptions = $state<GamePublicTag[]>([]);
 let form = $state(emptyGameForm());
 let savedSnapshot = $state(formSnapshot(emptyGameForm()));
 let errors = $state<GameFormErrors>({});
 let loadState = $state<'loading' | 'ready' | 'not-found' | 'forbidden' | 'error'>('loading');
 let isMutating = $state(false);
 let conflict = $state(false);
-let savedAttachments = $state<GameEditorDto['attachments']>([]);
+let savedAttachments = $state<GameEditor['resources']['attachments']>([]);
 
-const isReview = $derived(editor?.status === 'review');
+const isReview = $derived(editor?.workflow.status === 'review');
 const isDirty = $derived(loadState === 'ready' && formSnapshot(form) !== savedSnapshot);
-const canDelete = $derived(Boolean(editor && !editor.has_published_version));
+const canDelete = $derived(Boolean(editor && !editor.workflow.has_published_version));
 const latestChangesRequest = $derived(
-	[...(editor?.review_events ?? [])]
+	[...(editor?.workflow.review_events ?? [])]
 		.filter((event) => event.action === 'changes_requested')
 		.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))[0]
 );
 const submittedAt = $derived(
-	editor?.submitted_at ??
-		[...(editor?.review_events ?? [])]
+	editor?.workflow.submitted_at ??
+		[...(editor?.workflow.review_events ?? [])]
 			.filter((event) => event.action === 'submitted')
 			.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))[0]?.created_at ??
 		null
 );
 
-function applyEditor(next: GameEditorDto) {
+function applyEditor(next: GameEditor) {
 	editor = next;
 	form = editorToForm(next);
-	savedAttachments = next.attachments.map((attachment) => ({ ...attachment }));
+	savedAttachments = next.resources.attachments.map((attachment) => ({ ...attachment }));
 	savedSnapshot = formSnapshot(form);
 	errors = {};
 	conflict = false;
@@ -119,9 +119,11 @@ async function saveDraft(forReview = false): Promise<boolean> {
 		applyEditor(next);
 		await Promise.all([
 			invalidate('games:mine'),
+			invalidate('games:public-list'),
 			invalidate('games:tags'),
-			invalidate('games/tags'),
 			invalidate(`games:details:${next.slug}`),
+			invalidate(`games:details:${next.id}`),
+			invalidate(`users:${next.credits.owner_id}:games`),
 			previousSlug && previousSlug !== next.slug
 				? invalidate(`games:details:${previousSlug}`)
 				: Promise.resolve(),
@@ -157,7 +159,11 @@ async function submitReview() {
 		applyEditor(await api.submitForReview(gameId));
 		await Promise.all([
 			invalidate('games:mine'),
+			invalidate('games:public-list'),
 			invalidate('games:tags'),
+			invalidate(`games:details:${editor?.slug ?? gameId}`),
+			invalidate(`games:details:${gameId}`),
+			invalidate(`users:${editor?.credits.owner_id ?? ''}:games`),
 			invalidate(`games:editor:${gameId}`)
 		]);
 		showSnackbar({
@@ -186,9 +192,9 @@ async function deleteGame() {
 		await api.deleteGame(gameId);
 		await Promise.all([
 			invalidate('games:mine'),
-			invalidate('games:list'),
-			invalidate(`games:${gameId}`),
-			invalidate('user:games')
+			invalidate('games:public-list'),
+			invalidate(`games:details:${gameId}`),
+			invalidate('games:tags')
 		]);
 		showSnackbar({ message: 'Проект удалён.', variant: 'success' });
 		await goto('/games/mine');
@@ -247,11 +253,11 @@ onMount(() => {
   <div>
     <h1>{gameId ? "Редактор игры" : "Новая игра"}</h1>
     {#if editor}
-      <p class="status">Версия {editor.version} · {editor.status}</p>
-      <UserIdentity id={editor.owner_id} compact />
+      <p class="status">Версия {editor.workflow.version} · {editor.workflow.status}</p>
+      <UserIdentity id={editor.credits.owner_id} compact />
     {/if}
   </div>
-  {#if editor?.has_published_version}
+  {#if editor?.workflow.has_published_version}
     <Button as="a" href={`/games/${editor.slug}`} variant="outline"
       >Публичная версия</Button
     >
@@ -289,7 +295,7 @@ onMount(() => {
       <strong>Ревьюер запросил изменения</strong>
       <p>{latestChangesRequest.comment ?? "Комментарий не указан."}</p>
     </section>
-  {:else if editor?.status === "published"}
+  {:else if editor?.workflow.status === "published"}
     <section class="notice">
       <strong>Версия опубликована.</strong>
       <p>
@@ -345,7 +351,7 @@ onMount(() => {
     {#if isDirty}<span class="dirty">Есть несохранённые изменения</span>{/if}
   </div>
 
-  {#if editor}<ReviewTimeline events={editor.review_events} />{/if}
+  {#if editor}<ReviewTimeline events={editor.workflow.review_events} />{/if}
 {/if}
 
 <style>
