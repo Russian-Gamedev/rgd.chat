@@ -148,21 +148,76 @@ export type GameListItemDto = {
 	slug: string;
 	title: string;
 	release_date: string;
-	tags: { id: string; slug: string; name: string }[];
+	tags: GamePublicTag[];
 	authors: GameAuthor[];
-	image: string | null;
+	thumbnail: string | null;
 	likes_count: number;
 	published_at: string;
 };
 
 export type GameListItem = GameListItemDto;
 
-export type GameDetailsDto = GameListItemDto & {
-	description: string;
+export type GamePublicTag = {
+	slug: string;
+	name: string;
+};
+
+export type GameAttachment = {
+	type: GameAttachmentType;
+	url: string;
+};
+
+export type GameLink = {
+	icon: string;
+	label: string;
+	link: string;
+};
+
+export type GameCredits = {
 	owner_id: string;
-	links: { icon: string; label: string; link: string }[];
-	attachments: { type: GameAttachmentType; url: string }[];
+	authors: GameAuthor[];
+};
+
+export type GameResources = {
+	attachments: GameAttachment[];
+	links: GameLink[];
+};
+
+export type GameMetadata = {
+	release_date: string;
+	published_at: string;
 	updated_at: string;
+};
+
+export type GameStats = {
+	likes_count: number;
+};
+
+export type GameWorkflow = {
+	revision_id?: string;
+	status: GameRevisionStatus;
+	version: number;
+	has_published_version: boolean;
+	published_version: number | null;
+	review_events: GameReviewEvent[];
+	submitted_at?: string | null;
+};
+
+export type GameDetails = {
+	id: string;
+	slug: string;
+	title: string;
+	description: string;
+	thumbnail: string | null;
+	tags: GamePublicTag[];
+	credits: GameCredits;
+	resources: GameResources;
+	metadata: GameMetadata;
+	stats: GameStats;
+};
+
+export type GameEditor = GameDetails & {
+	workflow: GameWorkflow;
 };
 
 export type GameAuthorInputDto =
@@ -197,16 +252,6 @@ export type GameReviewEvent = {
 	comment: string | null;
 	created_at: string;
 	version?: number;
-};
-
-export type GameEditorDto = GameDetailsDto & {
-	revision_id?: string;
-	status: GameRevisionStatus;
-	version: number;
-	has_published_version: boolean;
-	published_version: number | null;
-	review_events: GameReviewEvent[];
-	submitted_at?: string | null;
 };
 
 export type MineGamesQueryDto = {
@@ -265,14 +310,6 @@ export type ReviewListQueryDto = {
 	owner_id?: string;
 	search?: string;
 };
-
-export type GameTagDto = {
-	id: string;
-	slug: string;
-	name: string;
-};
-
-export type GameTag = GameTagDto;
 
 export type LikeStateDto = {
 	liked: boolean;

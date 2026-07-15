@@ -1,10 +1,10 @@
 import type {
 	CreateGameDto,
-	GameDetailsDto,
-	GameEditorDto,
+	GameDetails,
+	GameEditor,
 	GameListQueryDto,
 	GameListResponseDto,
-	GameTagDto,
+	GamePublicTag,
 	LikeStateDto,
 	MembersStats,
 	MineGamesQueryDto,
@@ -111,17 +111,17 @@ export function createApi(options: ApiOptions) {
 			);
 		},
 		getPublishedGame(idOrSlug: string) {
-			return request<GameDetailsDto>(`/games/${encodeURIComponent(idOrSlug)}`);
+			return request<GameDetails>(`/games/${encodeURIComponent(idOrSlug)}`);
 		},
 		createGameDraft(payload: CreateGameDto) {
-			return request<GameEditorDto>('/games', {
+			return request<GameEditor>('/games', {
 				method: 'POST',
 				body: JSON.stringify(payload),
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},
 		updateGameDraft(id: string, payload: UpdateGameDto) {
-			return request<GameEditorDto>(`/games/${id}`, {
+			return request<GameEditor>(`/games/${id}`, {
 				method: 'PATCH',
 				body: JSON.stringify(payload),
 				headers: { 'Content-Type': 'application/json' }
@@ -136,10 +136,10 @@ export function createApi(options: ApiOptions) {
 			);
 		},
 		getGameEditor(id: string) {
-			return request<GameEditorDto>(`/games/${id}/editor`);
+			return request<GameEditor>(`/games/${id}/editor`);
 		},
 		submitForReview(id: string) {
-			return request<GameEditorDto>(`/games/${id}/submit-review`, { method: 'POST' });
+			return request<GameEditor>(`/games/${id}/submit-review`, { method: 'POST' });
 		},
 		listReviewGames(query: ReviewListQueryDto = {}) {
 			return request<ReviewListResponseDto>(
@@ -147,48 +147,31 @@ export function createApi(options: ApiOptions) {
 			);
 		},
 		getReviewGame(id: string) {
-			return request<GameEditorDto>(`/games/${id}/review`);
+			return request<GameEditor>(`/games/${id}/review`);
 		},
 		publishReview(id: string, comment?: string) {
-			return request<GameEditorDto>(`/games/${id}/review/publish`, {
+			return request<GameEditor>(`/games/${id}/review/publish`, {
 				method: 'POST',
 				body: comment ? JSON.stringify({ comment }) : undefined,
 				headers: comment ? { 'Content-Type': 'application/json' } : undefined
 			});
 		},
 		requestChanges(id: string, comment: string) {
-			return request<GameEditorDto>(`/games/${id}/review/request-changes`, {
+			return request<GameEditor>(`/games/${id}/review/request-changes`, {
 				method: 'POST',
 				body: JSON.stringify({ comment }),
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},
 		transferOwner(id: string, owner_id: string) {
-			return request<GameEditorDto>(`/games/${id}/review/owner`, {
+			return request<GameEditor>(`/games/${id}/review/owner`, {
 				method: 'PATCH',
 				body: JSON.stringify({ owner_id }),
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},
 		listTags() {
-			return request<GameTagDto[]>('/games/tags');
-		},
-		createTag(name: string) {
-			return request<GameTagDto>('/games/tags', {
-				method: 'POST',
-				body: JSON.stringify({ name }),
-				headers: { 'Content-Type': 'application/json' }
-			});
-		},
-		updateTag(id: string, name: string) {
-			return request<GameTagDto>(`/games/tags/${encodeURIComponent(id)}`, {
-				method: 'PATCH',
-				body: JSON.stringify({ name }),
-				headers: { 'Content-Type': 'application/json' }
-			});
-		},
-		deleteTag(id: string) {
-			return request<void>(`/games/tags/${encodeURIComponent(id)}`, { method: 'DELETE' });
+			return request<GamePublicTag[]>('/games/tags');
 		},
 		getLikeState(id: string) {
 			return request<LikeStateDto>(`/games/${id}/like`);
