@@ -36,7 +36,7 @@ export const load: PageLoad = async ({ params, depends, fetch }) => {
 		openGraph: {
 			title,
 			description,
-			...(game.image ? { images: [{ url: game.image }] } : {})
+			...(game.thumbnail ? { images: [{ url: game.thumbnail }] } : {})
 		}
 	});
 

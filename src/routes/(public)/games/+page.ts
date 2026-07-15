@@ -7,7 +7,7 @@ import type { PageLoad } from './$types';
 export const prerender = true;
 
 export const load: PageLoad = async ({ depends, fetch, url }) => {
-	depends('games:list');
+	depends('games:public-list');
 	const tag = url.searchParams.get('tag') || undefined;
 
 	const title = 'Игры';

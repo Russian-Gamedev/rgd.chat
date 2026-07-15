@@ -119,7 +119,7 @@ onMount(() => {
         <a class="game" href="/games/{game.slug}">
           <SkeletonImage
             class="game-image"
-            src={game.image ?? ''}
+            src={game.thumbnail ?? ''}
             alt={game.title}
           />
 
@@ -133,7 +133,7 @@ onMount(() => {
 
             {#if game.tags.length > 0}
               <div class="game-tags">
-                {#each game.tags as tag}
+                {#each game.tags as tag (tag.slug)}
                   <a class="tag-badge" href="/games?tag={tag.slug}">{tag.name}</a>
                 {/each}
               </div>

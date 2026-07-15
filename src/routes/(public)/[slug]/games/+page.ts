@@ -16,7 +16,7 @@ export const entries = async () => {
 };
 
 export const load: PageLoad = async ({ params, depends, fetch }) => {
-	depends('user:games');
+	depends(`users:${params.slug}:games`);
 
 	const api = createApi({ fetch });
 

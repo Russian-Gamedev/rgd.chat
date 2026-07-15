@@ -26,12 +26,8 @@ const game = $derived(data.game);
   <p>Игра не найдена.</p>
 {:else}
   <article class="game-detail">
-    {#if game.image}
-      <SkeletonImage
-        class="game-banner"
-        src={game.image}
-        alt={game.title}
-      />
+    {#if game.thumbnail}
+      <SkeletonImage class="game-banner" src={game.thumbnail} alt={game.title} />
     {/if}
 
     <h1>{game.title}</h1>
@@ -39,26 +35,32 @@ const game = $derived(data.game);
     <div class="game-meta">
       <span class="meta-item">
         <IconCalendar />
-        {formatGameDate(game.release_date)}
+        {formatGameDate(game.metadata.release_date)}
       </span>
       <span class="meta-item">
         <IconEye />
-        ♥ {game.likes_count}
+        ♥ {game.stats.likes_count}
       </span>
     </div>
 
-    <div class="game-owner"><strong>Владелец:</strong> <UserIdentity id={game.owner_id} compact /></div>
+    <div class="game-owner">
+      <strong>Владелец:</strong>
+      <UserIdentity id={game.credits.owner_id} compact />
+    </div>
 
     {#if game.tags.length > 0}
       <div class="game-tags">
-        {#each game.tags as tag}
+        {#each game.tags as tag (tag.slug)}
           <span class="tag-badge">{tag.name}</span>
         {/each}
       </div>
     {/if}
 
-    {#if game.authors.length > 0}
-      <div class="game-authors"><strong>Авторы:</strong> <GameAuthorsIdentity authors={game.authors} /></div>
+    {#if game.credits.authors.length > 0}
+      <div class="game-authors">
+        <strong>Авторы:</strong>
+        <GameAuthorsIdentity authors={game.credits.authors} />
+      </div>
     {/if}
 
     {#if game.description}
@@ -67,11 +69,11 @@ const game = $derived(data.game);
       </div>
     {/if}
 
-    {#if game.links && game.links.length > 0}
+    {#if game.resources.links.length > 0}
       <div class="game-links">
         <h2>Ссылки</h2>
         <ul>
-          {#each game.links as link}
+          {#each game.resources.links as link}
             <li>
               <a
                 href={link.link}
@@ -88,16 +90,24 @@ const game = $derived(data.game);
       </div>
     {/if}
 
-    {#if game.attachments && game.attachments.length > 0}
+    {#if game.resources.attachments.length > 0}
       <div class="game-attachments">
         <h2>Вложения</h2>
         <ul>
-          {#each game.attachments as attachment}
+          {#each game.resources.attachments as attachment}
             <li>
-              {#if attachment.type === 'image'}
-                <img src={attachment.url} alt="Attachment" class="attachment-image" />
+              {#if attachment.type === "image"}
+                <img
+                  src={attachment.url}
+                  alt="Attachment"
+                  class="attachment-image"
+                />
               {:else}
-                <a href={attachment.url} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={attachment.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {attachment.url}
                 </a>
               {/if}
