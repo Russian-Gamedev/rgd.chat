@@ -12,7 +12,7 @@ export const load: PageLoad = async ({ fetch, parent, depends, params }) => {
 	const api = createApi({ fetch });
 	try {
 		const game = await api.getReviewGame(params.id);
-		const published = game.has_published_version
+		const published = game.workflow.has_published_version
 			? await api.getPublishedGame(params.id).catch(() => null)
 			: null;
 		return { game, published };

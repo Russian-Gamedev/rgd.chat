@@ -64,7 +64,7 @@ onDestroy(() => {
 {#if !canReview}
 	<section class="state"><h1>403</h1><p>Для модерации требуется permission games:review.</p></section>
 {:else}
-	<div class="header"><div><h1>Модерация игр</h1><p>Очередь редакций и решения модераторов.</p></div><nav class="admin-tabs" aria-label="Раздел модерации"><a class="tab active" href="/admin/games"><strong>Очередь</strong><small>Редакции на проверке</small></a><a class="tab" href="/admin/games/tags"><strong>Теги</strong><small>Каталог тегов</small></a></nav></div>
+	<div class="header"><div><h1>Модерация игр</h1><p>Очередь редакций и решения модераторов.</p></div></div>
 	<section class="filters">
 		<label>Статус<select value={data.filters.status} onchange={(event) => navigate({ status: event.currentTarget.value as typeof data.filters.status })}><option value="review">На ревью</option><option value="draft">Черновики</option><option value="published">Опубликованные</option></select></label>
 		<label>Название<input value={search} oninput={(event) => onSearch(event.currentTarget.value)} placeholder="Поиск" /></label>
@@ -81,12 +81,8 @@ onDestroy(() => {
 {/if}
 
 <style>
-	.header, .header nav, .filters, .pagination { align-items: center; display: flex; flex-wrap: wrap; gap: .75rem; }
-	.header { justify-content: space-between; margin: 1.5rem 0; } h1, h2, p { margin-top: 0; } .header nav { gap: 1rem; }
-	.admin-tabs { gap: .5rem !important; }
-	.tab { background: var(--color-bg-surface); border: 1px solid #303238; border-radius: .65rem; color: inherit; display: grid; gap: .2rem; min-width: 10rem; padding: .7rem .85rem; text-decoration: none; }
-	.tab:hover, .tab.active { border-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 14%, var(--color-bg-surface)); }
-	.tab small { color: var(--color-text-secondary); }
+	.header, .filters, .pagination { align-items: center; display: flex; flex-wrap: wrap; gap: .75rem; }
+	.header { justify-content: space-between; margin: 1.5rem 0; }
 	.filters { align-items: end; margin-bottom: 1.5rem; } label { display: grid; gap: .3rem; } input, select { background: var(--color-bg-surface); border: 1px solid #303238; border-radius: .4rem; color: inherit; font: inherit; padding: .55rem; }
 	.table-wrap { overflow-x: auto; } table { border-collapse: collapse; min-width: 980px; table-layout: fixed; width: 100%; } .col-game { width: 22%; } .col-owner { width: 19%; } .col-version { width: 8%; } .col-status { width: 10%; } .col-date { width: 14%; } .col-action { width: 13%; } th, td { border-bottom: 1px solid #303238; height: 4.5rem; padding: .65rem .75rem; text-align: left; vertical-align: middle; } .game-cell { overflow: hidden; } .game-cell strong, .game-cell small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } small { color: var(--color-text-secondary); } .owner-cell :global(.identity) { max-width: 100%; } .nowrap { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .action-cell { text-align: right; } td span { background: color-mix(in srgb, var(--color-primary) 18%, transparent); border-radius: 999px; padding: .2rem .5rem; } td span.waiting { background: color-mix(in srgb, var(--color-warning) 22%, transparent); } td span.warning { background: color-mix(in srgb, var(--color-warning) 30%, transparent); } td span.critical { background: color-mix(in srgb, var(--color-error) 30%, transparent); }
 	.pagination { justify-content: center; margin: 1.5rem 0; } .state { background: var(--color-bg-surface); border-radius: .65rem; padding: 2rem; text-align: center; }
