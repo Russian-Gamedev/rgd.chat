@@ -2,6 +2,7 @@
 import { onMount } from 'svelte';
 
 import { page } from '$app/state';
+import type { User } from '$lib/api/api.type';
 import {
 	IconArrowUp,
 	IconCrown,
@@ -13,14 +14,11 @@ import {
 	IconRgd,
 	IconVideo
 } from '$lib/assets/icons';
-import { auth } from '$lib/auth/auth.store.svelte';
 import Button from '$lib/components/Button.svelte';
 
 let isCollapsed = $state(false);
 
-const redirectToAuth = () => {
-	window.location.href = import.meta.env.VITE_AUTH_URL;
-};
+const authUser = $derived(page.data.auth as User | null);
 
 const sidebarStorageKey = 'rgd.sidebar.collapsed';
 const sidebarDesktopQuery = '(min-width: 768px)';
@@ -66,7 +64,7 @@ const navItems = $derived([
 	// { name: "Блоги", href: "/blogs", icon: IconFeed },
 	{ name: 'Донатеры', href: '/patrons', icon: IconCrown },
 	{ name: 'Видео', href: '/videos', icon: IconVideo },
-	...(auth.user ? authedNavItems : [])
+	...(authUser ? authedNavItems : [])
 ]);
 
 const pathname = $derived(page.url.pathname);
@@ -184,23 +182,24 @@ onMount(() => {
     </nav>
   </div>
   <div class="auth-slot">
-    {#if auth.user}
-      <a href="/{auth.user.username}" class="user-block">
+    {#if authUser}
+      <a href="/{authUser.username}" class="user-block">
         <img
           class="user-avatar"
-          src={auth.user.avatarUrl}
-          alt={auth.user.nickname ?? auth.user.username}
+          src={authUser.avatarUrl}
+          alt={authUser.nickname ?? authUser.username}
         />
         <span class="user-username"
-          >{auth.user.nickname ?? auth.user.username}</span
+          >{authUser.nickname ?? authUser.username}</span
         >
       </a>
     {:else}
       <Button
+        as="a"
         color="bg"
+        href={import.meta.env.VITE_AUTH_URL}
         class="auth-button"
         aria-label="Авторизация"
-        onclick={redirectToAuth}
       >
         <div class="auth-icon">
           <IconDiscord />

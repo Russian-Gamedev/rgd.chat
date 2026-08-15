@@ -5,8 +5,7 @@ import { SITE_DESCRIPTION, SITE_URL } from '$lib/site-config';
 export const load = ({ url }) => {
 	const title = 'Russian Gamedev — Discord сообщество';
 	const description = SITE_DESCRIPTION;
-	const origin = url.origin === 'http://sveltekit-prerender' ? SITE_URL : url.origin;
-	const canonical = new URL(url.pathname, origin).href;
+	const canonical = new URL(url.pathname, SITE_URL).href;
 
 	const baseTags = defineBaseMetaTags({
 		title,

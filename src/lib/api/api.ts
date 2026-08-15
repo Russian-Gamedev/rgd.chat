@@ -10,16 +10,26 @@ import type {
 export type ApiOptions = {
 	fetch: typeof fetch;
 	baseUrl?: string;
+	headers?: Record<string, string>;
 };
 
 export function createApi(options: ApiOptions) {
-	const baseUrl = options.baseUrl ?? import.meta.env.VITE_API_BASE_URL ?? 'https://bot.rgd.chat';
+	const baseUrl = options.baseUrl ?? import.meta.env.VITE_API_BASE_URL ?? '/api';
 	const fetcher = options.fetch;
 
 	async function request<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
 		const url = endpoint.startsWith('/') ? `${baseUrl}${endpoint}` : endpoint;
 
+		const headers = new Headers(options.headers);
+		if (requestOptions.headers) {
+			const merged = new Headers(requestOptions.headers);
+			merged.forEach((value, key) => {
+				headers.set(key, value);
+			});
+		}
+
 		Object.assign(requestOptions, {
+			headers,
 			credentials: 'include'
 		});
 		const response = await fetcher(url, requestOptions);

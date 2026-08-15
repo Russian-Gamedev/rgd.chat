@@ -1,24 +1,13 @@
 import { mdsvex } from 'mdsvex';
 
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: [vitePreprocess(), mdsvex()],
 	kit: {
-		adapter: adapter({
-			fallback: '200.html',
-			strict: true
-		}),
-		prerender: {
-			handleHttpError: ({ path, status, message }) => {
-				const pendingRoutes = new Set(['/games', '/jams', '/blogs']);
-				if (status === 404 && pendingRoutes.has(path)) return;
-				throw new Error(message);
-			},
-			origin: 'https://rgd.chat'
-		}
+		adapter: adapter()
 	},
 	extensions: ['.svelte', '.svx']
 };
