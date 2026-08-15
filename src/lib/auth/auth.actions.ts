@@ -1,9 +1,5 @@
-import { invalidate } from '$app/navigation';
+import { goto, invalidate } from '$app/navigation';
 import { createApi } from '$lib/api/api';
-
-export async function login() {
-	window.location.href = import.meta.env.VITE_AUTH_URL;
-}
 
 export async function logout() {
 	const api = createApi({ fetch });
@@ -15,15 +11,9 @@ export async function logout() {
 	}
 
 	await invalidate('auth:me');
-	window.location.href = '/';
+	await goto('/');
 }
 
 export async function refreshAuth() {
 	await invalidate('auth:me');
-}
-
-export function requireAuth(user: unknown | null) {
-	if (typeof window !== 'undefined' && !user) {
-		window.location.href = import.meta.env.VITE_AUTH_URL;
-	}
 }

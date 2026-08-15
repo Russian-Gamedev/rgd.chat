@@ -1,30 +1,13 @@
 <script lang="ts">
-import { onMount } from 'svelte';
-
-import { page } from '$app/state';
-import { createApi } from '$lib/api/api';
-import type { MotdListItem } from '$lib/api/api.type';
 import { IconHash } from '$lib/assets/icons';
-import { requireAuth } from '$lib/auth/auth.actions';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Link from '$lib/components/Link.svelte';
 
-requireAuth(page.data.auth);
+import type { PageProps } from './$types';
 
-let motdList = $state<MotdListItem[] | null>(null);
-let isLoading = $state(true);
+let { data }: PageProps = $props();
 
-onMount(() => {
-	createApi({ fetch })
-		.getMotdList()
-		.then((res) => {
-			motdList = Array.isArray(res) ? res : (res.motdList ?? null);
-		})
-		.catch(() => {})
-		.finally(() => {
-			isLoading = false;
-		});
-});
+const motdList = $derived(data.motdList);
 </script>
 
 <Breadcrumb
@@ -54,9 +37,7 @@ onMount(() => {
   >
 </p>
 
-{#if isLoading}
-  <p>Загрузка...</p>
-{:else if motdList === null}
+{#if motdList === null}
   <p>Не удалось загрузить список сообщений.</p>
 {:else if motdList.length === 0}
   <p>Сообщения не найдены.</p>

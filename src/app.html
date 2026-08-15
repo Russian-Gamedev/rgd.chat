@@ -3,23 +3,6 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<script>
-			(() => {
-				var storageKey = "rgd.sidebar.collapsed";
-				var desktopQuery = "(min-width: 768px)";
-
-				try {
-					const isDesktop = window.matchMedia(desktopQuery).matches;
-					const isCollapsed =
-						isDesktop &&
-						window.localStorage.getItem(storageKey) === "true";
-					document.documentElement.dataset.sidebarCollapsed =
-						String(isCollapsed);
-				} catch (_) {
-					document.documentElement.dataset.sidebarCollapsed = "false";
-				}
-			})();
-		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link rel="preconnect" href="https://rabbit.damirlut.dev" />

@@ -1,10 +1,10 @@
 import { definePageMetaTags } from 'svelte-meta-tags';
 
-import { createApi } from '$lib/api/api';
+import { createServerApi } from '$lib/server/api';
 
-import type { PageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
-export const load: PageLoad = async ({ depends, fetch }) => {
+export const load: PageServerLoad = async ({ depends, request, fetch }) => {
 	depends('patrons:list');
 
 	const title = 'Донатеры сообщества';
@@ -18,8 +18,8 @@ export const load: PageLoad = async ({ depends, fetch }) => {
 		}
 	});
 
-	const api = createApi({ fetch });
-	const patrons = await api.getPatrons();
+	const api = createServerApi({ request, fetch });
+	const patrons = await api.getPatrons().catch(() => null);
 
 	return {
 		...pageMetaTags,
