@@ -34,9 +34,23 @@ export function createApi(options: ApiOptions) {
 		});
 		const response = await fetcher(url, requestOptions);
 		if (!response.ok) {
-			throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			throw new Error(await extractErrorMessage(response));
 		}
 		return await (response.json() as Promise<T>);
+	}
+
+	async function extractErrorMessage(response: Response) {
+		const fallback = `HTTP ${response.status}: ${response.statusText}`;
+
+		try {
+			const body = await response.json();
+			const message = body?.message;
+			const text = Array.isArray(message) ? message.join(', ') : message;
+
+			return typeof text === 'string' && text.length > 0 ? text : fallback;
+		} catch {
+			return fallback;
+		}
 	}
 
 	return {
