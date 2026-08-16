@@ -247,7 +247,7 @@ $effect(() => {
       <Button
         type="button"
         variant="ghost"
-        onclick={requestClose}
+        onclick={onClose}
         disabled={isSubmitting}
       >
         Отмена
