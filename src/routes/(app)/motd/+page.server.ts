@@ -6,7 +6,9 @@ import { createServerApi } from '$lib/server/api';
 
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ parent, request, fetch }) => {
+export const load: PageServerLoad = async ({ parent, request, fetch, depends }) => {
+	depends('motd:list');
+
 	const { auth } = await parent();
 	if (!auth) {
 		throw redirect(302, import.meta.env.VITE_AUTH_URL || '/');

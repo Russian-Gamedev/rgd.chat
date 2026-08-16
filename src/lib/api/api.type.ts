@@ -78,6 +78,12 @@ export type MotdListItem = {
 	};
 };
 
+export type AddMotdResponse = {
+	id: number;
+	content: string;
+	balance_after: string;
+};
+
 export type UserTag = {
 	background: string;
 	color: string;

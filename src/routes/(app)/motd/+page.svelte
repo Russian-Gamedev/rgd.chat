@@ -1,13 +1,17 @@
 <script lang="ts">
 import { IconHash } from '$lib/assets/icons';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+import Button from '$lib/components/Button.svelte';
 import Link from '$lib/components/Link.svelte';
 
 import type { PageProps } from './$types';
+import AddMotdModal from './AddMotdModal.svelte';
 
 let { data }: PageProps = $props();
 
 const motdList = $derived(data.motdList);
+
+let isAddMotdOpen = $state(false);
 </script>
 
 <Breadcrumb
@@ -27,15 +31,17 @@ const motdList = $derived(data.motdList);
 </p>
 
 <p class="description">
-  Вы можете сами добавить их в дискорд боте на сервере через <code
-    >/motd add</code
-  >
-  либо добавить скриптовый на
+  Вы можете добавить свои через кнопку ниже, в дискорд боте на сервере через
+  <code>/motd add</code> либо добавить скриптовый на
   <Link
     href="https://github.com/Russian-Gamedev/bot.rgd.chat/blob/main/src/core/guilds/motd/runtime-motds.ts"
     >гитхабе</Link
   >
 </p>
+
+<div class="actions">
+  <Button onclick={() => (isAddMotdOpen = true)}>Добавить свой</Button>
+</div>
 
 {#if motdList === null}
   <p>Не удалось загрузить список сообщений.</p>
@@ -73,6 +79,8 @@ const motdList = $derived(data.motdList);
   </div>
 {/if}
 
+<AddMotdModal open={isAddMotdOpen} onClose={() => (isAddMotdOpen = false)} />
+
 <style>
   .description + .description {
     margin-top: 1rem;
@@ -97,6 +105,11 @@ const motdList = $derived(data.motdList);
 
   .table-wrapper {
     overflow-x: auto;
+  }
+
+  .actions {
+    display: flex;
+    margin-top: 1rem;
   }
 
   table {

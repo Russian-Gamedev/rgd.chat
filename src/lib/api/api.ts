@@ -1,4 +1,5 @@
 import type {
+	AddMotdResponse,
 	MembersStats,
 	MotdListItem,
 	Patron,
@@ -71,6 +72,13 @@ export function createApi(options: ApiOptions) {
 		},
 		getMotdList() {
 			return request<{ motdList: MotdListItem[] }>('/motd/list');
+		},
+		addMotd(content: string) {
+			return request<AddMotdResponse>('/motd', {
+				method: 'POST',
+				body: JSON.stringify({ content }),
+				headers: { 'Content-Type': 'application/json' }
+			});
 		},
 		logout() {
 			return request<void>('/auth/logout', { method: 'POST' });
