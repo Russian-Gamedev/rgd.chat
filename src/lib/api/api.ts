@@ -5,7 +5,8 @@ import type {
 	Patron,
 	UpdateProfilePayload,
 	User,
-	VideosPage
+	VideosPage,
+	WalletBalance
 } from './api.type';
 
 export type ApiOptions = {
@@ -66,6 +67,9 @@ export function createApi(options: ApiOptions) {
 		},
 		getMe() {
 			return request<User>('/users/me');
+		},
+		getWalletBalance() {
+			return request<WalletBalance>('/wallet/balance');
 		},
 		getMotd() {
 			return request<{ motd: string }>('/motd');

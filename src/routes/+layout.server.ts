@@ -7,6 +7,7 @@ export const load: LayoutServerLoad = async ({ depends, request, fetch }) => {
 
 	const api = createServerApi({ request, fetch });
 	const auth = await api.getMe().catch(() => null);
+	const balance = auth ? ((await api.getWalletBalance().catch(() => null))?.balance ?? null) : null;
 
-	return { auth };
+	return { auth, balance };
 };

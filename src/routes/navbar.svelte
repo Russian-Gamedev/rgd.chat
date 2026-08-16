@@ -15,10 +15,12 @@ import {
 	IconVideo
 } from '$lib/assets/icons';
 import Button from '$lib/components/Button.svelte';
+import CoinsBadge from '$lib/components/CoinsBadge.svelte';
 
 let isCollapsed = $state(false);
 
 const authUser = $derived(page.data.auth as User | null);
+const walletBalance = $derived((page.data.balance as string | null | undefined) ?? null);
 
 const sidebarStorageKey = 'rgd.sidebar.collapsed';
 const sidebarDesktopQuery = '(min-width: 768px)';
@@ -193,6 +195,10 @@ onMount(() => {
           >{authUser.nickname ?? authUser.username}</span
         >
       </a>
+      {#if walletBalance !== null}
+        <span class="sidebar-separator" aria-hidden="true"></span>
+        <CoinsBadge balance={walletBalance} class="sidebar-coins" />
+      {/if}
     {:else}
       <Button
         as="a"
@@ -219,6 +225,7 @@ onMount(() => {
     width: clamp(240px, 24vw, 300px);
     height: 100vh;
     padding: 64px 40px;
+    padding-bottom: 12px;
     background-color: var(--color-bg-surface);
     border-right: 1px solid
       color-mix(in srgb, var(--color-text) 8%, transparent);
@@ -365,7 +372,15 @@ onMount(() => {
   .auth-slot {
     margin-top: auto;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sidebar-separator {
+    width: 100%;
+    border: none;
+    border-top: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
   }
 
   :global(.auth-button) {
@@ -497,6 +512,15 @@ onMount(() => {
     :global(html[data-sidebar-collapsed="true"]) .auth-slot,
     .navbar.collapsed .auth-slot {
       justify-content: center;
+    }
+
+    :global(html[data-sidebar-collapsed="true"]) :global(.sidebar-coins),
+    :global(.navbar.collapsed .sidebar-coins),
+    :global(html[data-sidebar-collapsed="true"]) .sidebar-separator,
+    .navbar.collapsed .sidebar-separator {
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
     }
 
     :global(html[data-sidebar-collapsed="true"]) :global(.auth-button),
@@ -661,6 +685,11 @@ onMount(() => {
       flex: 0 0 auto;
       margin-top: 0;
       justify-content: flex-end;
+    }
+
+    :global(.sidebar-coins),
+    .sidebar-separator {
+      display: none;
     }
 
     :global(.auth-button) {

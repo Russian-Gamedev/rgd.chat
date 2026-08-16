@@ -3,6 +3,10 @@ export interface MembersStats {
 	total: number;
 }
 
+export type WalletBalance = {
+	balance: string;
+};
+
 export type Video = {
 	id: number;
 	text?: string;
