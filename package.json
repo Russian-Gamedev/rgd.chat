@@ -38,6 +38,6 @@
 	},
 	"dependencies": {
 		"@floating-ui/dom": "^1.7.6",
-		"svelte-meta-tags": "^4.7.0"
+		"svelte-meta-tags": "^5.0.2"
 	}
 }
