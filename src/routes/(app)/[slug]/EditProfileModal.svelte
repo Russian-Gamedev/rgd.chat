@@ -1,8 +1,5 @@
 <script lang="ts">
-import { invalidate } from '$app/navigation';
-import { createApi } from '$lib/api/api';
-import type { ProfileLink, UpdateProfilePayload, User } from '$lib/api/api.type';
-import * as icons from '$lib/assets/icons';
+import type { ProfileLink, User } from '$lib/api/api.type';
 import Button from '$lib/components/Button.svelte';
 import DatePicker from '$lib/components/DatePicker.svelte';
 import IconPicker from '$lib/components/IconPicker.svelte';
@@ -10,15 +7,20 @@ import Input from '$lib/components/Input.svelte';
 import Modal from '$lib/components/Modal.svelte';
 import { showSnackbar } from '$lib/components/snackbar';
 
+import { updateProfile } from './EditProfileModal.api';
+import {
+	buildProfilePayload,
+	DEFAULT_LINK_ICON,
+	type EditableProfileLink,
+	MAX_LINKS,
+	normalizeIconKey
+} from './EditProfileModal.validation';
+
 type EditProfileModalProps = {
 	open: boolean;
 	user: User;
 	onClose: () => void;
 	onSaved: (user: User) => void;
-};
-
-type EditableProfileLink = ProfileLink & {
-	id: number;
 };
 
 let { open, user, onClose, onSaved }: EditProfileModalProps = $props();
@@ -28,12 +30,44 @@ let birthDate = $state('');
 let about = $state('');
 let links = $state<EditableProfileLink[]>([]);
 let errorMessage = $state('');
+let closeError = $state('');
+let shakeToken = $state(0);
 let isSubmitting = $state(false);
 let nextLinkId = 1;
 
-const DEFAULT_LINK_ICON = 'IconGlobe';
-const canAddLink = $derived(links.length < 5);
+const canAddLink = $derived(links.length < MAX_LINKS);
 const aboutLength = $derived(about.length);
+const isDirty = $derived.by(() => {
+	const initialBannerAlt = user.bannerAlt ?? '';
+	if (bannerAlt !== initialBannerAlt) {
+		return true;
+	}
+
+	const initialBirthDate = toDateInputValue(user.birthDate);
+	if (birthDate !== initialBirthDate) {
+		return true;
+	}
+
+	const initialAbout = user.info?.about ?? user.about ?? '';
+	if (about !== initialAbout) {
+		return true;
+	}
+
+	const initialLinks = (user.info?.links ?? [])
+		.slice(0, 5)
+		.map((link) => ({ label: link.label, icon: normalizeIconKey(link.icon), url: link.url }));
+
+	if (links.length !== initialLinks.length) {
+		return true;
+	}
+
+	return links.some(
+		(link, index) =>
+			link.label !== initialLinks[index].label ||
+			link.icon !== initialLinks[index].icon ||
+			link.url !== initialLinks[index].url
+	);
+});
 
 function toDateInputValue(value: string | null | undefined) {
 	if (!value) {
@@ -47,16 +81,6 @@ function toDateInputValue(value: string | null | undefined) {
 	}
 
 	return parsedDate.toISOString().slice(0, 10);
-}
-
-function normalizeNullableString(value: string) {
-	const trimmedValue = value.trim();
-	return trimmedValue.length > 0 ? trimmedValue : null;
-}
-
-function normalizeIconKey(value: string) {
-	const trimmedValue = value.trim();
-	return trimmedValue in icons ? trimmedValue : DEFAULT_LINK_ICON;
 }
 
 function toEditableLink(link: ProfileLink): EditableProfileLink {
@@ -74,7 +98,19 @@ function resetForm() {
 	about = user.info?.about ?? user.about ?? '';
 	links = (user.info?.links ?? []).slice(0, 5).map(toEditableLink);
 	errorMessage = '';
+	closeError = '';
 	isSubmitting = false;
+}
+
+function requestClose() {
+	if (isDirty) {
+		closeError = 'У вас есть несохранённые изменения. Сохраните их перед закрытием.';
+		shakeToken += 1;
+		return;
+	}
+
+	closeError = '';
+	onClose();
 }
 
 function addLink() {
@@ -93,54 +129,6 @@ function updateLink(id: number, field: keyof ProfileLink, value: string) {
 	links = links.map((link) => (link.id === id ? { ...link, [field]: value } : link));
 }
 
-function isValidUrl(value: string) {
-	try {
-		const url = new URL(value);
-		return url.protocol === 'http:' || url.protocol === 'https:';
-	} catch {
-		return false;
-	}
-}
-
-function buildLinksPayload() {
-	const filledLinks = links
-		.map((link) => ({
-			label: link.label.trim(),
-			icon: normalizeIconKey(link.icon),
-			url: link.url.trim()
-		}))
-		.filter((link) => link.label || link.url || link.icon !== DEFAULT_LINK_ICON);
-
-	for (const link of filledLinks) {
-		if (!link.label || !link.icon || !link.url) {
-			throw new Error('Заполните label, icon и url у каждой ссылки.');
-		}
-
-		if (!isValidUrl(link.url)) {
-			throw new Error('Укажите корректный URL для каждой ссылки.');
-		}
-	}
-
-	return filledLinks;
-}
-
-function buildPayload(): UpdateProfilePayload {
-	const normalizedBannerAlt = normalizeNullableString(bannerAlt);
-
-	if (normalizedBannerAlt && !isValidUrl(normalizedBannerAlt)) {
-		throw new Error('Укажите корректную ссылку на кастомный баннер.');
-	}
-
-	return {
-		bannerAlt: normalizedBannerAlt,
-		birthDate: birthDate ? new Date(`${birthDate}T00:00:00.000Z`).toISOString() : null,
-		info: {
-			about: normalizeNullableString(about),
-			links: buildLinksPayload()
-		}
-	};
-}
-
 async function handleSubmit(event: SubmitEvent) {
 	event.preventDefault();
 
@@ -152,10 +140,9 @@ async function handleSubmit(event: SubmitEvent) {
 	isSubmitting = true;
 
 	try {
-		const api = createApi({ fetch });
-		const updatedUser = await api.updateMe(buildPayload());
+		const payload = buildProfilePayload({ bannerAlt, birthDate, about, links });
+		const updatedUser = await updateProfile(payload);
 		onSaved(updatedUser);
-		await invalidate('user:profile');
 		showSnackbar({
 			message: 'Профиль обновлен.',
 			variant: 'success'
@@ -173,10 +160,20 @@ $effect(() => {
 		resetForm();
 	}
 });
+
+$effect(() => {
+	if (!isDirty) {
+		closeError = '';
+	}
+});
 </script>
 
-<Modal {open} title="Редактирование профиля" {onClose}>
+<Modal {open} title="Редактирование профиля" onClose={requestClose} {shakeToken}>
   <form class="profile-form" onsubmit={handleSubmit}>
+    {#if closeError}
+      <p class="error" role="alert">{closeError}</p>
+    {/if}
+
     <label class="field">
       <span>Кастомный баннер</span>
       <Input
@@ -250,7 +247,7 @@ $effect(() => {
       <Button
         type="button"
         variant="ghost"
-        onclick={onClose}
+        onclick={requestClose}
         disabled={isSubmitting}
       >
         Отмена
