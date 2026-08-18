@@ -1,30 +1,17 @@
 <script lang="ts">
-import { onMount } from 'svelte';
-
-import { page } from '$app/state';
-import { createApi } from '$lib/api/api';
-import type { MotdListItem } from '$lib/api/api.type';
 import { IconHash } from '$lib/assets/icons';
-import { requireAuth } from '$lib/auth/auth.actions';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+import Button from '$lib/components/Button.svelte';
 import Link from '$lib/components/Link.svelte';
 
-requireAuth(page.data.auth);
+import type { PageProps } from './$types';
+import AddMotdModal from './AddMotdModal.svelte';
 
-let motdList = $state<MotdListItem[] | null>(null);
-let isLoading = $state(true);
+let { data }: PageProps = $props();
 
-onMount(() => {
-	createApi({ fetch })
-		.getMotdList()
-		.then((res) => {
-			motdList = Array.isArray(res) ? res : (res.motdList ?? null);
-		})
-		.catch(() => {})
-		.finally(() => {
-			isLoading = false;
-		});
-});
+const motdList = $derived(data.motdList);
+
+let isAddMotdOpen = $state(false);
 </script>
 
 <Breadcrumb
@@ -44,19 +31,19 @@ onMount(() => {
 </p>
 
 <p class="description">
-  Вы можете сами добавить их в дискорд боте на сервере через <code
-    >/motd add</code
-  >
-  либо добавить скриптовый на
+  Вы можете добавить свои через кнопку ниже, в дискорд боте на сервере через
+  <code>/motd add</code> либо добавить скриптовый на
   <Link
     href="https://github.com/Russian-Gamedev/bot.rgd.chat/blob/main/src/core/guilds/motd/runtime-motds.ts"
     >гитхабе</Link
   >
 </p>
 
-{#if isLoading}
-  <p>Загрузка...</p>
-{:else if motdList === null}
+<div class="actions">
+  <Button onclick={() => (isAddMotdOpen = true)}>Добавить свой</Button>
+</div>
+
+{#if motdList === null}
   <p>Не удалось загрузить список сообщений.</p>
 {:else if motdList.length === 0}
   <p>Сообщения не найдены.</p>
@@ -92,6 +79,8 @@ onMount(() => {
   </div>
 {/if}
 
+<AddMotdModal open={isAddMotdOpen} onClose={() => (isAddMotdOpen = false)} />
+
 <style>
   .description + .description {
     margin-top: 1rem;
@@ -116,6 +105,11 @@ onMount(() => {
 
   .table-wrapper {
     overflow-x: auto;
+  }
+
+  .actions {
+    display: flex;
+    margin-top: 1rem;
   }
 
   table {

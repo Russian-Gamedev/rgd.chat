@@ -1,0 +1,8 @@
+name = "rgd-chat"
+pages_build_output_dir = ".svelte-kit/cloudflare"
+compatibility_date = "2026-08-01"
+
+[vars]
+API_ORIGIN = "https://bot.rgd.chat"
+VITE_AUTH_URL = "https://discord.com/oauth2/authorize?client_id=735101707419123784&response_type=code&redirect_uri=https%3A%2F%2Fbot.rgd.chat%2Fauth%2Fdiscord%2Fcallback&scope=identify"
+VITE_EMBED_URL = "https://embed.rgd.chat"

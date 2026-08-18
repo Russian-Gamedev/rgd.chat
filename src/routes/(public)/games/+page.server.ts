@@ -1,12 +1,10 @@
 import { definePageMetaTags } from 'svelte-meta-tags';
 
-import { createApi } from '$lib/api/api';
+import { createServerApi } from '$lib/server/api';
 
-import type { PageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
-export const prerender = true;
-
-export const load: PageLoad = async ({ depends, fetch, url }) => {
+export const load: PageServerLoad = async ({ depends, request, fetch, url }) => {
 	depends('games:public-list');
 	const tag = url.searchParams.get('tag') || undefined;
 
@@ -22,7 +20,7 @@ export const load: PageLoad = async ({ depends, fetch, url }) => {
 		}
 	});
 
-	const api = createApi({ fetch });
+	const api = createServerApi({ request, fetch });
 	const games = await api.listPublishedGames({ limit: 20, tag }).catch(() => null);
 
 	return {

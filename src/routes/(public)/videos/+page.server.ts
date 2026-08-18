@@ -1,12 +1,10 @@
 import { definePageMetaTags } from 'svelte-meta-tags';
 
-import { createApi } from '$lib/api/api';
+import { createServerApi } from '$lib/server/api';
 
-import type { PageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
-export const prerender = true;
-
-export const load: PageLoad = async ({ depends, fetch }) => {
+export const load: PageServerLoad = async ({ depends, request, fetch }) => {
 	depends('videos:list');
 
 	const title = 'Коллекция полезных видео по разработке игр';
@@ -21,7 +19,7 @@ export const load: PageLoad = async ({ depends, fetch }) => {
 		}
 	});
 
-	const api = createApi({ fetch });
+	const api = createServerApi({ request, fetch });
 	const videos = await api.getVideos().catch(() => null);
 
 	return {

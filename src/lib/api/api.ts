@@ -1,4 +1,5 @@
 import type {
+	AddMotdResponse,
 	CreateGameDto,
 	GameDetails,
 	GameEditor,
@@ -16,12 +17,14 @@ import type {
 	UpdateGameDto,
 	UpdateProfilePayload,
 	User,
-	VideosPage
+	VideosPage,
+	WalletBalance
 } from './api.type';
 
 export type ApiOptions = {
 	fetch: typeof fetch;
 	baseUrl?: string;
+	headers?: Record<string, string>;
 };
 
 export const gameDetailsQueryKey = (idOrSlug: string) => ['games', 'details', idOrSlug] as const;
@@ -38,13 +41,22 @@ export class ApiHttpError extends Error {
 }
 
 export function createApi(options: ApiOptions) {
-	const baseUrl = options.baseUrl ?? import.meta.env.VITE_API_BASE_URL ?? 'https://bot.rgd.chat';
+	const baseUrl = options.baseUrl ?? import.meta.env.VITE_API_BASE_URL ?? '/api';
 	const fetcher = options.fetch;
 
 	async function request<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
 		const url = endpoint.startsWith('/') ? `${baseUrl}${endpoint}` : endpoint;
 
+		const headers = new Headers(options.headers);
+		if (requestOptions.headers) {
+			const merged = new Headers(requestOptions.headers);
+			merged.forEach((value, key) => {
+				headers.set(key, value);
+			});
+		}
+
 		Object.assign(requestOptions, {
+			headers,
 			credentials: 'include'
 		});
 		const response = await fetcher(url, requestOptions);
@@ -80,11 +92,21 @@ export function createApi(options: ApiOptions) {
 		getMe() {
 			return request<User>('/users/me');
 		},
+		getWalletBalance() {
+			return request<WalletBalance>('/wallet/balance');
+		},
 		getMotd() {
 			return request<{ motd: string }>('/motd');
 		},
 		getMotdList() {
 			return request<{ motdList: MotdListItem[] }>('/motd/list');
+		},
+		addMotd(content: string) {
+			return request<AddMotdResponse>('/motd', {
+				method: 'POST',
+				body: JSON.stringify({ content }),
+				headers: { 'Content-Type': 'application/json' }
+			});
 		},
 		logout() {
 			return request<void>('/auth/logout', { method: 'POST' });

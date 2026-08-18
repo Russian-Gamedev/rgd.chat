@@ -1,10 +1,10 @@
 <script lang="ts">
 import { onMount } from 'svelte';
 
+import { page } from '$app/state';
 import { createApi } from '$lib/api/api';
-import type { GameListResponseDto } from '$lib/api/api.type';
+import type { GameListResponseDto, User } from '$lib/api/api.type';
 import { IconJoystick } from '$lib/assets/icons';
-import { auth } from '$lib/auth/auth.store.svelte';
 import { hasGlobalPermission } from '$lib/auth/permissions';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Button from '$lib/components/Button.svelte';
@@ -27,6 +27,7 @@ const currentOffset = $derived(loadedPages.at(-1)?.offset ?? games?.offset ?? 0)
 const total = $derived(loadedPages.at(-1)?.total ?? games?.total ?? 0);
 const limit = $derived(loadedPages.at(-1)?.limit ?? games?.limit ?? 20);
 const hasMore = $derived(games !== null && currentOffset + limit < total);
+const currentUser = $derived(page.data.auth as User | null);
 
 async function loadNextPage(options?: { force?: boolean }) {
 	if (isLoadingMore || !hasMore) return;
@@ -98,11 +99,11 @@ onMount(() => {
   участников.
 </p>
 
-{#if auth.user}
+{#if currentUser}
   <div class="actions">
     <a href="/games/mine" class="button">Мои проекты</a>
     <a href="/games/editor/new" class="button">Создать игру</a>
-    {#if hasGlobalPermission(auth.user, 'games:review')}
+    {#if hasGlobalPermission(currentUser, 'games:review')}
       <Button as="a" href="/admin/games" color="error" variant="ghost">Админка игр</Button>
     {/if}
   </div>

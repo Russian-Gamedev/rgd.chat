@@ -2,7 +2,7 @@
 
 # rgd.chat
 
-[![Discord Link](https://bot.rgd.chat/embed/invite/TGZ4CDxWRC/banner)](https://discord.gg/TGZ4CDxWRC)
+[![Discord Link](https://embed.rgd.chat/invite/TGZ4CDxWRC/banner)](https://discord.gg/TGZ4CDxWRC)
 
 </div>
 

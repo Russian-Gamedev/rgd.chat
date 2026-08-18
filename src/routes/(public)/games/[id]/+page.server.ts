@@ -2,22 +2,15 @@ import { definePageMetaTags } from 'svelte-meta-tags';
 
 import { error } from '@sveltejs/kit';
 
-import { ApiHttpError, createApi, gameDetailsQueryKey } from '$lib/api/api';
-import { getPublishedGameEntries } from '$lib/api/prerender-entries';
+import { ApiHttpError, gameDetailsQueryKey } from '$lib/api/api';
+import { createServerApi } from '$lib/server/api';
 
-import type { PageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
-export const ssr = true;
-export const prerender = 'auto';
-export const csr = true;
-
-export const entries = async () => {
-	return getPublishedGameEntries(fetch);
-};
-
-export const load: PageLoad = async ({ params, depends, fetch }) => {
+export const load: PageServerLoad = async ({ params, depends, request, fetch }) => {
 	depends(`games:details:${gameDetailsQueryKey(params.id).at(-1)}`);
-	const api = createApi({ fetch });
+
+	const api = createServerApi({ request, fetch });
 	const game = await api.getPublishedGame(params.id).catch((err: unknown) => {
 		if (err instanceof ApiHttpError && err.status === 404) {
 			throw error(404, 'Игра не найдена');

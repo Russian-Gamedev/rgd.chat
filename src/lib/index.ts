@@ -4,7 +4,6 @@ export type Colors = 'primary' | 'success' | 'error' | 'warning' | 'bg-surface' 
 
 declare global {
 	interface ImportMetaEnv {
-		VITE_API_TARGET_URL: string;
 		VITE_AUTH_URL: string;
 		VITE_EMBED_URL: string;
 	}

@@ -3,6 +3,10 @@ export interface MembersStats {
 	total: number;
 }
 
+export type WalletBalance = {
+	balance: string;
+};
+
 export type Video = {
 	id: number;
 	text?: string;
@@ -77,6 +81,12 @@ export type MotdListItem = {
 		username: string;
 		avatar_url: string;
 	};
+};
+
+export type AddMotdResponse = {
+	id: number;
+	content: string;
+	balance_after: string;
 };
 
 export type UserTag = {

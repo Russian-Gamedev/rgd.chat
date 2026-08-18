@@ -1,6 +1,6 @@
 <script lang="ts">
+import { page } from '$app/state';
 import { IconJoystick } from '$lib/assets/icons';
-import { auth } from '$lib/auth/auth.store.svelte';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import SkeletonImage from '$lib/components/SkeletonImage.svelte';
 import { formatGameDate } from '$lib/games/format-game-date';
@@ -11,7 +11,8 @@ let { data }: PageProps = $props();
 
 const user = $derived(data.user);
 const games = $derived(data.games);
-const isOwn = $derived(auth.user?.id === user?.id);
+const currentUser = $derived(page.data.auth ?? null);
+const isOwn = $derived(currentUser?.id === user?.id);
 
 function getAuthorName(author: { type: string; name?: string; discord_user_id?: string }): string {
 	if (author.type === 'text' && author.name) return author.name;

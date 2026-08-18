@@ -2,11 +2,10 @@ import { defineBaseMetaTags } from 'svelte-meta-tags';
 
 import { SITE_DESCRIPTION, SITE_URL } from '$lib/site-config';
 
-export const load = ({ url }) => {
+export const load = ({ url, data }) => {
 	const title = 'Russian Gamedev — Discord сообщество';
 	const description = SITE_DESCRIPTION;
-	const origin = url.origin === 'http://sveltekit-prerender' ? SITE_URL : url.origin;
-	const canonical = new URL(url.pathname, origin).href;
+	const canonical = new URL(url.pathname, SITE_URL).href;
 
 	const baseTags = defineBaseMetaTags({
 		title,
@@ -35,6 +34,7 @@ export const load = ({ url }) => {
 	});
 
 	return {
+		...data,
 		...baseTags,
 		themeColor: '#5c87e7'
 	};

@@ -1,14 +1,11 @@
 <script lang="ts">
 import { deepMerge, JsonLd, MetaTags } from 'svelte-meta-tags';
 
-import { onMount } from 'svelte';
-
 import { onNavigate } from '$app/navigation';
+
 import '../styles/globals.css';
 
 import { page } from '$app/state';
-import { createApi } from '$lib/api/api';
-import { setAuth } from '$lib/auth/auth.store.svelte';
 import SnackbarViewport from '$lib/components/snackbar/SnackbarViewport.svelte';
 import {
 	SITE_DESCRIPTION,
@@ -24,13 +21,6 @@ import Navbar from './navbar.svelte';
 
 onNavigate((navigation) => {
 	return startPageViewTransition(navigation);
-});
-
-onMount(() => {
-	createApi({ fetch })
-		.getMe()
-		.then(setAuth)
-		.catch(() => setAuth(null));
 });
 
 let { children, data }: LayoutProps = $props();

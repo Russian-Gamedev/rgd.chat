@@ -9,14 +9,17 @@ type ModalProps = {
 	open: boolean;
 	title: string;
 	onClose: () => void;
+	shakeToken?: number;
 	children?: Snippet;
 };
 
-let { open, title, onClose, children }: ModalProps = $props();
+let { open, title, onClose, shakeToken = 0, children }: ModalProps = $props();
 
 const titleId = $props.id();
 let panel: HTMLDivElement | null = $state(null);
 let previouslyFocused: HTMLElement | null = null;
+let isShaking = $state(false);
+let lastShakeToken = 0;
 
 function prefersReducedMotion() {
 	return browser && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -133,6 +136,21 @@ $effect(() => {
 		previouslyFocused = null;
 	};
 });
+
+$effect(() => {
+	if (!browser || !open || shakeToken <= 0 || shakeToken === lastShakeToken) {
+		return;
+	}
+
+	lastShakeToken = shakeToken;
+	isShaking = true;
+
+	const timeout = setTimeout(() => {
+		isShaking = false;
+	}, 450);
+
+	return () => clearTimeout(timeout);
+});
 </script>
 
 {#if open}
@@ -148,6 +166,7 @@ $effect(() => {
 			<div
 				bind:this={panel}
 				class="modal-panel"
+				class:shaking={isShaking}
 				transition:panelTransition
 				role="dialog"
 				aria-modal="true"
@@ -199,6 +218,33 @@ $effect(() => {
 
 	.modal-panel:focus {
 		outline: none;
+	}
+
+	.modal-panel.shaking {
+		animation: modal-shake 0.4s ease;
+	}
+
+	@keyframes modal-shake {
+		0%,
+		100% {
+			transform: translateX(0);
+		}
+
+		20% {
+			transform: translateX(-8px);
+		}
+
+		40% {
+			transform: translateX(8px);
+		}
+
+		60% {
+			transform: translateX(-4px);
+		}
+
+		80% {
+			transform: translateX(4px);
+		}
 	}
 
 	.modal-panel::-webkit-scrollbar {
