@@ -29,45 +29,47 @@ const blogs = []; /// TODO: Fetch blogs
 const other = []; /// TODO: Fetch other
 </script>
 
-<Breadcrumb
-  items={[
-    { label: "Главная", href: "/" },
-    { label: user.username, href: `/${user.username}` },
-  ]}
-/>
-
-<div class="page-content">
-  <ProfileHeader
-    {user}
-    {isOwnProfile}
-    onEdit={() => (isEditProfileOpen = true)}
+{#if user}
+  <Breadcrumb
+    items={[
+      { label: "Главная", href: "/" },
+      { label: user.username, href: `/${user.username}` },
+    ]}
   />
 
-  <ProfileLinks {links} />
-  {#if projects.length > 0}
-    <ProfileSection label="Проекты" id="projects">
-      <div></div>
-    </ProfileSection>
-  {/if}
-  {#if blogs.length > 0}
-    <ProfileSection label="Блоги" id="blogs">
-      <div></div>
-    </ProfileSection>
-  {/if}
-  {#if other.length > 0}
-    <ProfileSection label="Прочее" id="other">
-      <div></div>
-    </ProfileSection>
-  {/if}
-</div>
+  <div class="page-content">
+    <ProfileHeader
+      {user}
+      {isOwnProfile}
+      onEdit={() => (isEditProfileOpen = true)}
+    />
 
-{#if isOwnProfile}
-  <EditProfileModal
-    open={isEditProfileOpen}
-    {user}
-    onClose={() => (isEditProfileOpen = false)}
-    onSaved={(updatedUser) => (savedUser = updatedUser)}
-  />
+    <ProfileLinks {links} />
+    {#if projects.length > 0}
+      <ProfileSection label="Проекты" id="projects">
+        <div></div>
+      </ProfileSection>
+    {/if}
+    {#if blogs.length > 0}
+      <ProfileSection label="Блоги" id="blogs">
+        <div></div>
+      </ProfileSection>
+    {/if}
+    {#if other.length > 0}
+      <ProfileSection label="Прочее" id="other">
+        <div></div>
+      </ProfileSection>
+    {/if}
+  </div>
+
+  {#if isOwnProfile}
+    <EditProfileModal
+      open={isEditProfileOpen}
+      {user}
+      onClose={() => (isEditProfileOpen = false)}
+      onSaved={(updatedUser) => (savedUser = updatedUser)}
+    />
+  {/if}
 {/if}
 
 <style>
