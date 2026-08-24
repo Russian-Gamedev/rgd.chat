@@ -1,5 +1,8 @@
 import type {
+	AddEventResponse,
 	AddMotdResponse,
+	GuildEventListItem,
+	GuildEventName,
 	MembersStats,
 	MotdListItem,
 	Patron,
@@ -81,6 +84,16 @@ export function createApi(options: ApiOptions) {
 			return request<AddMotdResponse>('/motd', {
 				method: 'POST',
 				body: JSON.stringify({ content }),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		getEventsList() {
+			return request<GuildEventListItem[]>('/events/list');
+		},
+		addEvent(event: GuildEventName, message: string) {
+			return request<AddEventResponse>('/events', {
+				method: 'POST',
+				body: JSON.stringify({ event, message }),
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},

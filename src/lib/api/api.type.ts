@@ -88,6 +88,35 @@ export type AddMotdResponse = {
 	balance_after: string;
 };
 
+export type GuildEventName =
+	| 'member_first_join'
+	| 'member_join'
+	| 'member_leave'
+	| 'member_ban'
+	| 'member_kick'
+	| 'member_set_name';
+
+export type GuildEventAuthor = {
+	id: string;
+	username: string;
+	avatar_url: string;
+};
+
+export type GuildEventListItem = {
+	id: string;
+	event: GuildEventName;
+	message: string;
+	attachments: string[] | null;
+	author: GuildEventAuthor;
+};
+
+export type AddEventResponse = {
+	id: string;
+	event: GuildEventName;
+	message: string;
+	balance_after: string;
+};
+
 export type UserTag = {
 	background: string;
 	color: string;
