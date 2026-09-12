@@ -1,8 +1,10 @@
 <script lang="ts">
+import type { MotdListItem } from '$lib/api/api.type';
 import { IconHash } from '$lib/assets/icons';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Button from '$lib/components/Button.svelte';
 import Link from '$lib/components/Link.svelte';
+import Select, { type SelectOption } from '$lib/components/Select.svelte';
 
 import type { PageProps } from './$types';
 import AddMotdModal from './AddMotdModal.svelte';
@@ -12,6 +14,34 @@ let { data }: PageProps = $props();
 const motdList = $derived(data.motdList);
 
 let isAddMotdOpen = $state(false);
+let userFilter = $state<string[]>([]);
+
+const userOptions = $derived.by(() => {
+	if (motdList === null) {
+		return [];
+	}
+
+	const users = new Map<string, MotdListItem['user']>();
+	for (const item of motdList) {
+		users.set(item.user.id, item.user);
+	}
+
+	return [...users.values()]
+		.sort((a, b) => a.username.localeCompare(b.username))
+		.map(
+			(user): SelectOption => ({
+				value: user.id,
+				label: user.username,
+				meta: user
+			})
+		);
+});
+
+const filteredMotdList = $derived(
+	motdList === null || userFilter.length === 0
+		? motdList
+		: motdList.filter((item) => item.user.id === userFilter[0])
+);
 </script>
 
 <Breadcrumb
@@ -39,13 +69,30 @@ let isAddMotdOpen = $state(false);
   >
 </p>
 
+{#snippet userOptionContent(item: SelectOption)}
+  {@const user = item.meta as MotdListItem['user']}
+  {#if user.avatar_url}
+    <img class="option-avatar" src={user.avatar_url} alt="" />
+  {:else}
+    <span class="option-avatar option-placeholder" aria-hidden="true"
+      >{user.username?.[0]?.toUpperCase() ?? "?"}</span
+    >
+  {/if}
+  <span class="option-label">{user.username}</span>
+{/snippet}
+
 <div class="actions">
+  <Select options={userOptions} bind:values={userFilter} placeholder="Все пользователи">
+    {#snippet option(item)}
+      {@render userOptionContent(item)}
+    {/snippet}
+  </Select>
   <Button onclick={() => (isAddMotdOpen = true)}>Добавить свой</Button>
 </div>
 
-{#if motdList === null}
+{#if filteredMotdList === null}
   <p>Не удалось загрузить список сообщений.</p>
-{:else if motdList.length === 0}
+{:else if filteredMotdList.length === 0}
   <p>Сообщения не найдены.</p>
 {:else}
   <div class="table-wrapper">
@@ -58,7 +105,7 @@ let isAddMotdOpen = $state(false);
         </tr>
       </thead>
       <tbody>
-        {#each motdList as item (item.id)}
+        {#each filteredMotdList as item (item.id)}
           <tr>
             <td class="id-cell">{item.id}</td>
             <td>
@@ -109,7 +156,35 @@ let isAddMotdOpen = $state(false);
 
   .actions {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     margin-top: 1rem;
+  }
+
+  .option-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    object-fit: cover;
+    background-color: var(--color-bg);
+    flex: 0 0 auto;
+  }
+
+  .option-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .option-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   table {

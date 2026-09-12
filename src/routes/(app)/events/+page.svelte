@@ -1,7 +1,9 @@
 <script lang="ts">
+import type { GuildEventAuthor } from '$lib/api/api.type';
 import { IconCalendar } from '$lib/assets/icons';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Button from '$lib/components/Button.svelte';
+import Select, { type SelectOption } from '$lib/components/Select.svelte';
 
 import type { PageProps } from './$types';
 import AddEventModal from './AddEventModal.svelte';
@@ -12,6 +14,47 @@ let { data }: PageProps = $props();
 const eventsList = $derived(data.eventsList ?? null);
 
 let isAddEventOpen = $state(false);
+let userFilter = $state<string[]>([]);
+let eventFilter = $state<string[]>([]);
+
+const userOptions = $derived.by(() => {
+	if (eventsList === null) {
+		return [];
+	}
+
+	const authors = new Map<string, GuildEventAuthor>();
+	for (const item of eventsList) {
+		if (item.author) {
+			authors.set(item.author.id, item.author);
+		}
+	}
+
+	return [...authors.values()]
+		.sort((a, b) => a.username.localeCompare(b.username))
+		.map(
+			(author): SelectOption => ({
+				value: author.id,
+				label: author.username,
+				meta: author
+			})
+		);
+});
+
+const eventOptions: SelectOption[] = Object.entries(eventNames).map(([value, label]) => ({
+	value,
+	label
+}));
+
+const filteredEventsList = $derived(
+	eventsList === null
+		? null
+		: eventsList.filter(
+				(item) =>
+					(userFilter.length === 0 ||
+						(item.author != null && userFilter.includes(item.author.id))) &&
+					(eventFilter.length === 0 || eventFilter.includes(item.event))
+			)
+);
 </script>
 
 <Breadcrumb
@@ -36,13 +79,33 @@ let isAddEventOpen = $state(false);
   <code>/event add</code>
 </p>
 
+{#snippet userOptionContent(item: SelectOption)}
+  {@const author = item.meta as GuildEventAuthor}
+  {#if author.avatar_url}
+    <img class="option-avatar" src={author.avatar_url} alt="" />
+  {:else}
+    <span class="option-avatar option-placeholder" aria-hidden="true"
+      >{author.username?.[0]?.toUpperCase() ?? "?"}</span
+    >
+  {/if}
+  <span class="option-label">{author.username}</span>
+{/snippet}
+
 <div class="actions">
+  <div class="filters">
+    <Select options={userOptions} bind:values={userFilter} placeholder="Все пользователи">
+      {#snippet option(item)}
+        {@render userOptionContent(item)}
+      {/snippet}
+    </Select>
+    <Select options={eventOptions} bind:values={eventFilter} placeholder="Все события" multiple />
+  </div>
   <Button onclick={() => (isAddEventOpen = true)}>Добавить свой</Button>
 </div>
 
-{#if !eventsList}
+{#if filteredEventsList === null}
   <p>Не удалось загрузить список событий.</p>
-{:else if eventsList.length === 0}
+{:else if filteredEventsList.length === 0}
   <p>События не найдены.</p>
 {:else}
   <div class="table-wrapper">
@@ -55,7 +118,7 @@ let isAddEventOpen = $state(false);
         </tr>
       </thead>
       <tbody>
-        {#each eventsList as item (item.id)}
+        {#each filteredEventsList as item (item.id)}
           <tr>
             <td>
               <div class="user-cell">
@@ -112,7 +175,41 @@ let isAddEventOpen = $state(false);
 
   .actions {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     margin-top: 1rem;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .option-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    object-fit: cover;
+    background-color: var(--color-bg);
+    flex: 0 0 auto;
+  }
+
+  .option-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .option-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   table {
