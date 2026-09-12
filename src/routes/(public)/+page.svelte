@@ -64,20 +64,6 @@ const cards = [
     <ExternalLink />
   </Button>
 
-  <Button
-    as="a"
-    class="join-button"
-    href="https://discord.gg/MXWGuNtT4C"
-    target="_blank"
-    rel="noopener noreferrer"
-    data-rybbit-event="join_discord"
-    data-rybbit-prop-button="new"
-    color="success"
-  >
-    Новый неформальный сервер
-    <ExternalLink />
-    <span class="new-badge">NEW!</span>
-  </Button>
 </div>
 
 <section class="links">
@@ -120,20 +106,6 @@ const cards = [
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
-  }
-
-  .new-badge {
-    background-color: var(--color-error);
-    color: #fff;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem;
-    margin-left: 0.5rem;
-    line-height: 1;
-    position: absolute;
-    right: -5%;
-    top: -25%;
   }
 
   .cards {
