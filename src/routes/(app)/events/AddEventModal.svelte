@@ -6,7 +6,7 @@ import { showSnackbar } from '$lib/components/snackbar';
 import { COINS_TOP } from '$lib/site-config';
 
 import { addEvent } from './AddEventModal.api';
-import { eventNames, isGuildEventName } from './events.shared';
+import { eventNames, eventParams, isGuildEventName } from './events.shared';
 import { extractTemplateParams, renderTemplate } from './template';
 
 type AddEventModalProps = {
@@ -18,6 +18,7 @@ let { open, onClose }: AddEventModalProps = $props();
 
 let eventName = $state<GuildEventName>('member_join');
 let message = $state('');
+let messageEl = $state<HTMLTextAreaElement>();
 let paramValues = $state<Record<string, string>>({});
 let errorMessage = $state('');
 let closeError = $state('');
@@ -54,6 +55,19 @@ function handleEventChange(event: Event) {
 	if (target instanceof HTMLSelectElement && isGuildEventName(target.value)) {
 		eventName = target.value;
 	}
+}
+
+function insertParam(name: string) {
+	const snippet = `\${${name}}`;
+	const el = messageEl;
+	const start = el?.selectionStart ?? message.length;
+	const end = el?.selectionEnd ?? start;
+
+	message = message.slice(0, start) + snippet + message.slice(end);
+	queueMicrotask(() => {
+		el?.focus();
+		el?.setSelectionRange(start + snippet.length, start + snippet.length);
+	});
 }
 
 async function handleSubmit(event: SubmitEvent) {
@@ -109,15 +123,29 @@ $effect(() => {
       </select>
     </label>
 
-    <label class="field">
+    <div class="field">
       <span>Сообщение</span>
       <textarea
+        bind:this={messageEl}
         bind:value={message}
         rows="4"
         placeholder="Введите шаблон сообщения, например: Прощай, ${'{'}user{'}'}!"
         disabled={isSubmitting}
       ></textarea>
-    </label>
+      <div class="param-buttons">
+        {#each eventParams[eventName] as param (param)}
+          <button
+            type="button"
+            class="param-insert"
+            onclick={() => insertParam(param)}
+            disabled={isSubmitting}
+            title={`Вставить \${${param}} в позицию курсора`}
+          >
+            {'${' + param + '}'}
+          </button>
+        {/each}
+      </div>
+    </div>
 
     <details class="preview">
       <summary>Предпросмотр</summary>
@@ -215,6 +243,34 @@ $effect(() => {
   select:disabled,
   textarea:disabled {
     opacity: 0.5;
+  }
+
+  .param-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .param-insert {
+    padding: 5px 10px;
+    border: 1px solid #212226;
+    border-radius: 6px;
+    background: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .param-insert:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    color: var(--color-text);
+  }
+
+  .param-insert:disabled {
+    opacity: 0.5;
+    cursor: default;
   }
 
   .preview {

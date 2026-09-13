@@ -68,6 +68,7 @@ export type User = {
 	lastActiveAt: string;
 	activeStreak: number;
 	maxActiveStreak: number;
+	activityPublic: boolean;
 	permissions: Permissions;
 	tags: UserTag[];
 };
@@ -94,7 +95,8 @@ export type GuildEventName =
 	| 'member_leave'
 	| 'member_ban'
 	| 'member_kick'
-	| 'member_set_name';
+	| 'member_set_name'
+	| 'activity_raffle';
 
 export type GuildEventAuthor = {
 	id: string;
@@ -141,4 +143,43 @@ export type UpdateProfilePayload = {
 	bannerAlt?: string | null;
 	birthDate?: string | null;
 	info?: UpdateProfileInfo;
+	activityPublic?: boolean;
+};
+
+export type ActivityDay = {
+	date: string;
+	messageScore: number;
+	voiceSeconds: number;
+	reactionCount: number;
+};
+
+export type ActivityTotals = {
+	messageScore: number;
+	voiceSeconds: number;
+	reactionCount: number;
+};
+
+export type ActivityStreak = {
+	current: number;
+	max: number;
+};
+
+export type UserActivity = {
+	days: ActivityDay[];
+	totals: ActivityTotals;
+	streak: ActivityStreak;
+};
+
+export type CurrentUserActivity = UserActivity & {
+	isPublic: boolean;
+};
+
+export type ActivityOverviewDay = ActivityDay & {
+	activeUsers: number;
+};
+
+export type ActivityOverview = {
+	days: ActivityOverviewDay[];
+	totals: ActivityTotals;
+	activeWeekUsers: number;
 };

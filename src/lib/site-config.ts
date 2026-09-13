@@ -8,6 +8,8 @@ export const SITE_SOCIAL_LINKS = [
 	'https://www.youtube.com/@russiangamedev'
 ];
 
+export const SHOW_COMMUNITY_STATS = false;
+
 export const COINS_TOP =
 	'https://cdn.discordapp.com/emojis/1128595913007435887.webp?animated=true&size=128';
 export const COINS_BOTTOM =

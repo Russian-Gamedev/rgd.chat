@@ -1,10 +1,12 @@
 <script lang="ts">
 import { IconJam, IconVK, IconYoutube } from '$lib/assets/icons';
 import ExternalLink from '$lib/assets/icons/external-link.svelte';
+import ActivityGraph from '$lib/components/ActivityGraph.svelte';
 import BadgeCounter from '$lib/components/BadgeCounter.svelte';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Button from '$lib/components/Button.svelte';
 import Tertiary from '$lib/components/Tertiary.svelte';
+import { SHOW_COMMUNITY_STATS } from '$lib/site-config';
 
 import type { PageProps } from './$types';
 
@@ -12,6 +14,7 @@ let { data }: PageProps = $props();
 
 const stats = $derived(data.stats);
 const { motd } = $derived(data.motd);
+const activity = $derived(data.activity);
 
 const cards = [
 	{
@@ -88,9 +91,32 @@ const cards = [
   </div>
 </section>
 
+{#if SHOW_COMMUNITY_STATS && activity}
+	<section class="community">
+		<Tertiary label="Активность сообщества" />
+		<div class="badges">
+			<BadgeCounter label="Активных за неделю" count={activity.activeWeekUsers} />
+			<BadgeCounter
+				label="Часов в голосовых каналах"
+				count={Math.round(activity.totals.voiceSeconds / 3600)}
+			/>
+			<BadgeCounter label="Реакций поставлено" count={activity.totals.reactionCount} />
+		</div>
+		<ActivityGraph days={activity.days} />
+	</section>
+{/if}
+
 <Tertiary title="Сообщение дня" label={motd} />
 
 <style>
+  .community {
+    margin-top: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
   :global(.join-button) {
     font-weight: bold;
     font-size: 20px;

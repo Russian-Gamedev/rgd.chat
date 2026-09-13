@@ -3,6 +3,7 @@ import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
 import type { PageProps } from './$types';
 import EditProfileModal from './EditProfileModal.svelte';
+import ProfileActivity from './ProfileActivity.svelte';
 import ProfileHeader from './ProfileHeader.svelte';
 import ProfileLinks from './ProfileLinks.svelte';
 import ProfileSection from './ProfileSection.svelte';
@@ -44,7 +45,10 @@ const other = []; /// TODO: Fetch other
       onEdit={() => (isEditProfileOpen = true)}
     />
 
-    <ProfileLinks {links} />
+	<ProfileLinks {links} />
+
+	<ProfileActivity {user} currentUser={data.currentUser} initialActivity={data.activity} />
+
     {#if projects.length > 0}
       <ProfileSection label="Проекты" id="projects">
         <div></div>

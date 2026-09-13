@@ -1,6 +1,8 @@
 <script lang="ts">
 import type { SvelteHTMLElements } from 'svelte/elements';
 
+import { formatNumber } from '$lib/utils/format';
+
 import Badge from './Badge.svelte';
 
 interface BadgeProps {
@@ -14,7 +16,7 @@ let { label, count, ...rest }: BadgeProps & SvelteHTMLElements['span'] = $props(
 <Badge {...rest}>
   {label}{count !== undefined ? ":" : ""}
   {#if count !== undefined}
-    <span class="count">{count}</span>
+    <span class="count">{formatNumber(count)}</span>
   {/if}
 </Badge>
 

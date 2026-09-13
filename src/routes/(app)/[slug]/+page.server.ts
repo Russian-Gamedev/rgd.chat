@@ -18,6 +18,12 @@ export const load: PageServerLoad = async ({ params, depends, parent, request, f
 		throw error(404, 'Пользователь не найден');
 	});
 
+	const isOwnProfile = currentUser?.id === user.id;
+	const activity =
+		isOwnProfile || user.activityPublic
+			? await api.getUserActivity(user.id).catch(() => null)
+			: null;
+
 	const title = user.nickname ?? user.username;
 	const description = user.about ?? `Профиль пользователя ${title}`;
 	const pageMetaTags = definePageMetaTags({
@@ -43,6 +49,7 @@ export const load: PageServerLoad = async ({ params, depends, parent, request, f
 	return {
 		...pageMetaTags,
 		user,
-		currentUser
+		currentUser,
+		activity
 	};
 };

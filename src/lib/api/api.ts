@@ -1,6 +1,8 @@
 import type {
+	ActivityOverview,
 	AddEventResponse,
 	AddMotdResponse,
+	CurrentUserActivity,
 	GuildEventListItem,
 	GuildEventName,
 	MembersStats,
@@ -8,6 +10,7 @@ import type {
 	Patron,
 	UpdateProfilePayload,
 	User,
+	UserActivity,
 	VideosPage,
 	WalletBalance
 } from './api.type';
@@ -109,8 +112,21 @@ export function createApi(options: ApiOptions) {
 				body: JSON.stringify(payload),
 				headers: { 'Content-Type': 'application/json' }
 			});
+		},
+		getMyActivity(months?: number) {
+			return request<CurrentUserActivity>(withMonthsQuery('/activity/me', months));
+		},
+		getUserActivity(user: string, months?: number) {
+			return request<UserActivity>(withMonthsQuery(`/activity/users/${user}`, months));
+		},
+		getActivityOverview(months?: number) {
+			return request<ActivityOverview>(withMonthsQuery('/activity/overview', months));
 		}
 	};
+}
+
+function withMonthsQuery(endpoint: string, months?: number) {
+	return months === undefined ? endpoint : `${endpoint}?months=${months}`;
 }
 
 if (import.meta.env.DEV && typeof window !== 'undefined') {
