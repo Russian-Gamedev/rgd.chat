@@ -3,6 +3,7 @@ import type {
 	AddEventResponse,
 	AddMotdResponse,
 	CurrentUserActivity,
+	DonationsPage,
 	GuildEventListItem,
 	GuildEventName,
 	MembersStats,
@@ -70,6 +71,11 @@ export function createApi(options: ApiOptions) {
 		},
 		getPatrons() {
 			return request<Patron[]>('https://thanks.rgd.chat/api/supporters');
+		},
+		getDonations(page = 1, perPage = 20) {
+			return request<DonationsPage>(
+				`https://thanks.rgd.chat/api/donations?page=${page}&per_page=${perPage}`
+			);
 		},
 		getMe() {
 			return request<User>('/users/me');

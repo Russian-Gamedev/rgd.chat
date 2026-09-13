@@ -1,14 +1,78 @@
 <script lang="ts">
+import { onMount } from 'svelte';
+
+import type { Donation, DonationsPage } from '$lib/api/api.type';
 import patronsBanner from '$lib/assets/backgrounds/patrons-banner.webp';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import SkeletonImage from '$lib/components/SkeletonImage.svelte';
 import Tertiary from '$lib/components/Tertiary.svelte';
+import { createInfiniteScrollObserver } from '$lib/utils/infinite-scroll';
 
 import type { PageProps } from './$types';
 
 let { data }: PageProps = $props();
 
 const patrons = $derived(data.patrons);
+const donations = $derived(data.donations);
+
+let loadedPages = $state<DonationsPage[]>([]);
+let isLoadingMore = $state(false);
+let hasLoadError = $state(false);
+let sentinel: HTMLElement | undefined = $state();
+
+const donationItems = $derived(
+	uniqueDonations([...(donations?.items ?? []), ...loadedPages.flatMap((page) => page.items)])
+);
+const currentPage = $derived(loadedPages.at(-1)?.page ?? donations?.page ?? 1);
+const perPage = $derived(loadedPages.at(-1)?.per_page ?? donations?.per_page ?? 20);
+const total = $derived(loadedPages.at(-1)?.total ?? donations?.total ?? 0);
+const hasMore = $derived(donations !== null && currentPage * perPage < total);
+
+async function loadNextPage(options?: { force?: boolean }) {
+	if (isLoadingMore || !hasMore) return;
+	if (hasLoadError && !options?.force) return;
+
+	isLoadingMore = true;
+	hasLoadError = false;
+
+	try {
+		const response = await fetch(`/api/donations?page=${currentPage + 1}&per_page=${perPage}`);
+		if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+		loadedPages = [...loadedPages, (await response.json()) as DonationsPage];
+	} catch (error) {
+		console.error('Failed to load donations page', error);
+		hasLoadError = true;
+	} finally {
+		isLoadingMore = false;
+
+		if (hasMore && sentinel && !hasLoadError) {
+			const rect = sentinel.getBoundingClientRect();
+			const threshold = window.innerHeight + 400;
+			if (rect.top <= threshold && rect.bottom >= 0) {
+				loadNextPage();
+			}
+		}
+	}
+}
+
+onMount(() => {
+	if (!sentinel) return;
+
+	return createInfiniteScrollObserver(sentinel, () => void loadNextPage());
+});
+
+function uniqueDonations(items: Donation[]): Donation[] {
+	const seen = new Set<string>();
+
+	return items.filter((donation) => {
+		const key = `${donation.date}|${donation.username}`;
+		if (seen.has(key)) return false;
+
+		seen.add(key);
+		return true;
+	});
+}
 
 function formatDonation(value: number): string {
 	return new Intl.NumberFormat('ru-RU', {
@@ -17,6 +81,20 @@ function formatDonation(value: number): string {
 		maximumFractionDigits: 2,
 		minimumFractionDigits: 0
 	}).format(value);
+}
+
+function formatDonationDate(date: string): string {
+	return new Date(date).toLocaleString('ru-RU', {
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit'
+	});
+}
+
+function getFallbackAvatar(username: string): string {
+	return `https://blobatar.dev/avatar/${username}?size=64`;
 }
 
 function getBannerImageUrl(banner: string): string | null {
@@ -52,11 +130,16 @@ function getBannerColor(banner: string): string | undefined {
 {:else}
   <section class="patrons" aria-label="Список донатеров">
     <div class="top-patrons">
-      {#each patrons.slice(0, 3) as patron, index (patron.user.id)}
+      {#each patrons.slice(0, 3) as patron, index (patron.user.username)}
+        {@const hasProfile = Boolean(patron.user.id)}
         {@const bannerImageUrl = getBannerImageUrl(patron.user.banner)}
         {@const bannerColor = getBannerColor(patron.user.banner)}
 
-        <a href="/{patron.user.username}" class="patron">
+        <svelte:element
+          this={hasProfile ? 'a' : 'div'}
+          href={hasProfile ? `/${patron.user.username}` : undefined}
+          class="patron"
+        >
           {#if bannerImageUrl}
             <SkeletonImage class="banner" src={bannerImageUrl} alt="" />
           {:else}
@@ -71,6 +154,7 @@ function getBannerColor(banner: string): string | undefined {
               <SkeletonImage
                 class="avatar"
                 src={patron.user.avatar_url}
+                fallbackSrc={getFallbackAvatar(patron.user.username)}
                 alt={patron.user.username}
               />
               <h2>{patron.user.username}</h2>
@@ -85,18 +169,24 @@ function getBannerColor(banner: string): string | undefined {
               {formatDonation(patron.value)}
             </span>
           </div>
-        </a>
+        </svelte:element>
       {/each}
     </div>
 
     <div class="regular-patrons">
-      {#each patrons.slice(3) as patron (patron.user.id)}
-        <a href="/{patron.user.username}" class="patron without-banner">
+      {#each patrons.slice(3) as patron (patron.user.username)}
+        {@const hasProfile = Boolean(patron.user.id)}
+        <svelte:element
+          this={hasProfile ? 'a' : 'div'}
+          href={hasProfile ? `/${patron.user.username}` : undefined}
+          class="patron without-banner"
+        >
           <div class="content">
             <div class="identity">
               <SkeletonImage
                 class="avatar"
                 src={patron.user.avatar_url}
+                fallbackSrc={getFallbackAvatar(patron.user.username)}
                 alt={patron.user.username}
               />
               <h2>{patron.user.username}</h2>
@@ -104,11 +194,54 @@ function getBannerColor(banner: string): string | undefined {
 
             <span class="value-badge">{formatDonation(patron.value)}</span>
           </div>
-        </a>
+        </svelte:element>
       {/each}
     </div>
   </section>
 {/if}
+
+<section class="recent-donations" aria-label="Последние донаты">
+  <Tertiary label="Последние донаты" />
+
+  {#if donations === null}
+    <p>Не удалось загрузить последние донаты.</p>
+  {:else if donationItems.length === 0}
+    <p>Донаты не найдены.</p>
+  {:else}
+    <div class="donations">
+      {#each donationItems as donation (donation.date + donation.username)}
+        <article class="donation">
+          {#if donation.message}
+            <p class="donation-message">{donation.message}</p>
+          {/if}
+
+          {#if donation.image}
+            <img
+              class="donation-image"
+              src={donation.image}
+              alt={`Донат от ${donation.username}`}
+              loading="lazy"
+            />
+          {/if}
+
+          <time datetime={donation.date}>{formatDonationDate(donation.date)}</time>
+        </article>
+      {/each}
+    </div>
+
+    <div class="loader" bind:this={sentinel}>
+      {#if isLoadingMore}
+        <p>Загружаем ещё донаты...</p>
+      {:else if hasLoadError}
+        <button class="retry-button" type="button" onclick={() => loadNextPage({ force: true })}>
+          Повторить загрузку
+        </button>
+      {:else if !hasMore}
+        <p>Больше донатов нет.</p>
+      {/if}
+    </div>
+  {/if}
+</section>
 
 <style>
   .patrons {
@@ -248,6 +381,72 @@ function getBannerColor(banner: string): string | undefined {
 
   .value-badge.rank-third {
     background-color: #de9c65;
+  }
+
+  .recent-donations {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+  }
+
+  .donations {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .donation {
+    background-color: var(--color-bg-surface);
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+
+  .donation-message {
+    color: var(--color-text);
+    font-size: 14px;
+    line-height: 1.4;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .donation-image {
+    aspect-ratio: 565 / 95;
+    border-radius: 8px;
+    display: block;
+    height: auto;
+    margin-top: 0.5rem;
+    max-width: 565px;
+    width: 100%;
+  }
+
+  .loader {
+    display: flex;
+    justify-content: center;
+    min-height: 4rem;
+    padding: 1.5rem 0;
+  }
+
+  .loader p {
+    font-size: 1rem;
+  }
+
+  .retry-button {
+    border: 0;
+    border-radius: 0.5rem;
+    background-color: var(--color-primary);
+    color: var(--color-text);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    padding: 0.75rem 1rem;
+  }
+
+  time {
+    color: var(--color-text-secondary);
+    display: block;
+    font-size: 12px;
+    margin-top: 0.375rem;
   }
 
   @media (max-width: 1264px) {

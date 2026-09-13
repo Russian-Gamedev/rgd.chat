@@ -33,11 +33,28 @@ export type VideosPage = {
 export type Patron = {
 	value: number;
 	user: {
-		id: string;
+		id?: string;
 		username: string;
 		avatar_url: string;
 		banner: string;
 	};
+};
+
+export type Donation = {
+	username: string;
+	avatar_url: string;
+	message: string;
+	amount: number;
+	is_fee_paid_by_user: boolean;
+	date: string;
+	image: string;
+};
+
+export type DonationsPage = {
+	items: Donation[];
+	page: number;
+	per_page: number;
+	total: number;
 };
 
 export type Permission =

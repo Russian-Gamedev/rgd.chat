@@ -7,10 +7,10 @@ import { IconArrowUp } from '$lib/assets/icons';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Link from '$lib/components/Link.svelte';
 import SkeletonImage from '$lib/components/SkeletonImage.svelte';
+import { createInfiniteScrollObserver } from '$lib/utils/infinite-scroll';
 
 import type { PageProps } from './$types';
 import { formatAbsoluteDate, formatRelativeDateTime } from './format-date';
-import { createInfiniteScrollObserver } from './infinite-scroll';
 import { toVideoCards, uniqueById } from './video-utils';
 
 let { data }: PageProps = $props();

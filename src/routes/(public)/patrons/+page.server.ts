@@ -20,9 +20,11 @@ export const load: PageServerLoad = async ({ depends, request, fetch }) => {
 
 	const api = createServerApi({ request, fetch });
 	const patrons = await api.getPatrons().catch(() => null);
+	const donations = await api.getDonations().catch(() => null);
 
 	return {
 		...pageMetaTags,
-		patrons
+		patrons,
+		donations
 	};
 };
