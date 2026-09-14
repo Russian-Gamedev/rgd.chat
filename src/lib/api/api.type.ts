@@ -182,13 +182,11 @@ export type ActivityStreak = {
 };
 
 export type UserActivity = {
-	days: ActivityDay[];
+	isPublic: boolean;
+	/** Per-day graph data; null when the user keeps their activity graph private. */
+	days: ActivityDay[] | null;
 	totals: ActivityTotals;
 	streak: ActivityStreak;
-};
-
-export type CurrentUserActivity = UserActivity & {
-	isPublic: boolean;
 };
 
 export type ActivityOverviewDay = ActivityDay & {

@@ -2,7 +2,6 @@ import type {
 	ActivityOverview,
 	AddEventResponse,
 	AddMotdResponse,
-	CurrentUserActivity,
 	DonationsPage,
 	GuildEventListItem,
 	GuildEventName,
@@ -120,7 +119,7 @@ export function createApi(options: ApiOptions) {
 			});
 		},
 		getMyActivity(months?: number) {
-			return request<CurrentUserActivity>(withMonthsQuery('/activity/me', months));
+			return request<UserActivity>(withMonthsQuery('/activity/me', months));
 		},
 		getUserActivity(user: string, months?: number) {
 			return request<UserActivity>(withMonthsQuery(`/activity/users/${user}`, months));

@@ -27,7 +27,8 @@ let isPublicOverride = $state<boolean | null>(null);
 
 const isOwnProfile = $derived(currentUser?.id === user.id);
 const activity = $derived(savedActivity ?? initialActivity);
-const isPublic = $derived(isPublicOverride ?? user.activityPublic);
+const isPublic = $derived(isPublicOverride ?? activity?.isPublic ?? user.activityPublic);
+const showGraph = $derived(isOwnProfile || isPublic);
 
 async function selectPeriod(months: number) {
 	if (months === selectedMonths || isLoading) {
@@ -65,7 +66,7 @@ async function toggleVisibility() {
 		const updated = await updateProfile({ activityPublic: !isPublic });
 		isPublicOverride = updated.activityPublic;
 		showSnackbar({
-			message: isPublic ? 'Статистика активности видна другим.' : 'Статистика активности скрыта.',
+			message: isPublic ? 'График активности виден другим.' : 'График активности скрыт.',
 			variant: 'success'
 		});
 	} catch {
@@ -85,14 +86,14 @@ async function toggleVisibility() {
 			<Tertiary label="Активность" />
 			{#if isOwnProfile}
 				<label class="visibility">
-					<span>Видна другим</span>
+					<span>График виден другим</span>
 					<button
 						type="button"
 						class="switch"
 						class:on={isPublic}
 						role="switch"
 						aria-checked={isPublic}
-						aria-label="Показывать статистику активности другим"
+						aria-label="Показывать график активности другим"
 						onclick={toggleVisibility}
 						disabled={isToggling}
 					>
@@ -121,21 +122,23 @@ async function toggleVisibility() {
 			</div>
 		</div>
 
-		<div class="periods">
-			{#each PERIOD_OPTIONS as option (option)}
-				<button
-					type="button"
-					class="period"
-					class:active={selectedMonths === option}
-					onclick={() => selectPeriod(option)}
-					disabled={isLoading}
-				>
-					{option} мес.
-				</button>
-			{/each}
-		</div>
+		{#if showGraph && activity.days}
+			<div class="periods">
+				{#each PERIOD_OPTIONS as option (option)}
+					<button
+						type="button"
+						class="period"
+						class:active={selectedMonths === option}
+						onclick={() => selectPeriod(option)}
+						disabled={isLoading}
+					>
+						{option} мес.
+					</button>
+				{/each}
+			</div>
 
-		<ActivityGraph days={activity.days} />
+			<ActivityGraph days={activity.days} />
+		{/if}
 	</section>
 {/if}
 
