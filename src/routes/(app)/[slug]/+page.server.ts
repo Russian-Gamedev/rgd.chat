@@ -2,7 +2,9 @@ import { definePageMetaTags } from 'svelte-meta-tags';
 
 import { error } from '@sveltejs/kit';
 
+import { buildProfileEmbed } from '$lib/discord/component-embed';
 import { createServerApi } from '$lib/server/api';
+import { SITE_URL } from '$lib/site-config';
 
 import type { PageServerLoad } from './$types';
 
@@ -44,6 +46,11 @@ export const load: PageServerLoad = async ({ params, depends, parent, request, f
 
 	return {
 		...pageMetaTags,
+		discordEmbed: buildProfileEmbed({
+			user,
+			activity,
+			url: new URL(`/${user.username}`, SITE_URL).href
+		}),
 		user,
 		currentUser,
 		activity

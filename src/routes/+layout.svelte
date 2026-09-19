@@ -6,7 +6,9 @@ import { onNavigate } from '$app/navigation';
 import '../styles/globals.css';
 
 import { page } from '$app/state';
+import DiscordComponentEmbed from '$lib/components/DiscordComponentEmbed.svelte';
 import SnackbarViewport from '$lib/components/snackbar/SnackbarViewport.svelte';
+import { buildPageEmbed } from '$lib/discord/component-embed';
 import {
 	SITE_DESCRIPTION,
 	SITE_LOGO,
@@ -28,6 +30,16 @@ let { children, data }: LayoutProps = $props();
 const metaTags = $derived(deepMerge(data.baseMetaTags, page.data.pageMetaTags));
 const themeColor = $derived(data.themeColor);
 
+const discordEmbed = $derived(
+	page.data.discordEmbed ??
+		buildPageEmbed({
+			title: metaTags.title ?? SITE_NAME,
+			description: metaTags.description ?? SITE_DESCRIPTION,
+			url: metaTags.canonical ?? page.url.href,
+			imageUrl: SITE_LOGO
+		})
+);
+
 const organizationSchema = {
 	'@type': 'Organization',
 	name: SITE_NAME,
@@ -40,6 +52,7 @@ const organizationSchema = {
 
 <MetaTags {...metaTags} />
 <JsonLd schema={organizationSchema} />
+<DiscordComponentEmbed payload={discordEmbed} />
 
 <svelte:head>
   <link rel="icon" href="/favicon.svg" />
