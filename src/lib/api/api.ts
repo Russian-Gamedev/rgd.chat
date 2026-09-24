@@ -7,6 +7,7 @@ import type {
 	GolderListParams,
 	GolderMedia,
 	GolderMediaPage,
+	GolderSourceInfo,
 	GolderUpload,
 	GuildEventListItem,
 	GuildEventName,
@@ -162,6 +163,9 @@ export function createApi(options: ApiOptions) {
 		},
 		completeGolderUpload(id: string) {
 			return request<GolderMedia>(`/golder/uploads/${id}/complete`, { method: 'POST' });
+		},
+		resolveGolderImportSource(url: string) {
+			return request<GolderSourceInfo>(`/golder/import/resolve?url=${encodeURIComponent(url)}`);
 		},
 		importGolderFromDiscord(payload: { url: string; name: string; tags: string[] }) {
 			return request<GolderImportResult>('/golder/import', {

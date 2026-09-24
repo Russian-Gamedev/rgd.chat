@@ -1,6 +1,7 @@
 <script lang="ts">
 import { untrack } from 'svelte';
 
+import { createApi } from '$lib/api/api';
 import Button from '$lib/components/Button.svelte';
 import Modal from '$lib/components/Modal.svelte';
 import { showSnackbar } from '$lib/components/snackbar';
@@ -45,6 +46,28 @@ const urlValid = $derived(isDiscordMessageUrl(url.trim()) || isHttpUrl(url.trim(
 const canSubmit = $derived(
 	!isSubmitting && isNameValid(name) && (mode === 'file' ? file !== null : urlValid)
 );
+
+// Автозаполнение названия и тегов по ссылке (Tenor и любые страницы с OG-мета).
+$effect(() => {
+	const value = url.trim();
+	if (!isHttpUrl(value) || isDiscordMessageUrl(value)) return;
+
+	const timer = setTimeout(async () => {
+		try {
+			const api = createApi({ fetch });
+			const info = await api.resolveGolderImportSource(value);
+			if (info.name && name.trim().length === 0) {
+				name = info.name;
+			}
+			if (info.tags.length > 0 && tags.length === 0) {
+				tags = info.tags;
+			}
+		} catch {
+			// нет данных для автозаполнения — пользователь заполнит сам
+		}
+	}, 500);
+	return () => clearTimeout(timer);
+});
 
 function resetForm() {
 	mode = 'file';

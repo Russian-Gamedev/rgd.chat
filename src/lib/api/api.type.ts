@@ -238,3 +238,9 @@ export type GolderListParams = {
 export type GolderImportResult = {
 	items: GolderMedia[];
 };
+
+export type GolderSourceInfo = {
+	mediaUrl: string | null;
+	name: string | null;
+	tags: string[];
+};
