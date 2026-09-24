@@ -61,6 +61,22 @@ function toggleTag(tag: string) {
 		: [...activeTags, tag];
 }
 
+// Наведение на карточку проигрывает видео (с(loop)); при уходе мыши
+// проигрывание ставится на паузу — позиция сохраняется до следующего наведения.
+function playCardVideo(event: Event) {
+	const video = (event.currentTarget as HTMLElement).querySelector('video');
+	if (video) {
+		video.volume = 0.15;
+		video.play().catch(() => {
+			// браузер может запретить воспроизведение — молча игнорируем
+		});
+	}
+}
+
+function pauseCardVideo(event: Event) {
+	(event.currentTarget as HTMLElement).querySelector('video')?.pause();
+}
+
 async function fetchPage(offset: number, version: number, search: string, tags: string[]) {
 	isLoading = true;
 	hasError = false;
@@ -129,19 +145,37 @@ function loadMore() {
   <p>Не удалось загрузить медиабиблиотеку.</p>
 {:else if items.length === 0 && !isLoading}
   <p>
-    {isDefaultQuery ? "Пока ничего нет — станьте первым!" : "Ничего не найдено."}
+    {isDefaultQuery
+      ? "Пока ничего нет — станьте первым!"
+      : "Ничего не найдено."}
   </p>
 {:else}
   <ul class="media-grid">
     {#each items as media (media.id)}
       <li>
         <a class="card" href={`/golder/${media.slug}`}>
-          <div class="thumb">
-            {#if media.contentType.startsWith('image/')}
-              <img class="preview" src={media.url} alt={media.slug} loading="lazy" />
-            {:else if media.contentType.startsWith('video/')}
-            <video class="preview" src={media.url} preload="metadata" muted playsinline
-            ></video>
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <div
+            class="thumb"
+            onmouseenter={playCardVideo}
+            onmouseleave={pauseCardVideo}
+          >
+            {#if media.contentType.startsWith("image/")}
+              <img
+                class="preview"
+                src={media.url}
+                alt={media.slug}
+                loading="lazy"
+              />
+            {:else if media.contentType.startsWith("video/")}
+              <!-- svelte-ignore a11y_media_has_caption -->
+              <video
+                class="preview"
+                src={media.url}
+                preload="metadata"
+                loop
+                playsinline
+              ></video>
             {:else}
               <div class="preview preview-audio"><IconVideo /></div>
             {/if}
@@ -161,7 +195,7 @@ function loadMore() {
                       toggleTag(tag);
                     }}
                     onkeydown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
+                      if (event.key === "Enter" || event.key === " ") {
                         event.preventDefault();
                         toggleTag(tag);
                       }
@@ -180,11 +214,11 @@ function loadMore() {
                   alt=""
                 />
               {:else}
-                  <span class="author-avatar author-placeholder"
-                    >{(media.uploadedByUsername ?? "?")[0]?.toUpperCase()}</span
-                  >
+                <span class="author-avatar author-placeholder"
+                  >{(media.uploadedByUsername ?? "?")[0]?.toUpperCase()}</span
+                >
               {/if}
-              {media.uploadedByUsername ?? 'Неизвестный автор'}
+              {media.uploadedByUsername ?? "Неизвестный автор"}
             </p>
           </div>
         </a>
@@ -194,11 +228,15 @@ function loadMore() {
 
   <div class="loader">
     {#if hasError}
-      <button class="retry" type="button" onclick={loadMore}>Повторить загрузку</button>
+      <button class="retry" type="button" onclick={loadMore}
+        >Повторить загрузку</button
+      >
     {:else if isLoading}
       <p>Загружаем...</p>
     {:else if hasMore}
-      <button class="retry" type="button" onclick={loadMore}>Показать ещё</button>
+      <button class="retry" type="button" onclick={loadMore}
+        >Показать ещё</button
+      >
     {/if}
   </div>
 {/if}
