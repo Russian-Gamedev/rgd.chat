@@ -198,3 +198,43 @@ export type ActivityOverview = {
 	totals: ActivityTotals;
 	activeWeekUsers: number;
 };
+
+export type GolderMedia = {
+	id: string;
+	name: string;
+	slug: string;
+	tags: string[];
+	url: string;
+	contentType: string;
+	sizeBytes: string;
+	status: 'pending' | 'ready';
+	uploadedBy: string;
+	uploadedByUsername: string | null;
+	uploadedByAvatarUrl: string | null;
+	createdAt: string;
+	updatedAt: string;
+};
+
+export type GolderUpload = {
+	media: GolderMedia;
+	upload: {
+		url: string;
+		expiresInSeconds: number;
+	};
+};
+
+export type GolderMediaPage = {
+	items: GolderMedia[];
+	total: number;
+};
+
+export type GolderListParams = {
+	tags?: string;
+	search?: string;
+	limit?: number;
+	offset?: number;
+};
+
+export type GolderImportResult = {
+	items: GolderMedia[];
+};

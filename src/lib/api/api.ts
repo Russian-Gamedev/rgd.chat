@@ -3,6 +3,11 @@ import type {
 	AddEventResponse,
 	AddMotdResponse,
 	DonationsPage,
+	GolderImportResult,
+	GolderListParams,
+	GolderMedia,
+	GolderMediaPage,
+	GolderUpload,
 	GuildEventListItem,
 	GuildEventName,
 	MembersStats,
@@ -126,6 +131,44 @@ export function createApi(options: ApiOptions) {
 		},
 		getActivityOverview(months?: number) {
 			return request<ActivityOverview>(withMonthsQuery('/activity/overview', months));
+		},
+		listGolder(params: GolderListParams = {}) {
+			const query = new URLSearchParams(
+				Object.entries(params)
+					.filter(([, value]) => value !== undefined && value !== '')
+					.map(([key, value]) => [key, String(value)])
+			);
+			const queryString = query.toString();
+
+			return request<GolderMediaPage>(`/golder${queryString ? `?${queryString}` : ''}`);
+		},
+		getGolderMedia(slug: string) {
+			return request<GolderMedia>(`/golder/${encodeURIComponent(slug)}`);
+		},
+		suggestGolderTags(query: string) {
+			return request<string[]>(`/golder/tags?q=${encodeURIComponent(query)}`);
+		},
+		createGolderUpload(payload: {
+			name: string;
+			tags: string[];
+			contentType: string;
+			sizeBytes: number;
+		}) {
+			return request<GolderUpload>('/golder/uploads', {
+				method: 'POST',
+				body: JSON.stringify(payload),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		completeGolderUpload(id: string) {
+			return request<GolderMedia>(`/golder/uploads/${id}/complete`, { method: 'POST' });
+		},
+		importGolderFromDiscord(payload: { url: string; name: string; tags: string[] }) {
+			return request<GolderImportResult>('/golder/import', {
+				method: 'POST',
+				body: JSON.stringify(payload),
+				headers: { 'Content-Type': 'application/json' }
+			});
 		}
 	};
 }

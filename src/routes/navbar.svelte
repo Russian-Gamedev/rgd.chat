@@ -9,6 +9,7 @@ import {
 	IconCrown,
 	IconDiscord,
 	IconFeed,
+	IconGlobe,
 	IconHash,
 	IconJam,
 	IconJoystick,
@@ -61,6 +62,7 @@ const toggleCollapsed = () => {
 
 const authedNavItems = [
 	{ name: 'MOTD', href: '/motd', icon: IconHash },
+	{ name: 'Golder', href: '/golder', icon: IconGlobe },
 	{ name: 'События', href: '/events', icon: IconCalendar }
 ];
 
