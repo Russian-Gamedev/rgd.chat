@@ -33,11 +33,28 @@ export type VideosPage = {
 export type Patron = {
 	value: number;
 	user: {
-		id: string;
+		id?: string;
 		username: string;
 		avatar_url: string;
 		banner: string;
 	};
+};
+
+export type Donation = {
+	username: string;
+	avatar_url: string;
+	message: string;
+	amount: number;
+	is_fee_paid_by_user: boolean;
+	date: string;
+	image: string;
+};
+
+export type DonationsPage = {
+	items: Donation[];
+	page: number;
+	per_page: number;
+	total: number;
 };
 
 export type Permission =
@@ -69,6 +86,7 @@ export type User = {
 	lastActiveAt: string;
 	activeStreak: number;
 	maxActiveStreak: number;
+	activityPublic: boolean;
 	permissions: Permissions;
 	tags: UserTag[];
 };
@@ -86,6 +104,36 @@ export type MotdListItem = {
 export type AddMotdResponse = {
 	id: number;
 	content: string;
+	balance_after: string;
+};
+
+export type GuildEventName =
+	| 'member_first_join'
+	| 'member_join'
+	| 'member_leave'
+	| 'member_ban'
+	| 'member_kick'
+	| 'member_set_name'
+	| 'activity_raffle';
+
+export type GuildEventAuthor = {
+	id: string;
+	username: string;
+	avatar_url: string;
+};
+
+export type GuildEventListItem = {
+	id: string;
+	event: GuildEventName;
+	message: string;
+	attachments: string[] | null;
+	author: GuildEventAuthor;
+};
+
+export type AddEventResponse = {
+	id: string;
+	event: GuildEventName;
+	message: string;
 	balance_after: string;
 };
 
@@ -113,6 +161,89 @@ export type UpdateProfilePayload = {
 	bannerAlt?: string | null;
 	birthDate?: string | null;
 	info?: UpdateProfileInfo;
+	activityPublic?: boolean;
+};
+
+export type ActivityDay = {
+	date: string;
+	messageScore: number;
+	voiceSeconds: number;
+	reactionCount: number;
+};
+
+export type ActivityTotals = {
+	messageScore: number;
+	voiceSeconds: number;
+	reactionCount: number;
+};
+
+export type ActivityStreak = {
+	current: number;
+	max: number;
+};
+
+export type UserActivity = {
+	isPublic: boolean;
+	/** Per-day graph data; null when the user keeps their activity graph private. */
+	days: ActivityDay[] | null;
+	totals: ActivityTotals;
+	streak: ActivityStreak;
+};
+
+export type ActivityOverviewDay = ActivityDay & {
+	activeUsers: number;
+};
+
+export type ActivityOverview = {
+	days: ActivityOverviewDay[];
+	totals: ActivityTotals;
+	activeWeekUsers: number;
+};
+
+export type GolderMedia = {
+	id: string;
+	name: string;
+	slug: string;
+	tags: string[];
+	url: string;
+	contentType: string;
+	sizeBytes: string;
+	status: 'pending' | 'ready';
+	uploadedBy: string;
+	uploadedByUsername: string | null;
+	uploadedByAvatarUrl: string | null;
+	createdAt: string;
+	updatedAt: string;
+};
+
+export type GolderUpload = {
+	media: GolderMedia;
+	upload: {
+		url: string;
+		expiresInSeconds: number;
+	};
+};
+
+export type GolderMediaPage = {
+	items: GolderMedia[];
+	total: number;
+};
+
+export type GolderListParams = {
+	tags?: string;
+	search?: string;
+	limit?: number;
+	offset?: number;
+};
+
+export type GolderImportResult = {
+	items: GolderMedia[];
+};
+
+export type GolderSourceInfo = {
+	mediaUrl: string | null;
+	name: string | null;
+	tags: string[];
 };
 
 // --- Games Module ---

@@ -1,11 +1,22 @@
 import type {
+	ActivityOverview,
+	AddEventResponse,
 	AddMotdResponse,
 	CreateGameDto,
+	DonationsPage,
 	GameDetails,
 	GameEditor,
 	GameListQueryDto,
 	GameListResponseDto,
 	GamePublicTag,
+	GolderImportResult,
+	GolderListParams,
+	GolderMedia,
+	GolderMediaPage,
+	GolderSourceInfo,
+	GolderUpload,
+	GuildEventListItem,
+	GuildEventName,
 	LikeStateDto,
 	MembersStats,
 	MineGamesQueryDto,
@@ -17,6 +28,7 @@ import type {
 	UpdateGameDto,
 	UpdateProfilePayload,
 	User,
+	UserActivity,
 	VideosPage,
 	WalletBalance
 } from './api.type';
@@ -89,6 +101,11 @@ export function createApi(options: ApiOptions) {
 		getPatrons() {
 			return request<Patron[]>('https://thanks.rgd.chat/api/supporters');
 		},
+		getDonations(page = 1, perPage = 20) {
+			return request<DonationsPage>(
+				`https://thanks.rgd.chat/api/donations?page=${page}&per_page=${perPage}`
+			);
+		},
 		getMe() {
 			return request<User>('/users/me');
 		},
@@ -108,6 +125,16 @@ export function createApi(options: ApiOptions) {
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},
+		getEventsList() {
+			return request<GuildEventListItem[]>('/events/list');
+		},
+		addEvent(event: GuildEventName, message: string) {
+			return request<AddEventResponse>('/events', {
+				method: 'POST',
+				body: JSON.stringify({ event, message }),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
 		logout() {
 			return request<void>('/auth/logout', { method: 'POST' });
 		},
@@ -124,7 +151,6 @@ export function createApi(options: ApiOptions) {
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},
-
 		// --- Games Module ---
 
 		listPublishedGames(query: GameListQueryDto = {}) {
@@ -137,6 +163,43 @@ export function createApi(options: ApiOptions) {
 		},
 		createGameDraft(payload: CreateGameDto) {
 			return request<GameEditor>('/games', {
+				method: 'POST',
+				body: JSON.stringify(payload),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		getMyActivity(months?: number) {
+			return request<UserActivity>(withMonthsQuery('/activity/me', months));
+		},
+		getUserActivity(user: string, months?: number) {
+			return request<UserActivity>(withMonthsQuery(`/activity/users/${user}`, months));
+		},
+		getActivityOverview(months?: number) {
+			return request<ActivityOverview>(withMonthsQuery('/activity/overview', months));
+		},
+		listGolder(params: GolderListParams = {}) {
+			const query = new URLSearchParams(
+				Object.entries(params)
+					.filter(([, value]) => value !== undefined && value !== '')
+					.map(([key, value]) => [key, String(value)])
+			);
+			const queryString = query.toString();
+
+			return request<GolderMediaPage>(`/golder${queryString ? `?${queryString}` : ''}`);
+		},
+		getGolderMedia(slug: string) {
+			return request<GolderMedia>(`/golder/${encodeURIComponent(slug)}`);
+		},
+		suggestGolderTags(query: string) {
+			return request<string[]>(`/golder/tags?q=${encodeURIComponent(query)}`);
+		},
+		createGolderUpload(payload: {
+			name: string;
+			tags: string[];
+			contentType: string;
+			sizeBytes: number;
+		}) {
+			return request<GolderUpload>('/golder/uploads', {
 				method: 'POST',
 				body: JSON.stringify(payload),
 				headers: { 'Content-Type': 'application/json' }
@@ -203,8 +266,25 @@ export function createApi(options: ApiOptions) {
 		},
 		unlikeGame(id: string) {
 			return request<LikeStateDto>(`/games/${id}/like`, { method: 'DELETE' });
+		},
+		completeGolderUpload(id: string) {
+			return request<GolderMedia>(`/golder/uploads/${id}/complete`, { method: 'POST' });
+		},
+		resolveGolderImportSource(url: string) {
+			return request<GolderSourceInfo>(`/golder/import/resolve?url=${encodeURIComponent(url)}`);
+		},
+		importGolderFromDiscord(payload: { url: string; name: string; tags: string[] }) {
+			return request<GolderImportResult>('/golder/import', {
+				method: 'POST',
+				body: JSON.stringify(payload),
+				headers: { 'Content-Type': 'application/json' }
+			});
 		}
 	};
+}
+
+function withMonthsQuery(endpoint: string, months?: number) {
+	return months === undefined ? endpoint : `${endpoint}?months=${months}`;
 }
 
 if (import.meta.env.DEV && typeof window !== 'undefined') {

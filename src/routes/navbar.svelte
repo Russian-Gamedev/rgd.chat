@@ -5,9 +5,11 @@ import { page } from '$app/state';
 import type { User } from '$lib/api/api.type';
 import {
 	IconArrowUp,
+	IconCalendar,
 	IconCrown,
 	IconDiscord,
 	IconFeed,
+	IconGlobe,
 	IconHash,
 	IconJam,
 	IconJoystick,
@@ -58,7 +60,11 @@ const toggleCollapsed = () => {
 	setSidebarCollapsed(nextCollapsed);
 };
 
-const authedNavItems = [{ name: 'MOTD', href: '/motd', icon: IconHash }];
+const authedNavItems = [
+	{ name: 'MOTD', href: '/motd', icon: IconHash },
+	{ name: 'Golder', href: '/golder', icon: IconGlobe },
+	{ name: 'События', href: '/events', icon: IconCalendar }
+];
 
 const navItems = $derived([
 	{ name: 'Игры', href: '/games', icon: IconJoystick },

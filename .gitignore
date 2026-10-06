@@ -1,5 +1,8 @@
 node_modules
 
+# ZCode workspace metadata
+.zcode
+
 # Output
 .output
 .vercel

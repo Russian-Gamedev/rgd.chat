@@ -1,5 +1,6 @@
 export { default as IconArrowUp } from './arrow-up.svelte';
 export { default as IconCalendar } from './calendar.svelte';
+export { default as IconChevronDown } from './chevron-down.svelte';
 export { default as IconCrown } from './crown.svelte';
 export { default as IconDiscord } from './discord.svelte';
 export { default as IconExternalLink } from './external-link.svelte';

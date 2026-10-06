@@ -1,6 +1,6 @@
 <script lang="ts">
 type Props = {
-	src: string;
+	src?: string | null;
 	alt?: string;
 	class?: string;
 	fallbackSrc?: string | null;
@@ -17,7 +17,7 @@ let {
 
 let isLoaded = $state(false);
 let didFallback = $state(false);
-let lastSrc = $state<string | null>(null);
+let lastSrc = $state<string | null | undefined>(undefined);
 
 $effect(() => {
 	if (src !== lastSrc) {
@@ -27,7 +27,7 @@ $effect(() => {
 	}
 });
 
-const currentSrc = $derived(didFallback && fallbackSrc ? fallbackSrc : src);
+const currentSrc = $derived((didFallback || !src) && fallbackSrc ? fallbackSrc : src);
 
 function handleError() {
 	if (fallbackSrc && !didFallback) {
@@ -41,7 +41,7 @@ function handleError() {
 
 <span class={`skeleton-image ${className}`} class:is-loaded={isLoaded}>
 	<img
-		src={currentSrc}
+		src={currentSrc || undefined}
 		{alt}
 		{loading}
 		onload={() => {

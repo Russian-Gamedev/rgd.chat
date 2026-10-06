@@ -5,12 +5,31 @@ import Button from '$lib/components/Button.svelte';
 import IconPicker from '$lib/components/IconPicker.svelte';
 import Input from '$lib/components/Input.svelte';
 import { Popout, type PopoutApi } from '$lib/components/popout';
+import Select, { type SelectOption } from '$lib/components/Select.svelte';
 import Tertiary from '$lib/components/Tertiary.svelte';
 
 const iconEntries = Object.entries(icons).sort(([a], [b]) => a.localeCompare(b));
 
 let manualPopout: PopoutApi | undefined = $state();
 let selectedIcon = $state('IconGlobe');
+
+const frameworkOptions: SelectOption[] = [
+	{ value: 'svelte', label: 'Svelte' },
+	{ value: 'react', label: 'React' },
+	{ value: 'vue', label: 'Vue' },
+	{ value: 'solid', label: 'Solid' }
+];
+
+const colorOptions: SelectOption[] = [
+	{ value: 'primary', label: 'Primary', meta: { color: 'var(--color-primary)' } },
+	{ value: 'success', label: 'Success', meta: { color: 'var(--color-success)' } },
+	{ value: 'error', label: 'Error', meta: { color: 'var(--color-error)' } },
+	{ value: 'warning', label: 'Warning', meta: { color: 'var(--color-warning)' } }
+];
+
+let singleSelect = $state<string[]>([]);
+let multiSelect = $state<string[]>([]);
+let colorSelect = $state<string[]>([]);
 </script>
 
 <div class="page-content">
@@ -102,6 +121,31 @@ let selectedIcon = $state('IconGlobe');
 
 	<div class="picker-demo">
 		<IconPicker bind:value={selectedIcon} />
+	</div>
+</section>
+
+<section>
+	<Tertiary label="Select" id="select" />
+
+	{#snippet colorOption(item: SelectOption)}
+		{@const color = item.meta as { color: string }}
+		<span class="color-dot" style:background={color.color}></span>
+		{item.label}
+	{/snippet}
+
+	<div class="inline-buttons">
+		<Select options={frameworkOptions} bind:values={singleSelect} placeholder="Любой фреймворк" />
+		<Select
+			options={frameworkOptions}
+			bind:values={multiSelect}
+			placeholder="Любые фреймворки"
+			multiple
+		/>
+		<Select options={colorOptions} bind:values={colorSelect} placeholder="Любой цвет" multiple>
+			{#snippet option(item)}
+				{@render colorOption(item)}
+			{/snippet}
+		</Select>
 	</div>
 </section>
 
@@ -235,6 +279,13 @@ let selectedIcon = $state('IconGlobe');
 
 	.picker-demo {
 		width: min(220px, 100%);
+	}
+
+	.color-dot {
+		width: 10px;
+		height: 10px;
+		border-radius: 999px;
+		flex: 0 0 auto;
 	}
 
 	.popout-demo-card {

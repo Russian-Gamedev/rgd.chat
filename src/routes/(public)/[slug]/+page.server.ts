@@ -2,7 +2,9 @@ import { definePageMetaTags } from 'svelte-meta-tags';
 
 import { error } from '@sveltejs/kit';
 
+import { buildProfileEmbed } from '$lib/discord/component-embed';
 import { createServerApi } from '$lib/server/api';
+import { SITE_URL } from '$lib/site-config';
 
 import type { PageServerLoad } from './$types';
 
@@ -17,6 +19,8 @@ export const load: PageServerLoad = async ({ params, depends, parent, request, f
 	const user = await api.getUser(params.slug).catch(() => {
 		throw error(404, 'Пользователь не найден');
 	});
+
+	const activity = await api.getUserActivity(user.id).catch(() => null);
 
 	const title = user.nickname ?? user.username;
 	const description = user.about ?? `Профиль пользователя ${title}`;
@@ -42,7 +46,13 @@ export const load: PageServerLoad = async ({ params, depends, parent, request, f
 
 	return {
 		...pageMetaTags,
+		discordEmbed: buildProfileEmbed({
+			user,
+			activity,
+			url: new URL(`/${user.username}`, SITE_URL).href
+		}),
 		user,
-		currentUser
+		currentUser,
+		activity
 	};
 };

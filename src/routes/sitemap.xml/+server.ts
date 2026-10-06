@@ -11,7 +11,7 @@ export const GET: RequestHandler = async (event) => {
 		'/',
 		'/patrons',
 		'/videos',
-		...patrons.map((patron) => `/${patron.user.username}`)
+		...patrons.filter((patron) => patron.user.id).map((patron) => `/${patron.user.username}`)
 	];
 	const urls = routes.map((route) => `\t<url><loc>${SITE_URL}${route}</loc></url>`).join('\n');
 
