@@ -10,7 +10,7 @@ export const PROJECT_TYPES = [
 export const PROJECT_TYPE_LABELS: Record<ProjectType, string> = {
 	game: 'Игра',
 	service: 'Сервис',
-	tool: 'Инструменты',
+	tool: 'Инструмент',
 	other: 'Другое'
 };
 
