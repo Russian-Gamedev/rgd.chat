@@ -64,7 +64,7 @@ export type Permission =
 	| 'guild_events:read'
 	| 'read:messages'
 	| 'send:messages'
-	| 'games:review';
+	| 'projects:review';
 
 export type Permissions = {
 	global: Permission[];
@@ -246,23 +246,23 @@ export type GolderSourceInfo = {
 	tags: string[];
 };
 
-// --- Games Module ---
+// --- Projects Module ---
 
-export type GameRevisionStatus = 'draft' | 'review' | 'published';
+export type ProjectRevisionStatus = 'draft' | 'review' | 'published';
 
-export type GameAuthorType = 'discord' | 'text';
+export type ProjectAuthorType = 'discord' | 'text';
 
-export type GameAttachmentType = 'image' | 'external_video';
+export type ProjectAttachmentType = 'image' | 'external_video';
 
-export type GameReviewAction = 'submitted' | 'published' | 'changes_requested';
+export type ProjectReviewAction = 'submitted' | 'published' | 'changes_requested';
 
-export type GameListSort =
+export type ProjectListSort =
 	| 'release_date_desc'
 	| 'release_date_asc'
 	| 'likes_desc'
 	| 'published_desc';
 
-export type GameListQueryDto = {
+export type ProjectListQueryDto = {
 	limit?: number;
 	offset?: number;
 	tag?: string;
@@ -270,156 +270,156 @@ export type GameListQueryDto = {
 	search?: string;
 	release_from?: string;
 	release_to?: string;
-	sort?: GameListSort;
+	sort?: ProjectListSort;
 };
 
-export type GameListResponseDto = {
-	items: GameListItemDto[];
+export type ProjectListResponseDto = {
+	items: ProjectListItemDto[];
 	total: number;
 	limit: number;
 	offset: number;
 };
 
-export type GameAuthorDiscord = { type: 'discord'; discord_user_id: string };
-export type GameAuthorText = { type: 'text'; name: string };
-export type GameAuthor = GameAuthorDiscord | GameAuthorText;
+export type ProjectAuthorDiscord = { type: 'discord'; discord_user_id: string };
+export type ProjectAuthorText = { type: 'text'; name: string };
+export type ProjectAuthor = ProjectAuthorDiscord | ProjectAuthorText;
 
-export type GameListItemDto = {
+export type ProjectListItemDto = {
 	id: string;
 	slug: string;
 	title: string;
 	release_date: string;
-	tags: GamePublicTag[];
-	authors: GameAuthor[];
+	tags: ProjectPublicTag[];
+	authors: ProjectAuthor[];
 	thumbnail: string | null;
 	likes_count: number;
 	published_at: string;
 };
 
-export type GameListItem = GameListItemDto;
+export type ProjectListItem = ProjectListItemDto;
 
-export type GamePublicTag = {
+export type ProjectPublicTag = {
 	slug: string;
 	name: string;
 };
 
-export type GameAttachment = {
-	type: GameAttachmentType;
+export type ProjectAttachment = {
+	type: ProjectAttachmentType;
 	url: string;
 };
 
-export type GameLink = {
+export type ProjectLink = {
 	icon: string;
 	label: string;
 	link: string;
 };
 
-export type GameCredits = {
+export type ProjectCredits = {
 	owner_id: string;
-	authors: GameAuthor[];
+	authors: ProjectAuthor[];
 };
 
-export type GameResources = {
-	attachments: GameAttachment[];
-	links: GameLink[];
+export type ProjectResources = {
+	attachments: ProjectAttachment[];
+	links: ProjectLink[];
 };
 
-export type GameMetadata = {
+export type ProjectMetadata = {
 	release_date: string;
 	published_at: string;
 	updated_at: string;
 };
 
-export type GameStats = {
+export type ProjectStats = {
 	likes_count: number;
 };
 
-export type GameWorkflow = {
+export type ProjectWorkflow = {
 	revision_id?: string;
-	status: GameRevisionStatus;
+	status: ProjectRevisionStatus;
 	version: number;
 	has_published_version: boolean;
 	published_version: number | null;
-	review_events: GameReviewEvent[];
+	review_events: ProjectReviewEvent[];
 	submitted_at?: string | null;
 };
 
-export type GameDetails = {
+export type ProjectDetails = {
 	id: string;
 	slug: string;
 	title: string;
 	description: string;
 	thumbnail: string | null;
-	tags: GamePublicTag[];
-	credits: GameCredits;
-	resources: GameResources;
-	metadata: GameMetadata;
-	stats: GameStats;
+	tags: ProjectPublicTag[];
+	credits: ProjectCredits;
+	resources: ProjectResources;
+	metadata: ProjectMetadata;
+	stats: ProjectStats;
 };
 
-export type GameEditor = GameDetails & {
-	workflow: GameWorkflow;
+export type ProjectEditor = ProjectDetails & {
+	workflow: ProjectWorkflow;
 };
 
-export type GameAuthorInputDto =
+export type ProjectAuthorInputDto =
 	| { type: 'discord'; discord_user_id: string }
 	| { type: 'text'; name: string };
 
-export type GameLinkInputDto = { icon: string; label: string; link: string };
+export type ProjectLinkInputDto = { icon: string; label: string; link: string };
 
-export type GameAttachmentInputDto = {
-	type: GameAttachmentType;
+export type ProjectAttachmentInputDto = {
+	type: ProjectAttachmentType;
 	url: string;
 };
 
-export type CreateGameDto = {
+export type CreateProjectDto = {
 	title: string;
 	slug?: string;
 	description: string;
 	release_date: string;
 	tags: string[];
-	authors: GameAuthorInputDto[];
-	links?: GameLinkInputDto[];
-	attachments: GameAttachmentInputDto[];
+	authors: ProjectAuthorInputDto[];
+	links?: ProjectLinkInputDto[];
+	attachments: ProjectAttachmentInputDto[];
 };
 
-export type UpdateGameDto = Partial<CreateGameDto>;
+export type UpdateProjectDto = Partial<CreateProjectDto>;
 
-export type GameReviewEvent = {
+export type ProjectReviewEvent = {
 	id: string;
 	revision_id: string;
-	action: GameReviewAction;
+	action: ProjectReviewAction;
 	actor_id: string;
 	comment: string | null;
 	created_at: string;
 	version?: number;
 };
 
-export type MineGamesQueryDto = {
+export type MineProjectsQueryDto = {
 	limit?: number;
 	offset?: number;
-	status?: GameRevisionStatus;
+	status?: ProjectRevisionStatus;
 };
 
-export type MineGameItem = {
+export type MineProjectItem = {
 	id: string;
 	slug: string;
 	owner_id: string;
 	revision_id: string;
 	title: string;
-	status: GameRevisionStatus;
+	status: ProjectRevisionStatus;
 	version: number;
 	has_published_version: boolean;
 };
 
-export type MineGamesResponseDto = {
-	items: MineGameItem[];
+export type MineProjectsResponseDto = {
+	items: MineProjectItem[];
 	total: number;
 	limit: number;
 	offset: number;
 };
 
-export type GameReviewListQueryDto = MineGamesQueryDto & {
+export type GameReviewListQueryDto = MineProjectsQueryDto & {
 	owner_id?: string;
 	search?: string;
 };
@@ -430,7 +430,7 @@ export type ReviewListItem = {
 	owner_id: string;
 	revision_id: string;
 	version: number;
-	status: GameRevisionStatus;
+	status: ProjectRevisionStatus;
 	title: string;
 	submitted_at: string | null;
 	published_at: string | null;
@@ -447,7 +447,7 @@ export type ReviewListResponseDto = {
 export type ReviewListQueryDto = {
 	limit?: number;
 	offset?: number;
-	status?: GameRevisionStatus;
+	status?: ProjectRevisionStatus;
 	owner_id?: string;
 	search?: string;
 };

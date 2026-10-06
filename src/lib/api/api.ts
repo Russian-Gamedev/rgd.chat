@@ -2,13 +2,8 @@ import type {
 	ActivityOverview,
 	AddEventResponse,
 	AddMotdResponse,
-	CreateGameDto,
+	CreateProjectDto,
 	DonationsPage,
-	GameDetails,
-	GameEditor,
-	GameListQueryDto,
-	GameListResponseDto,
-	GamePublicTag,
 	GolderImportResult,
 	GolderListParams,
 	GolderMedia,
@@ -19,14 +14,19 @@ import type {
 	GuildEventName,
 	LikeStateDto,
 	MembersStats,
-	MineGamesQueryDto,
-	MineGamesResponseDto,
+	MineProjectsQueryDto,
+	MineProjectsResponseDto,
 	MotdListItem,
 	Patron,
+	ProjectDetails,
+	ProjectEditor,
+	ProjectListQueryDto,
+	ProjectListResponseDto,
+	ProjectPublicTag,
 	ReviewListQueryDto,
 	ReviewListResponseDto,
-	UpdateGameDto,
 	UpdateProfilePayload,
+	UpdateProjectDto,
 	User,
 	UserActivity,
 	VideosPage,
@@ -39,7 +39,8 @@ export type ApiOptions = {
 	headers?: Record<string, string>;
 };
 
-export const gameDetailsQueryKey = (idOrSlug: string) => ['games', 'details', idOrSlug] as const;
+export const projectDetailsQueryKey = (idOrSlug: string) =>
+	['projects', 'details', idOrSlug] as const;
 
 export class ApiHttpError extends Error {
 	constructor(
@@ -141,8 +142,8 @@ export function createApi(options: ApiOptions) {
 		getUser(user: string) {
 			return request<User>(`/users/${user}`);
 		},
-		getUserGames(user: string) {
-			return request<GameListResponseDto>(`/users/${user}/games`);
+		getUserProjects(user: string) {
+			return request<ProjectListResponseDto>(`/users/${user}/projects`);
 		},
 		updateMe(payload: UpdateProfilePayload) {
 			return request<User>('/users/me', {
@@ -151,18 +152,18 @@ export function createApi(options: ApiOptions) {
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},
-		// --- Games Module ---
+		// --- Projects Module ---
 
-		listPublishedGames(query: GameListQueryDto = {}) {
-			return request<GameListResponseDto>(
-				`/games${toQueryString(query as Record<string, string | number | undefined>)}`
+		listPublishedProjects(query: ProjectListQueryDto = {}) {
+			return request<ProjectListResponseDto>(
+				`/projects${toQueryString(query as Record<string, string | number | undefined>)}`
 			);
 		},
-		getPublishedGame(idOrSlug: string) {
-			return request<GameDetails>(`/games/${encodeURIComponent(idOrSlug)}`);
+		getPublishedProject(idOrSlug: string) {
+			return request<ProjectDetails>(`/projects/${encodeURIComponent(idOrSlug)}`);
 		},
-		createGameDraft(payload: CreateGameDto) {
-			return request<GameEditor>('/games', {
+		createProjectDraft(payload: CreateProjectDto) {
+			return request<ProjectEditor>('/projects', {
 				method: 'POST',
 				body: JSON.stringify(payload),
 				headers: { 'Content-Type': 'application/json' }
@@ -205,67 +206,67 @@ export function createApi(options: ApiOptions) {
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},
-		updateGameDraft(id: string, payload: UpdateGameDto) {
-			return request<GameEditor>(`/games/${id}`, {
+		updateProjectDraft(id: string, payload: UpdateProjectDto) {
+			return request<ProjectEditor>(`/projects/${id}`, {
 				method: 'PATCH',
 				body: JSON.stringify(payload),
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},
-		deleteGame(id: string) {
-			return request<void>(`/games/${id}`, { method: 'DELETE' });
+		deleteProject(id: string) {
+			return request<void>(`/projects/${id}`, { method: 'DELETE' });
 		},
-		getMyGames(query: MineGamesQueryDto = {}) {
-			return request<MineGamesResponseDto>(
-				`/games/mine${toQueryString(query as Record<string, string | number | undefined>)}`
+		getMyProjects(query: MineProjectsQueryDto = {}) {
+			return request<MineProjectsResponseDto>(
+				`/projects/mine${toQueryString(query as Record<string, string | number | undefined>)}`
 			);
 		},
-		getGameEditor(id: string) {
-			return request<GameEditor>(`/games/${id}/editor`);
+		getProjectEditor(id: string) {
+			return request<ProjectEditor>(`/projects/${id}/editor`);
 		},
 		submitForReview(id: string) {
-			return request<GameEditor>(`/games/${id}/submit-review`, { method: 'POST' });
+			return request<ProjectEditor>(`/projects/${id}/submit-review`, { method: 'POST' });
 		},
-		listReviewGames(query: ReviewListQueryDto = {}) {
+		listReviewProjects(query: ReviewListQueryDto = {}) {
 			return request<ReviewListResponseDto>(
-				`/games/review${toQueryString(query as Record<string, string | number | undefined>)}`
+				`/projects/review${toQueryString(query as Record<string, string | number | undefined>)}`
 			);
 		},
-		getReviewGame(id: string) {
-			return request<GameEditor>(`/games/${id}/review`);
+		getReviewProject(id: string) {
+			return request<ProjectEditor>(`/projects/${id}/review`);
 		},
 		publishReview(id: string, comment?: string) {
-			return request<GameEditor>(`/games/${id}/review/publish`, {
+			return request<ProjectEditor>(`/projects/${id}/review/publish`, {
 				method: 'POST',
 				body: comment ? JSON.stringify({ comment }) : undefined,
 				headers: comment ? { 'Content-Type': 'application/json' } : undefined
 			});
 		},
 		requestChanges(id: string, comment: string) {
-			return request<GameEditor>(`/games/${id}/review/request-changes`, {
+			return request<ProjectEditor>(`/projects/${id}/review/request-changes`, {
 				method: 'POST',
 				body: JSON.stringify({ comment }),
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},
 		transferOwner(id: string, owner_id: string) {
-			return request<GameEditor>(`/games/${id}/review/owner`, {
+			return request<ProjectEditor>(`/projects/${id}/review/owner`, {
 				method: 'PATCH',
 				body: JSON.stringify({ owner_id }),
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},
 		listTags() {
-			return request<GamePublicTag[]>('/games/tags');
+			return request<ProjectPublicTag[]>('/projects/tags');
 		},
 		getLikeState(id: string) {
-			return request<LikeStateDto>(`/games/${id}/like`);
+			return request<LikeStateDto>(`/projects/${id}/like`);
 		},
-		likeGame(id: string) {
-			return request<LikeStateDto>(`/games/${id}/like`, { method: 'PUT' });
+		likeProject(id: string) {
+			return request<LikeStateDto>(`/projects/${id}/like`, { method: 'PUT' });
 		},
-		unlikeGame(id: string) {
-			return request<LikeStateDto>(`/games/${id}/like`, { method: 'DELETE' });
+		unlikeProject(id: string) {
+			return request<LikeStateDto>(`/projects/${id}/like`, { method: 'DELETE' });
 		},
 		completeGolderUpload(id: string) {
 			return request<GolderMedia>(`/golder/uploads/${id}/complete`, { method: 'POST' });

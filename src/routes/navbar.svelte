@@ -67,7 +67,7 @@ const authedNavItems = [
 ];
 
 const navItems = $derived([
-	{ name: 'Игры', href: '/games', icon: IconJoystick },
+	{ name: 'Проекты', href: '/projects', icon: IconJoystick },
 	// { name: "Джемы", href: "/jams", icon: IconJam },
 	// { name: "Блоги", href: "/blogs", icon: IconFeed },
 	{ name: 'Донатеры', href: '/patrons', icon: IconCrown },
