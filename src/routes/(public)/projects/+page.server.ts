@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ depends, request, fetch, url }) => 
 
 	const title = 'Проекты';
 	const description =
-		'Коллекция проектов от сообщества RGD. Игры, сервисы, утилиты и другие проекты участников.';
+		'Коллекция проектов от сообщества RGD. Игры, сервисы, инструменты и другие проекты участников.';
 	const pageMetaTags = definePageMetaTags({
 		title,
 		description,
