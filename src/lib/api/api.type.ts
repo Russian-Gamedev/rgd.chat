@@ -262,11 +262,14 @@ export type ProjectListSort =
 	| 'likes_desc'
 	| 'published_desc';
 
+export type ProjectType = 'game' | 'service' | 'tool' | 'other';
+
 export type ProjectListQueryDto = {
 	limit?: number;
 	offset?: number;
 	tag?: string;
 	author_id?: string;
+	type?: ProjectType;
 	search?: string;
 	release_from?: string;
 	release_to?: string;
@@ -288,6 +291,7 @@ export type ProjectListItemDto = {
 	id: string;
 	slug: string;
 	title: string;
+	type: ProjectType;
 	release_date: string;
 	tags: ProjectPublicTag[];
 	authors: ProjectAuthor[];
@@ -315,7 +319,7 @@ export type ProjectLink = {
 };
 
 export type ProjectCredits = {
-	owner_id: string;
+	owner_id: string | null;
 	authors: ProjectAuthor[];
 };
 
@@ -326,6 +330,7 @@ export type ProjectResources = {
 
 export type ProjectMetadata = {
 	release_date: string;
+	type: ProjectType;
 	published_at: string;
 	updated_at: string;
 };
@@ -377,6 +382,7 @@ export type CreateProjectDto = {
 	slug?: string;
 	description: string;
 	release_date: string;
+	type: ProjectType;
 	tags: string[];
 	authors: ProjectAuthorInputDto[];
 	links?: ProjectLinkInputDto[];
@@ -399,6 +405,7 @@ export type MineProjectsQueryDto = {
 	limit?: number;
 	offset?: number;
 	status?: ProjectRevisionStatus;
+	type?: ProjectType;
 };
 
 export type MineProjectItem = {
@@ -407,6 +414,7 @@ export type MineProjectItem = {
 	owner_id: string;
 	revision_id: string;
 	title: string;
+	type?: ProjectType;
 	status: ProjectRevisionStatus;
 	version: number;
 	has_published_version: boolean;
@@ -417,11 +425,6 @@ export type MineProjectsResponseDto = {
 	total: number;
 	limit: number;
 	offset: number;
-};
-
-export type GameReviewListQueryDto = MineProjectsQueryDto & {
-	owner_id?: string;
-	search?: string;
 };
 
 export type ReviewListItem = {

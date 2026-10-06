@@ -4,6 +4,7 @@ import type { ProjectRevisionStatus } from '$lib/api/api.type';
 import { requireAuth } from '$lib/auth/auth.actions';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Button from '$lib/components/Button.svelte';
+import { PROJECT_TYPE_LABELS, PROJECT_TYPE_OPTIONS } from '$lib/projects/project-type';
 
 import type { PageProps } from './$types';
 
@@ -16,9 +17,18 @@ const labels: Record<ProjectRevisionStatus, string> = {
 	published: 'Опубликовано'
 };
 
+function mineHref(params: { status?: string; type?: string }): string {
+	const query = new URLSearchParams();
+	if (params.status) query.set('status', params.status);
+	if (params.type) query.set('type', params.type);
+	const queryString = query.toString();
+	return queryString ? `/projects/mine?${queryString}` : '/projects/mine';
+}
+
 function pageHref(offset: number): string {
 	const params = new URLSearchParams();
 	if (data.status) params.set('status', data.status);
+	if (data.type) params.set('type', data.type);
 	if (offset > 0) params.set('offset', String(offset));
 	const query = params.toString();
 	return query ? `/projects/mine?${query}` : '/projects/mine';
@@ -35,11 +45,20 @@ function pageHref(offset: number): string {
   <Button as="a" href="/projects/editor/new">Создать проект</Button>
 </div>
 
-<nav class="filters" aria-label="Фильтр проектов">
-  <a class:active={!data.status} href="/projects/mine">Все</a>
-  <a class:active={data.status === 'draft'} href="/projects/mine?status=draft">Черновики</a>
-  <a class:active={data.status === 'review'} href="/projects/mine?status=review">На ревью</a>
-  <a class:active={data.status === 'published'} href="/projects/mine?status=published">Опубликованные</a>
+<nav class="filters" aria-label="Фильтр по состоянию">
+  <a class:active={!data.status} href={mineHref({ type: data.type })}>Все</a>
+  <a class:active={data.status === 'draft'} href={mineHref({ status: 'draft', type: data.type })}>Черновики</a>
+  <a class:active={data.status === 'review'} href={mineHref({ status: 'review', type: data.type })}>На ревью</a>
+  <a class:active={data.status === 'published'} href={mineHref({ status: 'published', type: data.type })}>Опубликованные</a>
+</nav>
+
+<nav class="filters" aria-label="Фильтр по типу проектов">
+  <a class:active={!data.type} href={mineHref({ status: data.status })}>Все типы</a>
+  {#each PROJECT_TYPE_OPTIONS as option (option.value)}
+    <a class:active={data.type === option.value} href={mineHref({ status: data.status, type: option.value })}>
+      {option.label}
+    </a>
+  {/each}
 </nav>
 
 {#if data.projects === null}
@@ -57,6 +76,9 @@ function pageHref(offset: number): string {
         <div class="project-main">
           <div class="title-row">
             <h2>{project.title || 'Без названия'}</h2>
+            {#if project.type}
+              <span class="type">{PROJECT_TYPE_LABELS[project.type]}</span>
+            {/if}
             <span class:review={project.status === 'review'} class:published={project.status === 'published'}>{labels[project.status]}</span>
           </div>
           <p>Редакция v{project.version}</p>

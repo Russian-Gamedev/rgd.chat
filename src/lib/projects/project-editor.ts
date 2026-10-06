@@ -5,7 +5,8 @@ import type {
 	ProjectEditor,
 	ProjectLinkInputDto,
 	ProjectPublicTag,
-	ProjectRevisionStatus
+	ProjectRevisionStatus,
+	ProjectType
 } from '$lib/api/api.type';
 
 export type ProjectFormTag = Pick<ProjectPublicTag, 'name'> & {
@@ -18,6 +19,7 @@ export type ProjectFormState = {
 	slugManuallyEdited: boolean;
 	description: string;
 	releaseDate: string;
+	type: ProjectType;
 	tags: ProjectFormTag[];
 	authors: ProjectAuthorInputDto[];
 	links: ProjectLinkInputDto[];
@@ -49,6 +51,7 @@ export function emptyProjectForm(): ProjectFormState {
 		slugManuallyEdited: false,
 		description: '',
 		releaseDate: '',
+		type: 'game',
 		tags: [],
 		authors: [],
 		links: [],
@@ -63,6 +66,7 @@ export function editorToForm(editor: ProjectEditor): ProjectFormState {
 		slugManuallyEdited: true,
 		description: editor.description,
 		releaseDate: editor.metadata.release_date,
+		type: editor.metadata.type,
 		tags: editor.tags.map((tag) => ({ name: tag.name, slug: tag.slug })),
 		authors: editor.credits.authors.map((author) => ({ ...author })),
 		links: editor.resources.links.map((link) => ({ ...link, icon: normalizeLinkIcon(link.icon) })),
@@ -76,6 +80,7 @@ export function formToPayload(form: ProjectFormState): CreateProjectDto {
 		slug: form.slug?.trim() || undefined,
 		description: form.description,
 		release_date: form.releaseDate,
+		type: form.type,
 		tags: form.tags.map((tag) => tag.name),
 		authors: form.authors.map((author) =>
 			author.type === 'discord'
@@ -183,7 +188,7 @@ export function validateProjectForm(form: ProjectFormState, forReview = false): 
 	}
 
 	if (!form.attachments.some((attachment) => attachment.type === 'image')) {
-		errors.attachments = 'Добавьте хотя бы одну изображение проекта.';
+		errors.attachments = 'Добавьте хотя бы одно изображение проекта.';
 	} else if (form.attachments.length > 20)
 		errors.attachments = 'Можно добавить не более 20 вложений.';
 	else if (form.attachments.some((attachment) => !isAbsoluteHttpsUrl(attachment.url.trim()))) {

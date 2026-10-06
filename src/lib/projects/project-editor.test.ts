@@ -37,6 +37,7 @@ const editor: ProjectEditor = {
 	},
 	metadata: {
 		release_date: '2026-07-12',
+		type: 'service',
 		published_at: '',
 		updated_at: '2026-07-12T00:00:00Z'
 	},
@@ -58,11 +59,17 @@ describe('project editor normalization', () => {
 			slugManuallyEdited: true,
 			description: 'Описание',
 			releaseDate: '2026-07-12',
+			type: 'service',
 			tags: [{ name: 'Экшен', slug: 'action' }],
 			authors: editor.credits.authors,
 			links: editor.resources.links,
 			attachments: editor.resources.attachments
 		});
+	});
+
+	test('passes the project type through to the payload', () => {
+		expect(formToPayload(editorToForm(editor)).type).toBe('service');
+		expect(emptyProjectForm().type).toBe('game');
 	});
 
 	test('preserves both author union variants and snowflake as a string', () => {
@@ -197,7 +204,7 @@ describe('project editor validation', () => {
 		const form = editorToForm(editor);
 		form.attachments = [{ type: 'external_video', url: 'https://example.com/video' }];
 		expect(validateProjectForm(form).attachments).toBe(
-			'Добавьте хотя бы одну изображение проекта.'
+			'Добавьте хотя бы одно изображение проекта.'
 		);
 		form.attachments = editor.resources.attachments.map((attachment) => ({ ...attachment }));
 		expect(formToUpdatePayload(form, editor.resources.attachments).attachments).toBeUndefined();

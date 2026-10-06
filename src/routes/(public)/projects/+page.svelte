@@ -11,12 +11,15 @@ import Button from '$lib/components/Button.svelte';
 import ProjectAuthorsIdentity from '$lib/components/ProjectAuthorsIdentity.svelte';
 import SkeletonImage from '$lib/components/SkeletonImage.svelte';
 import { formatProjectDate } from '$lib/projects/format-project-date';
+import { PROJECT_TYPE_LABELS, PROJECT_TYPE_OPTIONS } from '$lib/projects/project-type';
 
 import type { PageProps } from './$types';
 
 let { data }: PageProps = $props();
 
 const projects = $derived(data.projects);
+const activeType = $derived(data.type);
+const activeTag = $derived(page.url.searchParams.get('tag') || undefined);
 let loadedPages = $state<ProjectListResponseDto[]>([]);
 let isLoadingMore = $state(false);
 let hasLoadError = $state(false);
@@ -29,6 +32,14 @@ const limit = $derived(loadedPages.at(-1)?.limit ?? projects?.limit ?? 20);
 const hasMore = $derived(projects !== null && currentOffset + limit < total);
 const currentUser = $derived(page.data.auth as User | null);
 
+function projectsHref(type: string | null): string {
+	const params = new URLSearchParams();
+	if (activeTag) params.set('tag', activeTag);
+	if (type) params.set('type', type);
+	const query = params.toString();
+	return query ? `/projects?${query}` : '/projects';
+}
+
 async function loadNextPage(options?: { force?: boolean }) {
 	if (isLoadingMore || !hasMore) return;
 	if (hasLoadError && !options?.force) return;
@@ -40,7 +51,9 @@ async function loadNextPage(options?: { force?: boolean }) {
 		const api = createApi({ fetch });
 		const nextPage = await api.listPublishedProjects({
 			limit,
-			offset: currentOffset + limit
+			offset: currentOffset + limit,
+			tag: activeTag,
+			type: activeType
 		});
 
 		loadedPages = [...loadedPages, nextPage];
@@ -109,6 +122,15 @@ onMount(() => {
   </div>
 {/if}
 
+<nav class="type-filters" aria-label="Фильтр по типу проектов">
+  <a class:active={!activeType} href={projectsHref(null)}>Все</a>
+  {#each PROJECT_TYPE_OPTIONS as option (option.value)}
+    <a class:active={activeType === option.value} href={projectsHref(option.value)}>
+      {option.label}
+    </a>
+  {/each}
+</nav>
+
 {#if projects === null}
   <p>Не удалось загрузить список проектов.</p>
 {:else if items.length === 0 && !hasMore}
@@ -128,6 +150,7 @@ onMount(() => {
             <h2 class="project-title">{project.title}</h2>
 
             <div class="project-meta">
+              <span class="project-type">{PROJECT_TYPE_LABELS[project.type]}</span>
               <span class="project-date">{formatProjectDate(project.release_date)}</span>
               <span class="project-likes">♥ {project.likes_count}</span>
             </div>
@@ -247,6 +270,36 @@ onMount(() => {
     gap: 0.75rem;
     font-size: 0.8125rem;
     color: var(--color-text-secondary);
+  }
+
+  .project-type {
+    background-color: color-mix(in srgb, var(--color-text-secondary) 15%, transparent);
+    border-radius: 0.25rem;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .type-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .type-filters a {
+    border: 1px solid color-mix(in srgb, var(--color-text-secondary) 30%, transparent);
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .type-filters a.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text);
+    font-weight: 600;
   }
 
   .project-tags {

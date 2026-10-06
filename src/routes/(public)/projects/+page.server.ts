@@ -1,5 +1,6 @@
 import { definePageMetaTags } from 'svelte-meta-tags';
 
+import { toProjectType } from '$lib/projects/project-type';
 import { createServerApi } from '$lib/server/api';
 
 import type { PageServerLoad } from './$types';
@@ -7,6 +8,7 @@ import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ depends, request, fetch, url }) => {
 	depends('projects:public-list');
 	const tag = url.searchParams.get('tag') || undefined;
+	const type = toProjectType(url.searchParams.get('type'));
 
 	const title = 'Проекты';
 	const description =
@@ -21,10 +23,11 @@ export const load: PageServerLoad = async ({ depends, request, fetch, url }) => 
 	});
 
 	const api = createServerApi({ request, fetch });
-	const projects = await api.listPublishedProjects({ limit: 20, tag }).catch(() => null);
+	const projects = await api.listPublishedProjects({ limit: 20, tag, type }).catch(() => null);
 
 	return {
 		...pageMetaTags,
-		projects
+		projects,
+		type
 	};
 };

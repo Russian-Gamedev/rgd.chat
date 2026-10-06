@@ -254,7 +254,9 @@ onMount(() => {
     <h1>{projectId ? "Редактор проекта" : "Новый проект"}</h1>
     {#if editor}
       <p class="status">Версия {editor.workflow.version} · {editor.workflow.status}</p>
-      <UserIdentity id={editor.credits.owner_id} compact />
+      {#if editor.credits.owner_id}
+        <UserIdentity id={editor.credits.owner_id} compact />
+      {/if}
     {/if}
   </div>
   {#if editor?.workflow.has_published_version}

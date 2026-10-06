@@ -11,6 +11,7 @@ import {
 	slugifyProjectTitle,
 	youtubeEmbedUrl
 } from './project-editor';
+import { PROJECT_TYPE_OPTIONS } from './project-type';
 
 let {
 	form = $bindable(),
@@ -129,6 +130,15 @@ const filteredTagOptions = $derived(
     <input id="project-slug" bind:value={form.slug} oninput={() => (form.slugManuallyEdited = true)} onblur={normalizeSlugInput} maxlength="120" placeholder="my-project" />
     <p class="muted">Публичная ссылка: /projects/{form.slug || '…'}</p>
     {#if errors.slug}<p class="error">{errors.slug}</p>{/if}
+  </section>
+
+  <section class="field-section">
+    <label for="project-type">Тип</label>
+    <select id="project-type" bind:value={form.type} aria-label="Тип проекта">
+      {#each PROJECT_TYPE_OPTIONS as option (option.value)}
+        <option value={option.value}>{option.label}</option>
+      {/each}
+    </select>
   </section>
 
   <section class="field-section">

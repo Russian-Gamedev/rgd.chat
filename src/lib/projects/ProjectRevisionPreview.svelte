@@ -23,7 +23,7 @@ function markImageFailed(url: string) {
 		{#if markdownMode === 'preview'}<MarkdownPreview source={project.description} />{:else}<pre class="source">{project.description}</pre>{/if}
 	</section>
 	<section class="facts"><div><strong>Дата релиза</strong><span>{project.metadata.release_date}</span></div><div><strong>Теги</strong><span class="tags">{#each project.tags as tag (tag.slug)}<span class="tag">{tag.name}</span>{/each}</span></div></section>
-	<section><h3>Владелец</h3><UserIdentity id={project.credits.owner_id} /></section>
+	<section><h3>Владелец</h3>{#if project.credits.owner_id}<UserIdentity id={project.credits.owner_id} />{:else}<span class="muted">Скрыт</span>{/if}</section>
 	<section><h3>Авторы</h3><ProjectAuthorsIdentity authors={project.credits.authors} /></section>
 	<section><h3>Ссылки</h3><ul class="links-list">{#each project.resources.links as item (item.link)}<li><span class="link-icon"><IconPreview name={isAllowedIcon(item.icon) ? item.icon : 'IconExternalLink'} /></span><span class="link-label">{item.label}</span><a href={item.link} target="_blank" rel="noopener noreferrer">{safeLinkHost(item.link)}</a></li>{/each}</ul></section>
 	<section><h3>Вложения</h3><div class="attachments">{#each project.resources.attachments as item (item.type + item.url)}

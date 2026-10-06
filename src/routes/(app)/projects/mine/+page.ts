@@ -2,6 +2,7 @@ import { definePageMetaTags } from 'svelte-meta-tags';
 
 import { createApi } from '$lib/api/api';
 import type { ProjectRevisionStatus } from '$lib/api/api.type';
+import { toProjectType } from '$lib/projects/project-type';
 
 import type { PageLoad } from './$types';
 
@@ -17,9 +18,10 @@ export const load: PageLoad = async ({ depends, fetch, parent, url }) => {
 	)
 		? (rawStatus as ProjectRevisionStatus)
 		: undefined;
+	const type = toProjectType(url.searchParams.get('type'));
 	const projects = auth
 		? await createApi({ fetch })
-				.getMyProjects({ limit: 20, offset, status })
+				.getMyProjects({ limit: 20, offset, status, type })
 				.catch(() => null)
 		: null;
 
@@ -29,6 +31,7 @@ export const load: PageLoad = async ({ depends, fetch, parent, url }) => {
 			description: 'Черновики, ревью и опубликованные проекты.'
 		}),
 		projects,
-		status
+		status,
+		type
 	};
 };

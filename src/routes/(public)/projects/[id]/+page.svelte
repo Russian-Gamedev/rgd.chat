@@ -6,6 +6,7 @@ import SkeletonImage from '$lib/components/SkeletonImage.svelte';
 import UserIdentity from '$lib/components/UserIdentity.svelte';
 import { formatProjectDate } from '$lib/projects/format-project-date';
 import MarkdownPreview from '$lib/projects/MarkdownPreview.svelte';
+import { PROJECT_TYPE_LABELS } from '$lib/projects/project-type';
 
 import type { PageProps } from './$types';
 
@@ -33,6 +34,7 @@ const project = $derived(data.project);
     <h1>{project.title}</h1>
 
     <div class="project-meta">
+      <span class="meta-item project-type">{PROJECT_TYPE_LABELS[project.metadata.type]}</span>
       <span class="meta-item">
         <IconCalendar />
         {formatProjectDate(project.metadata.release_date)}
@@ -43,10 +45,12 @@ const project = $derived(data.project);
       </span>
     </div>
 
-    <div class="project-owner">
-      <strong>Владелец:</strong>
-      <UserIdentity id={project.credits.owner_id} compact />
-    </div>
+    {#if project.credits.owner_id}
+      <div class="project-owner">
+        <strong>Владелец:</strong>
+        <UserIdentity id={project.credits.owner_id} compact />
+      </div>
+    {/if}
 
     {#if project.tags.length > 0}
       <div class="project-tags">
@@ -149,6 +153,14 @@ const project = $derived(data.project);
     display: flex;
     align-items: center;
     gap: 0.375rem;
+  }
+
+  .project-type {
+    background-color: color-mix(in srgb, var(--color-text-secondary) 15%, transparent);
+    border-radius: 0.25rem;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
   }
 
   .meta-item :global(svg) {

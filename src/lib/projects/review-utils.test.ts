@@ -49,7 +49,12 @@ describe('project review helpers', () => {
 				links: [{ icon: 'IconGlobe', label: 'Site', link: 'https://example.com' }],
 				attachments: [{ type: 'image' as const, url: 'https://example.com/a.png' }]
 			},
-			metadata: { release_date: '2026-01-01', published_at: '', updated_at: '' }
+			metadata: {
+				release_date: '2026-01-01',
+				type: 'game' as const,
+				published_at: '',
+				updated_at: ''
+			}
 		};
 		const published = {
 			id: 'g',
@@ -62,6 +67,7 @@ describe('project review helpers', () => {
 			resources: base.resources,
 			metadata: {
 				release_date: '2026-01-01',
+				type: 'game' as const,
 				published_at: '2026-01-02',
 				updated_at: '2026-01-03'
 			},
