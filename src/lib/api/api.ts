@@ -33,6 +33,7 @@ import type {
 	UpdateProjectDto,
 	User,
 	UserActivity,
+	UserSearchResult,
 	VideosPage,
 	WalletBalance
 } from './api.type';
@@ -280,6 +281,9 @@ export function createApi(options: ApiOptions) {
 		},
 		listTags() {
 			return request<ProjectPublicTag[]>('/projects/tags');
+		},
+		listPopularTags() {
+			return request<ProjectPopularTag[]>('/projects/tags/popular');
 		},
 		getLikeState(id: string) {
 			return request<LikeStateDto>(`/projects/${id}/like`);

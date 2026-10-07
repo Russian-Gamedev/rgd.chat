@@ -4,7 +4,7 @@ import { onMount } from 'svelte';
 import { beforeNavigate, goto, invalidate } from '$app/navigation';
 import { page } from '$app/state';
 import { ApiHttpError, createApi } from '$lib/api/api';
-import type { ProjectEditor, ProjectPublicTag } from '$lib/api/api.type';
+import type { ProjectEditor, ProjectPopularTag, ProjectPublicTag } from '$lib/api/api.type';
 import bannerImage from '$lib/assets/backgrounds/banner-1.webp';
 import { requireAuth } from '$lib/auth/auth.actions';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
@@ -38,6 +38,8 @@ const api = createApi({ fetch });
 const lastStep = EDITOR_STEPS.length - 1;
 let editor = $state<ProjectEditor | null>(null);
 let tagOptions = $state<ProjectPublicTag[]>([]);
+let tagsLoadFailed = $state(false);
+let popularTags = $state<ProjectPopularTag[]>([]);
 let form = $state(emptyProjectForm());
 let savedSnapshot = $state(formSnapshot(emptyProjectForm()));
 let errors = $state<ProjectFormErrors>({});
@@ -301,13 +303,21 @@ onMount(() => {
 	Promise.all([
 		api
 			.listTags()
-			.then((value) => (tagOptions = value))
-			.catch(() =>
+			.then((value) => {
+				tagOptions = value;
+				tagsLoadFailed = false;
+			})
+			.catch(() => {
+				tagsLoadFailed = true;
 				showSnackbar({
 					message: 'Не удалось загрузить теги.',
 					variant: 'error'
-				})
-			),
+				});
+			}),
+		api
+			.listPopularTags()
+			.then((value) => (popularTags = value))
+			.catch(() => (popularTags = [])),
 		projectId ? loadEditor({ replaceDirty: true }) : Promise.resolve()
 	]);
 

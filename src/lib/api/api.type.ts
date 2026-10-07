@@ -319,6 +319,8 @@ export type ProjectPublicTag = {
 	name: string;
 };
 
+export type ProjectPopularTag = ProjectPublicTag & { count: number };
+
 export type ProjectAttachment = {
 	type: ProjectAttachmentType;
 	url: string;
