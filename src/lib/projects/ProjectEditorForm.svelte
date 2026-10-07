@@ -221,11 +221,6 @@ const filteredTagOptions = $derived(
       <ProjectImageField bind:value={form.banner} disabled={readonly} error={errors.banner} />
       {#if errors.cover}<p class="error">{errors.cover}</p>{/if}
     </section>
-
-    <aside class="tip">
-      <strong>Совет</strong>
-      <p>Хорошее описание помогает привлечь больше внимания к вашему проекту. Укажите ключевые особенности, скриншоты и планы развития.</p>
-    </aside>
   {:else if step === 1}
     <section class="field-section">
       <label for="project-type">Тип</label>
@@ -507,24 +502,6 @@ const filteredTagOptions = $derived(
     display: grid;
     gap: 1rem;
     grid-template-columns: 1fr 1fr;
-  }
-
-  .tip {
-    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
-    border-radius: 0.5rem;
-    margin-bottom: 1.5rem;
-    padding: 0.85rem 1rem;
-  }
-
-  .tip strong {
-    display: block;
-    margin-bottom: 0.25rem;
-  }
-
-  .tip p {
-    color: var(--color-text-secondary);
-    margin: 0;
   }
 
   .tags-input {

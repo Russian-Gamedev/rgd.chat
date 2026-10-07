@@ -58,7 +58,9 @@ function getAuthorName(author: { type: string; name?: string; discord_user_id?: 
             <h2 class="project-title">{project.title}</h2>
 
             <div class="project-meta">
-              <span class="project-date">{formatProjectDate(project.release_date)}</span>
+              {#if project.release_date}
+                <span class="project-date">{formatProjectDate(project.release_date)}</span>
+              {/if}
               <span class="project-likes">♥ {project.likes_count}</span>
             </div>
 

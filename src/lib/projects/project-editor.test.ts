@@ -146,6 +146,13 @@ describe('project editor validation', () => {
 		expect(validateProjectForm(form).releaseDate).toBeDefined();
 	});
 
+	test('allows an empty release date', () => {
+		const form = editorToForm(editor);
+		form.releaseDate = '';
+		expect(validateProjectForm(form, true).releaseDate).toBeUndefined();
+		expect(formToPayload(form).release_date).toBeUndefined();
+	});
+
 	test('requires at least one tag for review', () => {
 		const form = editorToForm(editor);
 		form.tags = [];
@@ -279,7 +286,7 @@ describe('project editor validation', () => {
 		const errors = validateProjectForm(emptyProjectForm(), true);
 		expect(errors.title).toBeDefined();
 		expect(errors.description).toBeDefined();
-		expect(errors.releaseDate).toBeDefined();
+		expect(errors.releaseDate).toBeUndefined();
 		expect(errors.tags).toBeDefined();
 	});
 });

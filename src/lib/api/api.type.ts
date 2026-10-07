@@ -292,7 +292,7 @@ export type ProjectListItemDto = {
 	slug: string;
 	title: string;
 	type: ProjectType;
-	release_date: string;
+	release_date: string | null;
 	tags: ProjectPublicTag[];
 	authors: ProjectAuthor[];
 	thumbnail: string | null;
@@ -331,7 +331,7 @@ export type ProjectResources = {
 };
 
 export type ProjectMetadata = {
-	release_date: string;
+	release_date: string | null;
 	type: ProjectType;
 	published_at: string;
 	updated_at: string;
@@ -409,7 +409,7 @@ export type CreateProjectDto = {
 	title: string;
 	slug?: string;
 	description: string;
-	release_date: string;
+	release_date?: string;
 	type: ProjectType;
 	tags: string[];
 	authors: ProjectAuthorInputDto[];

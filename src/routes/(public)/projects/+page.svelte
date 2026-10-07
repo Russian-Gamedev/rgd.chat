@@ -151,7 +151,9 @@ onMount(() => {
 
             <div class="project-meta">
               <span class="project-type">{PROJECT_TYPE_LABELS[project.type]}</span>
-              <span class="project-date">{formatProjectDate(project.release_date)}</span>
+              {#if project.release_date}
+                <span class="project-date">{formatProjectDate(project.release_date)}</span>
+              {/if}
               <span class="project-likes">♥ {project.likes_count}</span>
             </div>
 

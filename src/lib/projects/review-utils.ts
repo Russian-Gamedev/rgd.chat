@@ -122,7 +122,7 @@ export function compareRevisions(
 	const fields: Array<[string, string, string]> = [
 		['Название', working.title, published.title],
 		['Описание', working.description, published.description],
-		['Дата релиза', working.metadata.release_date, published.metadata.release_date],
+		['Дата релиза', working.metadata.release_date ?? '', published.metadata.release_date ?? ''],
 		['Теги', names(working.tags).join(', '), names(published.tags).join(', ')],
 		[
 			'Авторы',

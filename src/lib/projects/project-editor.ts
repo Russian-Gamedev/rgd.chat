@@ -154,7 +154,7 @@ export function editorToForm(editor: ProjectEditor): ProjectFormState {
 		slug: editor.slug ?? '',
 		slugManuallyEdited: true,
 		description: editor.description,
-		releaseDate: editor.metadata.release_date,
+		releaseDate: editor.metadata.release_date ?? '',
 		type: editor.metadata.type,
 		tags: editor.tags.map((tag) => ({ name: tag.name, slug: tag.slug })),
 		authors: editor.credits.authors.map((author) => ({ ...author })),
@@ -183,7 +183,7 @@ export function formToPayload(form: ProjectFormState): CreateProjectDto {
 		title: form.title.trim(),
 		slug: form.slug?.trim() || undefined,
 		description: form.description,
-		release_date: form.releaseDate,
+		release_date: form.releaseDate || undefined,
 		type: form.type,
 		tags: form.tags.map((tag) => tag.name),
 		authors: form.authors.map((author) =>
@@ -277,7 +277,7 @@ function collectErrors(
 		}
 	}
 
-	if (fields.has('releaseDate') && !isIsoDate(form.releaseDate)) {
+	if (fields.has('releaseDate') && form.releaseDate && !isIsoDate(form.releaseDate)) {
 		errors.releaseDate = 'Укажите корректную дату в формате ГГГГ-ММ-ДД.';
 	}
 

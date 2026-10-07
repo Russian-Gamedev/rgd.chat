@@ -1,4 +1,5 @@
-export function formatProjectDate(value: string, locale = 'ru-RU'): string {
+export function formatProjectDate(value: string | null, locale = 'ru-RU'): string {
+	if (!value) return '';
 	const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
 	if (!match) return value;
 	const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));

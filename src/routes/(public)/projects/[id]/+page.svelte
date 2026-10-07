@@ -35,10 +35,12 @@ const project = $derived(data.project);
 
     <div class="project-meta">
       <span class="meta-item project-type">{PROJECT_TYPE_LABELS[project.metadata.type]}</span>
-      <span class="meta-item">
-        <IconCalendar />
-        {formatProjectDate(project.metadata.release_date)}
-      </span>
+      {#if project.metadata.release_date}
+        <span class="meta-item">
+          <IconCalendar />
+          {formatProjectDate(project.metadata.release_date)}
+        </span>
+      {/if}
       <span class="meta-item">
         <IconEye />
         ♥ {project.stats.likes_count}

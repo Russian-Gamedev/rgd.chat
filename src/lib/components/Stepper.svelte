@@ -16,7 +16,7 @@ let {
 
 <ol class="stepper">
 	{#each steps as step, index (`${index}-${step.label}`)}
-		<li>
+		<li class:filled={index < current}>
 			<button
 				type="button"
 				class:done={index < maxReached || index < current}
@@ -30,7 +30,6 @@ let {
 				<span class="bullet">{index < current && !errorSteps.includes(index) ? '✓' : index + 1}</span>
 				<span class="label">{step.label}</span>
 			</button>
-			{#if index < steps.length - 1}<span class="line" class:filled={index < current}></span>{/if}
 		</li>
 	{/each}
 </ol>
@@ -44,13 +43,23 @@ let {
 	}
 
 	li {
-		align-items: flex-start;
-		display: flex;
 		flex: 1;
+		/* Линия между кружками: от края текущего круга до края следующего. */
+		position: relative;
 	}
 
-	li:last-child {
-		flex: 0;
+	li:not(:last-child)::after {
+		content: '';
+		background: #3a3c43;
+		height: 1px;
+		left: calc(50% + 1.25rem);
+		position: absolute;
+		right: calc(-50% + 1.25rem);
+		top: 1rem;
+	}
+
+	li.filled:not(:last-child)::after {
+		background: var(--color-primary);
 	}
 
 	button {
@@ -64,6 +73,7 @@ let {
 		gap: 0.45rem;
 		padding: 0;
 		text-align: center;
+		width: 100%;
 	}
 
 	button.clickable {
@@ -86,6 +96,7 @@ let {
 		height: 2rem;
 		justify-content: center;
 		margin: 0 auto;
+		position: relative;
 		width: 2rem;
 	}
 
@@ -114,27 +125,13 @@ let {
 	.label {
 		display: block;
 		font-size: 0.8125rem;
+		margin: 0 auto;
 		max-width: 7.5rem;
-	}
-
-	.line {
-		background: #3a3c43;
-		flex: 1;
-		height: 1px;
-		margin-top: 1rem;
-	}
-
-	.line.filled {
-		background: var(--color-primary);
 	}
 
 	@media (max-width: 800px) {
 		.label {
 			display: none;
-		}
-
-		.line {
-			margin-top: 1rem;
 		}
 	}
 </style>
