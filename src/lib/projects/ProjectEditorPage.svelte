@@ -357,17 +357,6 @@ onMount(() => {
       >
     {/if}
   </div>
-
-  {#if loadState === "ready"}
-    <Stepper
-      steps={EDITOR_STEPS}
-      current={step}
-      maxReached={maxStep}
-      errorSteps={stepErrorList}
-      onSelect={selectStep}
-    />
-    <p class="step-description">{EDITOR_STEPS[step].description}</p>
-  {/if}
 </section>
 
 {#if loadState === "loading"}
@@ -388,6 +377,15 @@ onMount(() => {
     <Button type="button" onclick={() => loadEditor()}>Повторить</Button>
   </section>
 {:else}
+  <Stepper
+    steps={EDITOR_STEPS}
+    current={step}
+    maxReached={maxStep}
+    errorSteps={stepErrorList}
+    onSelect={selectStep}
+  />
+  <p class="step-description">{EDITOR_STEPS[step].description}</p>
+
   {#if isReview}
     <section class="notice review-notice">
       <strong>Редакция находится на ревью.</strong>
@@ -494,7 +492,7 @@ onMount(() => {
     background-repeat: no-repeat;
     background-size: auto, 100% 100%, cover;
     margin: -64px -40px 1.5rem;
-    padding: 64px 40px 1.75rem;
+    padding: 40px 40px 1.25rem;
   }
 
   .page-banner :global(a) {
@@ -503,12 +501,12 @@ onMount(() => {
 
   .page-banner h1 {
     font-size: 2.25rem;
-    margin: 1rem 0 0.5rem;
+    margin: 0.5rem 0 0.35rem;
   }
 
   .page-header {
     justify-content: space-between;
-    margin: 0 0 1.75rem;
+    margin: 0;
   }
 
   h1,
@@ -579,18 +577,9 @@ onMount(() => {
   }
 
   @media (max-width: 900px) {
-    .wizard-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .preview-col {
-      order: -1;
-      position: static;
-    }
-
     .page-banner {
       margin: -24px -16px 1.25rem;
-      padding: 24px 16px 1.25rem;
+      padding: 20px 16px 1rem;
     }
 
     .page-banner h1 {
