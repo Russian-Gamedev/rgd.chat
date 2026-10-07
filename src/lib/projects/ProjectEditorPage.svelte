@@ -14,7 +14,6 @@ import { showSnackbar } from '$lib/components/snackbar';
 import UserIdentity from '$lib/components/UserIdentity.svelte';
 
 import ProjectEditorForm from './ProjectEditorForm.svelte';
-import ProjectPreviewCard from './ProjectPreviewCard.svelte';
 import type { ProjectFormErrors, ProjectSavedMedia } from './project-editor';
 import {
 	EDITOR_STEPS,
@@ -126,7 +125,7 @@ async function loadEditor(options?: { replaceDirty?: boolean }) {
 }
 
 /** Сохраняет черновик без валидации — валидация происходит в обработчиках шагов. */
-async function saveDraft(): Promise<boolean> {
+async function saveDraft(options?: { silent?: boolean }): Promise<boolean> {
 	if (isMutating || isReview) return false;
 	if (projectId && !isDirty) return true;
 
@@ -149,12 +148,12 @@ async function saveDraft(): Promise<boolean> {
 				: Promise.resolve(),
 			projectId ? invalidate(`projects:editor:${projectId}`) : Promise.resolve()
 		]);
-		showSnackbar({ message: 'Черновик сохранён.', variant: 'success' });
-
-		if (!projectId) {
-			projectId = next.id;
-			await goto(`/projects/editor/${next.id}`, { replaceState: true });
+		// «Далее» сохраняет молча; тост показываем только явному «Сохранить черновик».
+		if (!options?.silent) {
+			showSnackbar({ message: 'Черновик сохранён.', variant: 'success' });
 		}
+
+		if (!projectId) projectId = next.id;
 		return true;
 	} catch (error) {
 		if (error instanceof ApiHttpError && error.status === 409) conflict = true;
@@ -179,7 +178,7 @@ async function goNext() {
 			scrollTop();
 			return;
 		}
-		if (!(await saveDraft())) return;
+		if (!(await saveDraft({ silent: true }))) return;
 	}
 	advance();
 }
@@ -216,7 +215,7 @@ async function submitForModeration() {
 		scrollTop();
 		return;
 	}
-	if (!(await saveDraft()) || !projectId) return;
+	if (!(await saveDraft({ silent: true })) || !projectId) return;
 
 	isMutating = true;
 	try {
@@ -421,14 +420,17 @@ onMount(() => {
     </section>
   {/if}
 
-  <div class="wizard-grid">
-    <div class="wizard-form">
-      <ProjectEditorForm bind:form {step} {tagOptions} {errors} readonly={isReview} />
-      {#if isDirty}<span class="dirty">Есть несохранённые изменения</span>{/if}
-    </div>
-    <aside class="preview-col">
-      <ProjectPreviewCard {form} />
-    </aside>
+  <div class="wizard-form">
+    <ProjectEditorForm
+      bind:form
+      {step}
+      {tagOptions}
+      tagsUnavailable={tagsLoadFailed}
+      {popularTags}
+      {errors}
+      readonly={isReview}
+    />
+    {#if isDirty}<span class="dirty">Есть несохранённые изменения</span>{/if}
   </div>
 
   <div class="wizard-footer">
@@ -523,18 +525,6 @@ onMount(() => {
   .step-description {
     color: var(--color-text-secondary);
     margin: 0 0 1.5rem;
-  }
-
-  .wizard-grid {
-    display: grid;
-    align-items: start;
-    gap: 1.5rem;
-    grid-template-columns: minmax(0, 1fr) 18rem;
-  }
-
-  .preview-col {
-    position: sticky;
-    top: 1rem;
   }
 
   .wizard-footer {
