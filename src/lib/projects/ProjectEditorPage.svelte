@@ -5,6 +5,7 @@ import { beforeNavigate, goto, invalidate } from '$app/navigation';
 import { page } from '$app/state';
 import { ApiHttpError, createApi } from '$lib/api/api';
 import type { ProjectEditor, ProjectPublicTag } from '$lib/api/api.type';
+import bannerImage from '$lib/assets/backgrounds/banner-1.webp';
 import { requireAuth } from '$lib/auth/auth.actions';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Button from '$lib/components/Button.svelte';
@@ -314,34 +315,50 @@ onMount(() => {
 });
 </script>
 
-<Breadcrumb
-  items={[
-    { label: "Главная", href: "/" },
-    { label: "Проекты", href: "/projects" },
-    { label: projectId ? "Редактор" : "Создание проекта", href: "" }
-  ]}
-/>
+<section
+  class="page-banner"
+  style:background-image={`linear-gradient(90deg, var(--color-bg) 0%, color-mix(in srgb, var(--color-bg) 72%, transparent) 42%, rgba(0, 0, 0, 0.35) 100%), linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, var(--color-bg) 100%), url(${bannerImage})`}
+>
+  <Breadcrumb
+    items={[
+      { label: "Главная", href: "/" },
+      { label: "Проекты", href: "/projects" },
+      { label: projectId ? "Редактор" : "Создание проекта", href: "" }
+    ]}
+  />
 
-<div class="page-header">
-  <div>
-    <h1>{projectId ? "Редактор проекта" : "Создание проекта"}</h1>
-    {#if projectId}
-      {#if editor}
-        <p class="status">Версия {editor.workflow.version} · {editor.workflow.status}</p>
-        {#if editor.credits.owner_id}
-          <UserIdentity id={editor.credits.owner_id} compact />
+  <div class="page-header">
+    <div>
+      <h1>{projectId ? "Редактор проекта" : "Создание проекта"}</h1>
+      {#if projectId}
+        {#if editor}
+          <p class="status">Версия {editor.workflow.version} · {editor.workflow.status}</p>
+          {#if editor.credits.owner_id}
+            <UserIdentity id={editor.credits.owner_id} compact />
+          {/if}
         {/if}
+      {:else}
+        <p class="status">Заполните основные данные и отправьте проект на модерацию</p>
       {/if}
-    {:else}
-      <p class="status">Заполните основные данные и отправьте проект на модерацию</p>
+    </div>
+    {#if editor?.workflow.has_published_version}
+      <Button as="a" href={`/projects/${editor.slug}`} variant="outline"
+        >Публичная версия</Button
+      >
     {/if}
   </div>
-  {#if editor?.workflow.has_published_version}
-    <Button as="a" href={`/projects/${editor.slug}`} variant="outline"
-      >Публичная версия</Button
-    >
+
+  {#if loadState === "ready"}
+    <Stepper
+      steps={EDITOR_STEPS}
+      current={step}
+      maxReached={maxStep}
+      errorSteps={stepErrorList}
+      onSelect={selectStep}
+    />
+    <p class="step-description">{EDITOR_STEPS[step].description}</p>
   {/if}
-</div>
+</section>
 
 {#if loadState === "loading"}
   <p>Загрузка редактора…</p>
@@ -395,15 +412,6 @@ onMount(() => {
       >
     </section>
   {/if}
-
-  <Stepper
-    steps={EDITOR_STEPS}
-    current={step}
-    maxReached={maxStep}
-    errorSteps={stepErrorList}
-    onSelect={selectStep}
-  />
-  <p class="step-description">{EDITOR_STEPS[step].description}</p>
 
   <div class="wizard-grid">
     <div class="wizard-form">
@@ -470,9 +478,27 @@ onMount(() => {
     gap: 0.75rem;
   }
 
+  .page-banner {
+    background-color: var(--color-bg);
+    background-position: left top, center bottom, right center;
+    background-repeat: no-repeat;
+    background-size: auto, 100% 100%, cover;
+    margin: -64px -40px 1.5rem;
+    padding: 64px 40px 1.75rem;
+  }
+
+  .page-banner :global(a) {
+    color: var(--color-text-secondary);
+  }
+
+  .page-banner h1 {
+    font-size: 2.25rem;
+    margin: 1rem 0 0.5rem;
+  }
+
   .page-header {
     justify-content: space-between;
-    margin: 1.5rem 0;
+    margin: 0 0 1.75rem;
   }
 
   h1,
@@ -550,6 +576,15 @@ onMount(() => {
     .preview-col {
       order: -1;
       position: static;
+    }
+
+    .page-banner {
+      margin: -24px -16px 1.25rem;
+      padding: 24px 16px 1.25rem;
+    }
+
+    .page-banner h1 {
+      font-size: 1.5rem;
     }
   }
 </style>
