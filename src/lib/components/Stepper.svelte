@@ -27,7 +27,7 @@ let {
 				aria-current={index === current ? 'step' : undefined}
 				onclick={() => onSelect(index)}
 			>
-				<span class="bullet">{index < current && !errorSteps.includes(index) ? '✓' : index + 1}</span>
+				<span class="bullet">{index + 1}</span>
 				<span class="label">{step.label}</span>
 			</button>
 		</li>
@@ -103,7 +103,7 @@ let {
 	button.active .bullet {
 		background: var(--color-primary);
 		border-color: var(--color-primary);
-		color: var(--color-text);
+		color: #fff;
 	}
 
 	button.done .bullet {
