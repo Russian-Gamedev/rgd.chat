@@ -17,6 +17,8 @@ import {
 } from './project-editor';
 import { describe, expect, test } from 'bun:test';
 
+const UPLOAD_ID = '01986b4a-1a2b-7c3d-9e4f-5a6b7c8d9e0f';
+
 const editor: ProjectEditor = {
 	id: 'project-1',
 	slug: 'igra',
@@ -24,6 +26,8 @@ const editor: ProjectEditor = {
 	description: 'Описание',
 	tags: [{ slug: 'action', name: 'Экшен' }],
 	thumbnail: null,
+	banner_url: null,
+	banner_upload_id: null,
 	credits: {
 		owner_id: 'owner-1',
 		authors: [
@@ -33,7 +37,10 @@ const editor: ProjectEditor = {
 	},
 	resources: {
 		links: [{ icon: 'IconGlobe', label: 'Сайт', link: 'https://example.com' }],
-		attachments: [{ type: 'image', url: 'https://example.com/image.png' }]
+		attachments: [
+			{ type: 'image', url: 'https://example.com/image.png', upload_id: UPLOAD_ID },
+			{ type: 'external_video', url: 'https://example.com/video' }
+		]
 	},
 	metadata: {
 		release_date: '2026-07-12',
@@ -63,7 +70,11 @@ describe('project editor normalization', () => {
 			tags: [{ name: 'Экшен', slug: 'action' }],
 			authors: editor.credits.authors,
 			links: editor.resources.links,
-			attachments: editor.resources.attachments
+			banner: null,
+			attachments: [
+				{ type: 'image', upload_id: UPLOAD_ID, url: 'https://example.com/image.png' },
+				{ type: 'external_video', url: 'https://example.com/video' }
+			]
 		});
 	});
 
@@ -154,7 +165,8 @@ describe('project editor validation', () => {
 		}));
 		form.attachments = Array.from({ length: 21 }, () => ({
 			type: 'image' as const,
-			url: 'https://x.dev/a.png'
+			upload_id: UPLOAD_ID,
+			url: null
 		}));
 		const errors = validateProjectForm(form, true);
 		expect(errors.tags).toBeDefined();
@@ -166,7 +178,10 @@ describe('project editor validation', () => {
 	test('rejects non-HTTPS links and attachments', () => {
 		const form = editorToForm(editor);
 		form.links[0].link = 'http://example.com';
-		form.attachments[0].url = 'javascript:alert(1)';
+		form.attachments = [
+			{ type: 'image', upload_id: UPLOAD_ID, url: null },
+			{ type: 'external_video', url: 'javascript:alert(1)' }
+		];
 		const errors = validateProjectForm(form);
 		expect(errors.links).toBeDefined();
 		expect(errors.attachments).toBeDefined();
@@ -206,8 +221,32 @@ describe('project editor validation', () => {
 		expect(validateProjectForm(form).attachments).toBe(
 			'Добавьте хотя бы одно изображение проекта.'
 		);
-		form.attachments = editor.resources.attachments.map((attachment) => ({ ...attachment }));
-		expect(formToUpdatePayload(form, editor.resources.attachments).attachments).toBeUndefined();
+		form.attachments = editorToForm(editor).attachments;
+		expect(
+			formToUpdatePayload(form, {
+				attachments: editor.resources.attachments,
+				banner: null
+			}).attachments
+		).toBeUndefined();
+	});
+
+	test('waits for the upload and maps the banner id into the payload', () => {
+		const form = emptyProjectForm();
+		form.title = 'Проект';
+		form.description = 'Описание';
+		form.releaseDate = '2026-01-01';
+		form.tags = [{ name: 'Экшен', slug: 'action' }];
+		form.authors = [{ type: 'text', name: 'Команда' }];
+		form.attachments = [{ type: 'image', upload_id: UPLOAD_ID, url: null }];
+
+		form.banner = { upload_id: null, url: 'blob:uploading' };
+		expect(validateProjectForm(form).banner).toBeDefined();
+		form.banner = { upload_id: UPLOAD_ID, url: 'https://cdn.example/banner.png' };
+		expect(validateProjectForm(form).banner).toBeUndefined();
+
+		const payload = formToPayload(form);
+		expect(payload.banner_upload_id).toBe(UPLOAD_ID);
+		expect(payload.attachments).toEqual([{ type: 'image', upload_id: UPLOAD_ID }]);
 	});
 
 	test('normalizes title suggestions and validates slug format', () => {

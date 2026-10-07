@@ -1,9 +1,15 @@
 <script lang="ts">
-import type { ProjectAuthorInputDto, ProjectPublicTag } from '$lib/api/api.type';
+import type {
+	ProjectAttachmentType,
+	ProjectAuthorInputDto,
+	ProjectPublicTag
+} from '$lib/api/api.type';
 import Button from '$lib/components/Button.svelte';
 import IconPicker from '$lib/components/IconPicker.svelte';
+import { showSnackbar } from '$lib/components/snackbar';
 
 import MarkdownPreview from './MarkdownPreview.svelte';
+import ProjectImageField from './ProjectImageField.svelte';
 import type { ProjectFormErrors, ProjectFormState } from './project-editor';
 import {
 	moveItem,
@@ -12,6 +18,7 @@ import {
 	youtubeEmbedUrl
 } from './project-editor';
 import { PROJECT_TYPE_OPTIONS } from './project-type';
+import { isAcceptableImageSize, isSupportedImage, uploadProjectImage } from './project-uploads';
 
 let {
 	form = $bindable(),
@@ -29,6 +36,8 @@ let descriptionMode = $state<'editor' | 'preview'>('editor');
 let tagInput = $state('');
 let showTagDropdown = $state(false);
 let tagInputRef: HTMLInputElement | undefined = $state();
+let attachmentFileInput = $state<HTMLInputElement>();
+let pendingImageIndex = $state<number | null>(null);
 
 function updateAuthor(index: number, author: ProjectAuthorInputDto) {
 	form.authors[index] = author;
@@ -40,6 +49,60 @@ function removeAt(key: 'authors' | 'links' | 'attachments', index: number) {
 		if (imageCount === 1) return;
 	}
 	form[key].splice(index, 1);
+}
+
+function updateAttachmentType(index: number, type: ProjectAttachmentType) {
+	const current = form.attachments[index];
+	if (!current || current.type === type) return;
+	form.attachments[index] =
+		type === 'image'
+			? { type: 'image', upload_id: null, url: null }
+			: { type: 'external_video', url: '' };
+}
+
+function addImageAttachment() {
+	form.attachments.push({ type: 'image', upload_id: null, url: null, uploading: false });
+	pendingImageIndex = form.attachments.length - 1;
+	attachmentFileInput?.click();
+}
+
+function pickAttachmentFile(index: number) {
+	pendingImageIndex = index;
+	attachmentFileInput?.click();
+}
+
+async function handleAttachmentFile(event: Event) {
+	const input = event.currentTarget as HTMLInputElement;
+	const file = input.files?.[0];
+	input.value = '';
+	const index = pendingImageIndex;
+	pendingImageIndex = null;
+	if (!file || index === null) return;
+	const row = form.attachments[index];
+	if (row?.type !== 'image') return;
+	if (!isSupportedImage(file)) {
+		showSnackbar({ message: 'Поддерживаются только изображения.', variant: 'error' });
+		return;
+	}
+	if (!isAcceptableImageSize(file)) {
+		showSnackbar({ message: 'Изображение должно быть меньше 25 МБ.', variant: 'error' });
+		return;
+	}
+	row.url = URL.createObjectURL(file);
+	row.upload_id = null;
+	row.uploading = true;
+	try {
+		const upload = await uploadProjectImage('attachment', file);
+		row.upload_id = upload.id;
+		row.url = upload.url;
+	} catch {
+		showSnackbar({
+			message: 'Не удалось загрузить изображение. Попробуйте ещё раз.',
+			variant: 'error'
+		});
+	} finally {
+		row.uploading = false;
+	}
 }
 
 function normalizeTag(value: string): string | null {
@@ -139,6 +202,11 @@ const filteredTagOptions = $derived(
         <option value={option.value}>{option.label}</option>
       {/each}
     </select>
+  </section>
+
+  <section class="field-section">
+    <span class="field-label">Баннер</span>
+    <ProjectImageField bind:value={form.banner} disabled={readonly} error={errors.banner} />
   </section>
 
   <section class="field-section">
@@ -284,7 +352,21 @@ const filteredTagOptions = $derived(
   <section class="collection">
     <div class="section-header">
       <div><h2>Вложения</h2><span>{form.attachments.length}/20</span></div>
-      <Button type="button" variant="outline" disabled={readonly || form.attachments.length >= 20} onclick={() => form.attachments.push({ type: 'image', url: '' })}>Добавить вложение</Button>
+      <div class="section-actions">
+        <Button
+          type="button"
+          variant="outline"
+          disabled={readonly || form.attachments.length >= 20}
+          onclick={addImageAttachment}>Добавить изображение</Button
+        >
+        <Button
+          type="button"
+          variant="outline"
+          disabled={readonly || form.attachments.length >= 20}
+          onclick={() => form.attachments.push({ type: 'external_video', url: '' })}
+          >Добавить видео</Button
+        >
+      </div>
     </div>
     {#each form.attachments as attachment, index (`${index}-${attachment.type}`)}
       <div class="attachment">
@@ -292,21 +374,43 @@ const filteredTagOptions = $derived(
           {#if attachment.type === 'image' && form.attachments.findIndex((item) => item.type === 'image') === index}
             <span class="cover-label">Обложка</span>
           {/if}
-          <select bind:value={attachment.type} aria-label="Тип вложения">
+          <select
+            value={attachment.type}
+            aria-label="Тип вложения"
+            onchange={(event) => updateAttachmentType(index, event.currentTarget.value as ProjectAttachmentType)}
+          >
             <option value="image">Изображение</option>
             <option value="external_video">Внешнее видео</option>
           </select>
-          <input aria-label="URL вложения" type="url" placeholder="https://…" bind:value={attachment.url} />
+          {#if attachment.type === 'image'}
+            <div class="attachment-file">
+              <span class="muted">
+                {attachment.uploading
+                  ? 'Загрузка…'
+                  : attachment.upload_id
+                    ? 'Изображение загружено'
+                    : 'Файл не выбран'}
+              </span>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={readonly || attachment.uploading}
+                onclick={() => pickAttachmentFile(index)}>Выбрать файл</Button
+              >
+            </div>
+          {:else}
+            <input aria-label="URL вложения" type="url" placeholder="https://…" bind:value={attachment.url} />
+          {/if}
           <div class="row-actions">
             <button type="button" aria-label="Переместить выше" disabled={readonly || index === 0} onclick={() => (form.attachments = moveItem(form.attachments, index, -1))}>↑</button>
             <button type="button" aria-label="Переместить ниже" disabled={readonly || index === form.attachments.length - 1} onclick={() => (form.attachments = moveItem(form.attachments, index, 1))}>↓</button>
             <button type="button" aria-label="Удалить вложение" disabled={attachment.type === 'image' && form.attachments.filter((item) => item.type === 'image').length === 1} onclick={() => removeAt('attachments', index)}>×</button>
           </div>
         </div>
-        {#if attachment.url.startsWith('https://')}
-          {#if attachment.type === 'image'}
-            <img src={attachment.url} alt="Предпросмотр вложения" onerror={(event) => ((event.currentTarget as HTMLImageElement).hidden = true)} />
-          {:else if youtubeEmbedUrl(attachment.url)}
+        {#if attachment.type === 'image' && attachment.url}
+          <img src={attachment.url} alt="Предпросмотр вложения" onerror={(event) => ((event.currentTarget as HTMLImageElement).hidden = true)} />
+        {:else if attachment.type === 'external_video' && attachment.url.startsWith('https://')}
+          {#if youtubeEmbedUrl(attachment.url)}
             <iframe
               src={youtubeEmbedUrl(attachment.url) ?? ''}
               title="Предпросмотр видео"
@@ -320,6 +424,7 @@ const filteredTagOptions = $derived(
         {/if}
       </div>
     {/each}
+    <input bind:this={attachmentFileInput} type="file" accept="image/*" hidden onchange={handleAttachmentFile} />
     {#if errors.attachments}<p class="error">{errors.attachments}</p>{/if}
   </section>
 </fieldset>
@@ -508,6 +613,19 @@ const filteredTagOptions = $derived(
 
   .section-header > div {
     gap: 0.5rem;
+  }
+
+  .section-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .attachment-file {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
   }
 
   h2 {

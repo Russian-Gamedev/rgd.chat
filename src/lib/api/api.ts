@@ -3,6 +3,7 @@ import type {
 	AddEventResponse,
 	AddMotdResponse,
 	CreateProjectDto,
+	CreateProjectUploadDto,
 	DonationsPage,
 	GolderImportResult,
 	GolderListParams,
@@ -23,6 +24,8 @@ import type {
 	ProjectListQueryDto,
 	ProjectListResponseDto,
 	ProjectPublicTag,
+	ProjectUpload,
+	ProjectUploadCreated,
 	ReviewListQueryDto,
 	ReviewListResponseDto,
 	UpdateProfilePayload,
@@ -168,6 +171,21 @@ export function createApi(options: ApiOptions) {
 				body: JSON.stringify(payload),
 				headers: { 'Content-Type': 'application/json' }
 			});
+		},
+		createProjectUpload(payload: CreateProjectUploadDto) {
+			return request<ProjectUploadCreated>('/projects/uploads', {
+				method: 'POST',
+				body: JSON.stringify(payload),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		completeProjectUpload(id: string) {
+			return request<ProjectUpload>(`/projects/uploads/${encodeURIComponent(id)}/complete`, {
+				method: 'POST'
+			});
+		},
+		deleteProjectUpload(id: string) {
+			return request<void>(`/projects/uploads/${encodeURIComponent(id)}`, { method: 'DELETE' });
 		},
 		getMyActivity(months?: number) {
 			return request<UserActivity>(withMonthsQuery('/activity/me', months));

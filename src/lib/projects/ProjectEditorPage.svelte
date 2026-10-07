@@ -12,7 +12,7 @@ import { showSnackbar } from '$lib/components/snackbar';
 import UserIdentity from '$lib/components/UserIdentity.svelte';
 
 import ProjectEditorForm from './ProjectEditorForm.svelte';
-import type { ProjectFormErrors } from './project-editor';
+import type { ProjectFormErrors, ProjectSavedMedia } from './project-editor';
 import {
 	editorToForm,
 	emptyProjectForm,
@@ -37,7 +37,7 @@ let errors = $state<ProjectFormErrors>({});
 let loadState = $state<'loading' | 'ready' | 'not-found' | 'forbidden' | 'error'>('loading');
 let isMutating = $state(false);
 let conflict = $state(false);
-let savedAttachments = $state<ProjectEditor['resources']['attachments']>([]);
+let savedMedia = $state<ProjectSavedMedia>({ attachments: [], banner: null });
 
 const isReview = $derived(editor?.workflow.status === 'review');
 const isDirty = $derived(loadState === 'ready' && formSnapshot(form) !== savedSnapshot);
@@ -58,7 +58,10 @@ const submittedAt = $derived(
 function applyEditor(next: ProjectEditor) {
 	editor = next;
 	form = editorToForm(next);
-	savedAttachments = next.resources.attachments.map((attachment) => ({ ...attachment }));
+	savedMedia = {
+		attachments: next.resources.attachments.map((attachment) => ({ ...attachment })),
+		banner: form.banner ? { ...form.banner } : null
+	};
 	savedSnapshot = formSnapshot(form);
 	errors = {};
 	conflict = false;
@@ -114,7 +117,7 @@ async function saveDraft(forReview = false): Promise<boolean> {
 	try {
 		const previousSlug = editor?.slug;
 		const next = projectId
-			? await api.updateProjectDraft(projectId, formToUpdatePayload(form, savedAttachments))
+			? await api.updateProjectDraft(projectId, formToUpdatePayload(form, savedMedia))
 			: await api.createProjectDraft(formToPayload(form));
 		applyEditor(next);
 		await Promise.all([

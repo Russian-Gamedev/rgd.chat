@@ -296,6 +296,7 @@ export type ProjectListItemDto = {
 	tags: ProjectPublicTag[];
 	authors: ProjectAuthor[];
 	thumbnail: string | null;
+	banner_url: string | null;
 	likes_count: number;
 	published_at: string;
 };
@@ -310,6 +311,7 @@ export type ProjectPublicTag = {
 export type ProjectAttachment = {
 	type: ProjectAttachmentType;
 	url: string;
+	upload_id?: string;
 };
 
 export type ProjectLink = {
@@ -355,6 +357,8 @@ export type ProjectDetails = {
 	title: string;
 	description: string;
 	thumbnail: string | null;
+	banner_url: string | null;
+	banner_upload_id: string | null;
 	tags: ProjectPublicTag[];
 	credits: ProjectCredits;
 	resources: ProjectResources;
@@ -372,9 +376,33 @@ export type ProjectAuthorInputDto =
 
 export type ProjectLinkInputDto = { icon: string; label: string; link: string };
 
-export type ProjectAttachmentInputDto = {
-	type: ProjectAttachmentType;
+export type ProjectAttachmentInputDto =
+	| { type: 'image'; upload_id: string }
+	| { type: 'external_video'; url: string };
+
+export type ProjectUploadKind = 'banner' | 'attachment';
+
+export type ProjectUploadStatus = 'pending' | 'ready';
+
+export type CreateProjectUploadDto = {
+	kind: ProjectUploadKind;
+	content_type: string;
+	size_bytes: number;
+};
+
+export type ProjectUpload = {
+	id: string;
+	kind: ProjectUploadKind;
+	status: ProjectUploadStatus;
 	url: string;
+};
+
+export type ProjectUploadCreated = {
+	upload: {
+		id: string;
+		url: string;
+		expires_in_seconds: number;
+	};
 };
 
 export type CreateProjectDto = {
@@ -387,6 +415,7 @@ export type CreateProjectDto = {
 	authors: ProjectAuthorInputDto[];
 	links?: ProjectLinkInputDto[];
 	attachments: ProjectAttachmentInputDto[];
+	banner_upload_id?: string | null;
 };
 
 export type UpdateProjectDto = Partial<CreateProjectDto>;

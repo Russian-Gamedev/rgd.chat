@@ -1,5 +1,6 @@
 import type {
 	CreateProjectDto,
+	ProjectAttachment,
 	ProjectAttachmentInputDto,
 	ProjectAuthorInputDto,
 	ProjectEditor,
@@ -13,6 +14,16 @@ export type ProjectFormTag = Pick<ProjectPublicTag, 'name'> & {
 	slug: string | null;
 };
 
+/** Загруженное изображение: `upload_id` появляется после завершения загрузки. */
+export type ProjectFormImage = {
+	upload_id: string | null;
+	url: string | null;
+};
+
+export type ProjectFormAttachment =
+	| ({ type: 'image'; upload_id: string | null; url: string | null } & { uploading?: boolean })
+	| { type: 'external_video'; url: string };
+
 export type ProjectFormState = {
 	title: string;
 	slug: string;
@@ -23,10 +34,16 @@ export type ProjectFormState = {
 	tags: ProjectFormTag[];
 	authors: ProjectAuthorInputDto[];
 	links: ProjectLinkInputDto[];
-	attachments: ProjectAttachmentInputDto[];
+	banner: ProjectFormImage | null;
+	attachments: ProjectFormAttachment[];
 };
 
 export type ProjectFormErrors = Partial<Record<keyof ProjectFormState | 'form', string>>;
+
+export type ProjectSavedMedia = {
+	attachments: ProjectAttachment[];
+	banner: ProjectFormImage | null;
+};
 
 const DEFAULT_LINK_ICON = 'IconGlobe';
 
@@ -55,8 +72,19 @@ export function emptyProjectForm(): ProjectFormState {
 		tags: [],
 		authors: [],
 		links: [],
+		banner: null,
 		attachments: []
 	};
+}
+
+function imageToForm(upload_id: string | null, url: string | null): ProjectFormImage | null {
+	return upload_id || url ? { upload_id, url } : null;
+}
+
+function attachmentToForm(attachment: ProjectAttachment): ProjectFormAttachment {
+	return attachment.type === 'image' && attachment.upload_id
+		? { type: 'image', upload_id: attachment.upload_id, url: attachment.url }
+		: { type: 'external_video', url: attachment.url };
 }
 
 export function editorToForm(editor: ProjectEditor): ProjectFormState {
@@ -70,8 +98,23 @@ export function editorToForm(editor: ProjectEditor): ProjectFormState {
 		tags: editor.tags.map((tag) => ({ name: tag.name, slug: tag.slug })),
 		authors: editor.credits.authors.map((author) => ({ ...author })),
 		links: editor.resources.links.map((link) => ({ ...link, icon: normalizeLinkIcon(link.icon) })),
-		attachments: editor.resources.attachments.map((attachment) => ({ ...attachment }))
+		banner: imageToForm(editor.banner_upload_id ?? null, editor.banner_url),
+		attachments: editor.resources.attachments.map(attachmentToForm)
 	};
+}
+
+function attachmentToPayload(attachment: ProjectFormAttachment): ProjectAttachmentInputDto | null {
+	if (attachment.type === 'image') {
+		return attachment.upload_id ? { type: 'image', upload_id: attachment.upload_id } : null;
+	}
+	return { type: 'external_video', url: attachment.url.trim() };
+}
+
+function attachmentToSaved(attachment: ProjectAttachment): ProjectAttachmentInputDto | null {
+	if (attachment.type === 'image') {
+		return attachment.upload_id ? { type: 'image', upload_id: attachment.upload_id } : null;
+	}
+	return { type: 'external_video', url: attachment.url };
 }
 
 export function formToPayload(form: ProjectFormState): CreateProjectDto {
@@ -92,23 +135,24 @@ export function formToPayload(form: ProjectFormState): CreateProjectDto {
 			label: link.label.trim(),
 			link: link.link.trim()
 		})),
-		attachments: form.attachments.map((attachment) => ({
-			type: attachment.type,
-			url: attachment.url.trim()
-		}))
+		banner_upload_id: form.banner?.upload_id ?? null,
+		attachments: form.attachments
+			.map(attachmentToPayload)
+			.filter((attachment): attachment is ProjectAttachmentInputDto => attachment !== null)
 	};
 }
 
 export function formToUpdatePayload(
 	form: ProjectFormState,
-	savedAttachments: ProjectAttachmentInputDto[]
+	saved: ProjectSavedMedia
 ): Partial<CreateProjectDto> {
-	const current = form.attachments.map((attachment) => ({
-		type: attachment.type,
-		url: attachment.url.trim()
-	}));
 	const payload: Partial<CreateProjectDto> = formToPayload(form);
+	const current = form.attachments.map(attachmentToPayload);
+	const savedAttachments = saved.attachments.map(attachmentToSaved);
 	if (JSON.stringify(current) === JSON.stringify(savedAttachments)) delete payload.attachments;
+	if ((form.banner?.upload_id ?? null) === (saved.banner?.upload_id ?? null)) {
+		delete payload.banner_upload_id;
+	}
 	return payload;
 }
 
@@ -189,10 +233,20 @@ export function validateProjectForm(form: ProjectFormState, forReview = false): 
 
 	if (!form.attachments.some((attachment) => attachment.type === 'image')) {
 		errors.attachments = 'Добавьте хотя бы одно изображение проекта.';
-	} else if (form.attachments.length > 20)
+	} else if (form.attachments.length > 20) {
 		errors.attachments = 'Можно добавить не более 20 вложений.';
-	else if (form.attachments.some((attachment) => !isAbsoluteHttpsUrl(attachment.url.trim()))) {
-		errors.attachments = 'Каждое вложение должно содержать абсолютный HTTPS URL.';
+	} else if (
+		form.attachments.some((attachment) =>
+			attachment.type === 'image'
+				? !attachment.upload_id
+				: !isAbsoluteHttpsUrl(attachment.url.trim())
+		)
+	) {
+		errors.attachments = 'Дождитесь загрузки изображений и проверьте ссылки на видео.';
+	}
+
+	if (form.banner && !form.banner.upload_id) {
+		errors.banner = 'Дождитесь загрузки баннера.';
 	}
 
 	if (form.slug?.trim() && !isValidProjectSlug(form.slug.trim())) {

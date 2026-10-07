@@ -1,6 +1,7 @@
 import { invalidate } from '$app/navigation';
 import { createApi } from '$lib/api/api';
 import type { GolderMedia } from '$lib/api/api.type';
+import { uploadViaPresign } from '$lib/api/upload';
 
 export async function uploadGolderMedia(
 	file: File,
@@ -8,25 +9,23 @@ export async function uploadGolderMedia(
 	tags: string[]
 ): Promise<GolderMedia> {
 	const api = createApi({ fetch });
-	const { media, upload } = await api.createGolderUpload({
-		name,
-		tags,
-		contentType: file.type,
-		sizeBytes: file.size
-	});
-
-	const response = await fetch(upload.url, {
-		method: 'PUT',
-		body: file,
-		headers: { 'Content-Type': file.type }
-	});
-	if (!response.ok) {
-		throw new Error(`Не удалось загрузить файл в хранилище (HTTP ${response.status}).`);
-	}
-
-	const completed = await api.completeGolderUpload(media.id);
-	await invalidate('golder:list');
-	return completed;
+	return uploadViaPresign(
+		file,
+		async (file) => {
+			const { media, upload } = await api.createGolderUpload({
+				name,
+				tags,
+				contentType: file.type,
+				sizeBytes: file.size
+			});
+			return { media, url: upload.url };
+		},
+		async ({ media }) => {
+			const completed = await api.completeGolderUpload(media.id);
+			await invalidate('golder:list');
+			return completed;
+		}
+	);
 }
 
 export async function importGolderMediaFromDiscord(

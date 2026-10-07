@@ -62,6 +62,8 @@ describe('project review helpers', () => {
 			title: 'Old',
 			description: 'D',
 			thumbnail: null,
+			banner_url: null,
+			banner_upload_id: null,
 			tags: [{ slug: 'tag', name: 'Tag' }],
 			credits: base.credits,
 			resources: base.resources,

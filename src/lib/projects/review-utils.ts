@@ -1,4 +1,5 @@
 import type {
+	ProjectAttachment,
 	ProjectAttachmentInputDto,
 	ProjectAuthor,
 	ProjectDetails,
@@ -95,13 +96,20 @@ export type RevisionDiff = {
 };
 
 function names(
-	items: Array<ProjectPublicTag | ProjectAuthor | ProjectLinkInputDto | ProjectAttachmentInputDto>
+	items: Array<
+		| ProjectPublicTag
+		| ProjectAuthor
+		| ProjectLinkInputDto
+		| ProjectAttachmentInputDto
+		| ProjectAttachment
+	>
 ) {
 	return items.map((item) => {
 		if ('slug' in item) return item.slug;
 		if ('type' in item && item.type === 'discord') return `discord:${item.discord_user_id}`;
 		if ('type' in item && item.type === 'text') return `text:${item.name.trim().toLowerCase()}`;
 		if ('link' in item) return item.link;
+		if ('upload_id' in item) return `image:${item.upload_id}`;
 		return `${item.type}:${item.url}`;
 	});
 }
