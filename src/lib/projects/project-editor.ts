@@ -38,12 +38,73 @@ export type ProjectFormState = {
 	attachments: ProjectFormAttachment[];
 };
 
-export type ProjectFormErrors = Partial<Record<keyof ProjectFormState | 'form', string>>;
+export type ProjectFormErrors = Partial<Record<keyof ProjectFormState | 'cover' | 'form', string>>;
 
 export type ProjectSavedMedia = {
 	attachments: ProjectAttachment[];
 	banner: ProjectFormImage | null;
 };
+
+/** Шаги мастера создания проекта — порядок фиксирован, индекс = позиция в массиве. */
+export const EDITOR_STEPS = [
+	{
+		id: 'info',
+		label: 'Основная информация',
+		description:
+			'Расскажите о вашем проекте. Эта информация будет отображаться на странице проекта.'
+	},
+	{
+		id: 'categorization',
+		label: 'Категоризация',
+		description: 'Выберите тип проекта и добавьте теги, по которым его найдут в каталоге.'
+	},
+	{
+		id: 'team',
+		label: 'Команда',
+		description: 'Укажите авторов проекта — людей или команды, которые над ним работали.'
+	},
+	{
+		id: 'links',
+		label: 'Внешние ссылки',
+		description: 'Добавьте ссылки на сайт, сборки, соцсети и другие ресурсы проекта.'
+	},
+	{
+		id: 'files',
+		label: 'Файлы',
+		description: 'Загрузите скриншоты и арты, приложите трейлеры и видеообзоры.'
+	}
+] as const satisfies readonly { id: string; label: string; description: string }[];
+
+export type ProjectEditorStepId = (typeof EDITOR_STEPS)[number]['id'];
+
+/** Ключ ошибки формы → индекс шага, на котором находится соответствующее поле. */
+const ERROR_KEY_STEP: Record<string, number> = {
+	title: 0,
+	slug: 0,
+	description: 0,
+	releaseDate: 0,
+	banner: 0,
+	cover: 0,
+	tags: 1,
+	authors: 2,
+	links: 3,
+	attachments: 4,
+	form: 0
+};
+
+export function errorSteps(errors: ProjectFormErrors): number[] {
+	return [...new Set(Object.keys(errors).map((key) => ERROR_KEY_STEP[key] ?? 0))].sort(
+		(a, b) => a - b
+	);
+}
+
+const STEP_FIELDS: string[][] = [
+	['title', 'slug', 'description', 'releaseDate', 'banner', 'cover'],
+	['tags'],
+	['authors'],
+	['links'],
+	['attachments']
+];
 
 const DEFAULT_LINK_ICON = 'IconGlobe';
 
@@ -196,63 +257,100 @@ export function isAbsoluteHttpsUrl(value: string): boolean {
 	}
 }
 
-export function validateProjectForm(form: ProjectFormState, forReview = false): ProjectFormErrors {
-	const errors: ProjectFormErrors = {};
+function collectErrors(
+	form: ProjectFormState,
+	errors: ProjectFormErrors,
+	fields: ReadonlySet<string>,
+	forReview: boolean
+): void {
 	const title = form.title.trim();
 
-	if (!title) errors.title = 'Укажите название.';
-	else if (title.length > 120) errors.title = 'Название не должно превышать 120 символов.';
-
-	if (!form.description.trim()) errors.description = 'Добавьте описание.';
-	else if (form.description.length > 20_000) {
-		errors.description = 'Описание не должно превышать 20 000 символов.';
+	if (fields.has('title')) {
+		if (!title) errors.title = 'Укажите название.';
+		else if (title.length > 120) errors.title = 'Название не должно превышать 120 символов.';
 	}
 
-	if (!isIsoDate(form.releaseDate))
+	if (fields.has('description')) {
+		if (!form.description.trim()) errors.description = 'Добавьте описание.';
+		else if (form.description.length > 20_000) {
+			errors.description = 'Описание не должно превышать 20 000 символов.';
+		}
+	}
+
+	if (fields.has('releaseDate') && !isIsoDate(form.releaseDate)) {
 		errors.releaseDate = 'Укажите корректную дату в формате ГГГГ-ММ-ДД.';
-	if (form.tags.length > 10) errors.tags = 'Можно добавить не более 10 тегов.';
-	else if (forReview && form.tags.length === 0) errors.tags = 'Добавьте хотя бы один тег.';
-
-	if (form.authors.length > 20) errors.authors = 'Можно добавить не более 20 авторов.';
-	else if (
-		form.authors.some((author) =>
-			author.type === 'discord' ? !/^\d+$/.test(author.discord_user_id.trim()) : !author.name.trim()
-		)
-	) {
-		errors.authors = 'Заполните каждого автора. Discord ID должен содержать только цифры.';
 	}
 
-	if (form.links.length > 5) errors.links = 'Можно добавить не более 5 ссылок.';
-	else if (
-		form.links.some(
-			(link) => !link.icon.trim() || !link.label.trim() || !isAbsoluteHttpsUrl(link.link.trim())
-		)
-	) {
-		errors.links = 'Для каждой ссылки заполните иконку, подпись и абсолютный HTTPS URL.';
+	if (fields.has('tags')) {
+		if (form.tags.length > 10) errors.tags = 'Можно добавить не более 10 тегов.';
+		else if (forReview && form.tags.length === 0) errors.tags = 'Добавьте хотя бы один тег.';
 	}
 
-	if (!form.attachments.some((attachment) => attachment.type === 'image')) {
-		errors.attachments = 'Добавьте хотя бы одно изображение проекта.';
-	} else if (form.attachments.length > 20) {
-		errors.attachments = 'Можно добавить не более 20 вложений.';
-	} else if (
-		form.attachments.some((attachment) =>
-			attachment.type === 'image'
-				? !attachment.upload_id
-				: !isAbsoluteHttpsUrl(attachment.url.trim())
-		)
-	) {
-		errors.attachments = 'Дождитесь загрузки изображений и проверьте ссылки на видео.';
+	if (fields.has('authors')) {
+		if (form.authors.length > 20) errors.authors = 'Можно добавить не более 20 авторов.';
+		else if (
+			form.authors.some((author) =>
+				author.type === 'discord'
+					? !/^\d+$/.test(author.discord_user_id.trim())
+					: !author.name.trim()
+			)
+		) {
+			errors.authors = 'Заполните каждого автора. Discord ID должен содержать только цифры.';
+		}
 	}
 
-	if (form.banner && !form.banner.upload_id) {
+	if (fields.has('links')) {
+		if (form.links.length > 5) errors.links = 'Можно добавить не более 5 ссылок.';
+		else if (
+			form.links.some(
+				(link) => !link.icon.trim() || !link.label.trim() || !isAbsoluteHttpsUrl(link.link.trim())
+			)
+		) {
+			errors.links = 'Для каждой ссылки заполните иконку, подпись и абсолютный HTTPS URL.';
+		}
+	}
+
+	if (fields.has('attachments')) {
+		if (form.attachments.length > 20) {
+			errors.attachments = 'Можно добавить не более 20 вложений.';
+		} else if (
+			form.attachments.some((attachment) =>
+				attachment.type === 'image'
+					? !attachment.upload_id
+					: !isAbsoluteHttpsUrl(attachment.url.trim())
+			)
+		) {
+			errors.attachments = 'Дождитесь загрузки изображений и проверьте ссылки на видео.';
+		}
+	}
+
+	if (fields.has('banner') && form.banner && !form.banner.upload_id) {
 		errors.banner = 'Дождитесь загрузки баннера.';
 	}
 
-	if (form.slug?.trim() && !isValidProjectSlug(form.slug.trim())) {
-		errors.slug = 'Адрес должен содержать только lowercase-буквы, цифры и дефисы.';
+	if (fields.has('cover') && forReview && !form.banner?.upload_id) {
+		errors.cover = 'Загрузите баннер — он станет обложкой проекта.';
 	}
 
+	if (fields.has('slug') && form.slug?.trim() && !isValidProjectSlug(form.slug.trim())) {
+		errors.slug = 'Адрес должен содержать только lowercase-буквы, цифры и дефисы.';
+	}
+}
+
+export function validateProjectForm(form: ProjectFormState, forReview = false): ProjectFormErrors {
+	const errors: ProjectFormErrors = {};
+	collectErrors(form, errors, new Set(STEP_FIELDS.flat()), forReview);
+	return errors;
+}
+
+/** Валидирует только поля конкретного шага мастера. */
+export function validateStep(
+	form: ProjectFormState,
+	step: number,
+	forReview = false
+): ProjectFormErrors {
+	const errors: ProjectFormErrors = {};
+	collectErrors(form, errors, new Set(STEP_FIELDS[step] ?? []), forReview);
 	return errors;
 }
 

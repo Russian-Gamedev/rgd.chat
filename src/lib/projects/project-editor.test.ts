@@ -3,6 +3,7 @@ import {
 	canDeleteUnpublished,
 	editorToForm,
 	emptyProjectForm,
+	errorSteps,
 	formSnapshot,
 	formToPayload,
 	formToUpdatePayload,
@@ -13,6 +14,7 @@ import {
 	normalizeProjectSlug,
 	slugifyProjectTitle,
 	validateProjectForm,
+	validateStep,
 	youtubeEmbedUrl
 } from './project-editor';
 import { describe, expect, test } from 'bun:test';
@@ -215,12 +217,10 @@ describe('project editor validation', () => {
 		expect(youtubeEmbedUrl('https://example.com/video')).toBeNull();
 	});
 
-	test('requires a photograph and protects unchanged attachments in patch', () => {
+	test('keeps attachments optional and protects unchanged ones in patch', () => {
 		const form = editorToForm(editor);
 		form.attachments = [{ type: 'external_video', url: 'https://example.com/video' }];
-		expect(validateProjectForm(form).attachments).toBe(
-			'Добавьте хотя бы одно изображение проекта.'
-		);
+		expect(validateProjectForm(form).attachments).toBeUndefined();
 		form.attachments = editorToForm(editor).attachments;
 		expect(
 			formToUpdatePayload(form, {
@@ -230,7 +230,7 @@ describe('project editor validation', () => {
 		).toBeUndefined();
 	});
 
-	test('waits for the upload and maps the banner id into the payload', () => {
+	test('waits for the upload and maps the cover ids into the payload', () => {
 		const form = emptyProjectForm();
 		form.title = 'Проект';
 		form.description = 'Описание';
@@ -247,6 +247,25 @@ describe('project editor validation', () => {
 		const payload = formToPayload(form);
 		expect(payload.banner_upload_id).toBe(UPLOAD_ID);
 		expect(payload.attachments).toEqual([{ type: 'image', upload_id: UPLOAD_ID }]);
+	});
+
+	test('validateStep only reports the fields of its own step', () => {
+		const errors = validateProjectForm(emptyProjectForm(), true);
+		expect(errors.title).toBeDefined();
+		expect(errors.tags).toBeDefined();
+		expect(errors.cover).toBeDefined();
+
+		const stepZero = validateStep(emptyProjectForm(), 0, true);
+		expect(stepZero.title).toBeDefined();
+		expect(stepZero.cover).toBeDefined();
+		expect(stepZero.tags).toBeUndefined();
+		expect(stepZero.authors).toBeUndefined();
+
+		expect(validateStep(emptyProjectForm(), 1, true).tags).toBeDefined();
+		expect(validateStep(emptyProjectForm(), 1, true).title).toBeUndefined();
+		expect(validateStep(emptyProjectForm(), 4, true).attachments).toBeUndefined();
+
+		expect(errorSteps(errors)).toEqual([0, 1]);
 	});
 
 	test('normalizes title suggestions and validates slug format', () => {

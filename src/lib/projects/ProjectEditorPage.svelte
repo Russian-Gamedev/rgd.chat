@@ -8,19 +8,24 @@ import type { ProjectEditor, ProjectPublicTag } from '$lib/api/api.type';
 import { requireAuth } from '$lib/auth/auth.actions';
 import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 import Button from '$lib/components/Button.svelte';
+import Stepper from '$lib/components/Stepper.svelte';
 import { showSnackbar } from '$lib/components/snackbar';
 import UserIdentity from '$lib/components/UserIdentity.svelte';
 
 import ProjectEditorForm from './ProjectEditorForm.svelte';
+import ProjectPreviewCard from './ProjectPreviewCard.svelte';
 import type { ProjectFormErrors, ProjectSavedMedia } from './project-editor';
 import {
+	EDITOR_STEPS,
 	editorToForm,
 	emptyProjectForm,
+	errorSteps,
 	formSnapshot,
 	formToPayload,
 	formToUpdatePayload,
 	hasErrors,
-	validateProjectForm
+	validateProjectForm,
+	validateStep
 } from './project-editor';
 import ReviewTimeline from './ReviewTimeline.svelte';
 
@@ -29,6 +34,7 @@ let { projectId = null }: { projectId?: string | null } = $props();
 requireAuth(page.data.auth);
 
 const api = createApi({ fetch });
+const lastStep = EDITOR_STEPS.length - 1;
 let editor = $state<ProjectEditor | null>(null);
 let tagOptions = $state<ProjectPublicTag[]>([]);
 let form = $state(emptyProjectForm());
@@ -38,6 +44,9 @@ let loadState = $state<'loading' | 'ready' | 'not-found' | 'forbidden' | 'error'
 let isMutating = $state(false);
 let conflict = $state(false);
 let savedMedia = $state<ProjectSavedMedia>({ attachments: [], banner: null });
+let step = $state(0);
+let maxStep = $state(0);
+let stepErrorList = $state<number[]>([]);
 
 const isReview = $derived(editor?.workflow.status === 'review');
 const isDirty = $derived(loadState === 'ready' && formSnapshot(form) !== savedSnapshot);
@@ -54,6 +63,17 @@ const submittedAt = $derived(
 			.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))[0]?.created_at ??
 		null
 );
+
+function scrollTop() {
+	window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function advance() {
+	step = Math.min(step + 1, lastStep);
+	maxStep = Math.max(maxStep, step);
+	stepErrorList = [];
+	scrollTop();
+}
 
 function applyEditor(next: ProjectEditor) {
 	editor = next;
@@ -102,15 +122,9 @@ async function loadEditor(options?: { replaceDirty?: boolean }) {
 	}
 }
 
-async function saveDraft(forReview = false): Promise<boolean> {
+/** Сохраняет черновик без валидации — валидация происходит в обработчиках шагов. */
+async function saveDraft(): Promise<boolean> {
 	if (isMutating || isReview) return false;
-
-	errors = validateProjectForm(form, forReview);
-	if (hasErrors(errors)) {
-		showSnackbar({ message: 'Исправьте ошибки формы.', variant: 'error' });
-		return false;
-	}
-
 	if (projectId && !isDirty) return true;
 
 	isMutating = true;
@@ -136,7 +150,7 @@ async function saveDraft(forReview = false): Promise<boolean> {
 
 		if (!projectId) {
 			projectId = next.id;
-			if (!forReview) await goto(`/projects/editor/${next.id}`, { replaceState: true });
+			await goto(`/projects/editor/${next.id}`, { replaceState: true });
 		}
 		return true;
 	} catch (error) {
@@ -152,10 +166,54 @@ async function saveDraft(forReview = false): Promise<boolean> {
 	}
 }
 
-async function submitReview() {
+/** «Далее»: валидирует текущий шаг, сохраняет его и переходит к следующему. */
+async function goNext() {
+	if (isMutating) return;
+	stepErrorList = [];
+	if (!isReview) {
+		errors = validateStep(form, step, false);
+		if (hasErrors(errors)) {
+			scrollTop();
+			return;
+		}
+		if (!(await saveDraft())) return;
+	}
+	advance();
+}
+
+function goBack() {
+	if (step === 0 || isMutating) return;
+	step -= 1;
+	errors = {};
+	stepErrorList = [];
+	scrollTop();
+}
+
+function selectStep(index: number) {
+	if (index > maxStep || index === step || isMutating) return;
+	step = index;
+	errors = {};
+	stepErrorList = [];
+	scrollTop();
+}
+
+/** Финал: полная валидация, сохранение и отправка на модерацию. */
+async function submitForModeration() {
 	if (isMutating || isReview) return;
-	const wasNew = !projectId;
-	if (!(await saveDraft(true)) || !projectId) return;
+	errors = validateProjectForm(form, true);
+	stepErrorList = errorSteps(errors);
+	if (hasErrors(errors)) {
+		const firstErrorStep = stepErrorList[0];
+		if (firstErrorStep !== undefined && firstErrorStep > maxStep) maxStep = firstErrorStep;
+		if (firstErrorStep !== undefined) step = firstErrorStep;
+		showSnackbar({
+			message: 'Проверьте шаги, отмеченные ошибками.',
+			variant: 'error'
+		});
+		scrollTop();
+		return;
+	}
+	if (!(await saveDraft()) || !projectId) return;
 
 	isMutating = true;
 	try {
@@ -170,10 +228,9 @@ async function submitReview() {
 			invalidate(`projects:editor:${projectId}`)
 		]);
 		showSnackbar({
-			message: 'Редакция отправлена на ревью.',
+			message: 'Проект отправлен на модерацию.',
 			variant: 'success'
 		});
-		if (wasNew) await goto(`/projects/editor/${projectId}`, { replaceState: true });
 	} catch (error) {
 		if (error instanceof ApiHttpError && error.status === 409) conflict = true;
 		showSnackbar({
@@ -184,6 +241,16 @@ async function submitReview() {
 	} finally {
 		isMutating = false;
 	}
+}
+
+async function saveDraftAction() {
+	stepErrorList = [];
+	errors = validateStep(form, step, false);
+	if (hasErrors(errors)) {
+		scrollTop();
+		return;
+	}
+	await saveDraft();
 }
 
 async function deleteProject() {
@@ -210,6 +277,10 @@ async function deleteProject() {
 	} finally {
 		isMutating = false;
 	}
+}
+
+function cancel() {
+	void goto('/projects/mine');
 }
 
 beforeNavigate((navigation) => {
@@ -247,19 +318,22 @@ onMount(() => {
   items={[
     { label: "Главная", href: "/" },
     { label: "Проекты", href: "/projects" },
-    { label: "Мои проекты", href: "/projects/mine" },
-    { label: projectId ? "Редактор" : "Новый проект", href: "" },
+    { label: projectId ? "Редактор" : "Создание проекта", href: "" }
   ]}
 />
 
 <div class="page-header">
   <div>
-    <h1>{projectId ? "Редактор проекта" : "Новый проект"}</h1>
-    {#if editor}
-      <p class="status">Версия {editor.workflow.version} · {editor.workflow.status}</p>
-      {#if editor.credits.owner_id}
-        <UserIdentity id={editor.credits.owner_id} compact />
+    <h1>{projectId ? "Редактор проекта" : "Создание проекта"}</h1>
+    {#if projectId}
+      {#if editor}
+        <p class="status">Версия {editor.workflow.version} · {editor.workflow.status}</p>
+        {#if editor.credits.owner_id}
+          <UserIdentity id={editor.credits.owner_id} compact />
+        {/if}
       {/if}
+    {:else}
+      <p class="status">Заполните основные данные и отправьте проект на модерацию</p>
     {/if}
   </div>
   {#if editor?.workflow.has_published_version}
@@ -322,38 +396,61 @@ onMount(() => {
     </section>
   {/if}
 
-  <ProjectEditorForm bind:form {tagOptions} {errors} readonly={isReview} />
+  <Stepper
+    steps={EDITOR_STEPS}
+    current={step}
+    maxReached={maxStep}
+    errorSteps={stepErrorList}
+    onSelect={selectStep}
+  />
+  <p class="step-description">{EDITOR_STEPS[step].description}</p>
 
-  <div class="actions">
-    {#if !isReview}
-      <Button
-        type="button"
-        disabled={isMutating || (!isDirty && Boolean(projectId))}
-        onclick={() => saveDraft()}
-      >
-        {isMutating
-          ? "Сохранение…"
-          : isDirty || !projectId
-            ? "Сохранить черновик"
-            : "Сохранено"}
-      </Button>
+  <div class="wizard-grid">
+    <div class="wizard-form">
+      <ProjectEditorForm bind:form {step} {tagOptions} {errors} readonly={isReview} />
+      {#if isDirty}<span class="dirty">Есть несохранённые изменения</span>{/if}
+    </div>
+    <aside class="preview-col">
+      <ProjectPreviewCard {form} />
+    </aside>
+  </div>
+
+  <div class="wizard-footer">
+    <Button type="button" variant="outline" disabled={isMutating} onclick={cancel}>
+      Отмена
+    </Button>
+    <div class="footer-right">
+      {#if !isReview && canDelete}
+        <Button
+          type="button"
+          color="error"
+          variant="ghost"
+          disabled={isMutating}
+          onclick={deleteProject}>Удалить</Button
+        >
+      {/if}
       <Button
         type="button"
         variant="outline"
-        disabled={isMutating}
-        onclick={submitReview}>Отправить на ревью</Button
+        disabled={step === 0 || isMutating}
+        onclick={goBack}>Назад</Button
       >
-    {/if}
-    {#if canDelete}
-      <Button
-        type="button"
-        color="error"
-        variant="outline"
-        disabled={isMutating}
-        onclick={deleteProject}>Удалить проект</Button
-      >
-    {/if}
-    {#if isDirty}<span class="dirty">Есть несохранённые изменения</span>{/if}
+      {#if step < lastStep}
+        <Button type="button" disabled={isMutating} onclick={goNext}>
+          {isMutating ? "Сохранение…" : "Далее"}
+        </Button>
+      {:else if !isReview}
+        <Button
+          type="button"
+          variant="outline"
+          disabled={isMutating}
+          onclick={saveDraftAction}>Сохранить черновик</Button
+        >
+        <Button type="button" disabled={isMutating} onclick={submitForModeration}>
+          {isMutating ? "Отправка…" : "Отправить на модерацию"}
+        </Button>
+      {/if}
+    </div>
   </div>
 
   {#if editor}<ReviewTimeline events={editor.workflow.review_events} />{/if}
@@ -365,7 +462,8 @@ onMount(() => {
   }
 
   .page-header,
-  .actions {
+  .wizard-footer,
+  .footer-right {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
@@ -386,6 +484,34 @@ onMount(() => {
   .dirty {
     color: var(--color-text-secondary);
     font-size: 0.875rem;
+  }
+
+  .step-description {
+    color: var(--color-text-secondary);
+    margin: 0 0 1.5rem;
+  }
+
+  .wizard-grid {
+    display: grid;
+    align-items: start;
+    gap: 1.5rem;
+    grid-template-columns: minmax(0, 1fr) 18rem;
+  }
+
+  .preview-col {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .wizard-footer {
+    border-top: 1px solid #303238;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1rem;
+  }
+
+  .footer-right {
+    margin-left: auto;
   }
 
   .notice,
@@ -416,9 +542,14 @@ onMount(() => {
     margin-top: 0.75rem;
   }
 
-  .actions {
-    border-top: 1px solid #303238;
-    margin-top: 2rem;
-    padding-top: 1rem;
+  @media (max-width: 900px) {
+    .wizard-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .preview-col {
+      order: -1;
+      position: static;
+    }
   }
 </style>

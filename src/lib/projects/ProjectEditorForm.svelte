@@ -1,16 +1,12 @@
 <script lang="ts">
-import type {
-	ProjectAttachmentType,
-	ProjectAuthorInputDto,
-	ProjectPublicTag
-} from '$lib/api/api.type';
+import type { ProjectAuthorInputDto, ProjectPublicTag } from '$lib/api/api.type';
 import Button from '$lib/components/Button.svelte';
 import IconPicker from '$lib/components/IconPicker.svelte';
 import { showSnackbar } from '$lib/components/snackbar';
 
 import MarkdownPreview from './MarkdownPreview.svelte';
 import ProjectImageField from './ProjectImageField.svelte';
-import type { ProjectFormErrors, ProjectFormState } from './project-editor';
+import type { ProjectFormAttachment, ProjectFormErrors, ProjectFormState } from './project-editor';
 import {
 	moveItem,
 	normalizeProjectSlug,
@@ -22,11 +18,13 @@ import { isAcceptableImageSize, isSupportedImage, uploadProjectImage } from './p
 
 let {
 	form = $bindable(),
+	step,
 	tagOptions,
 	errors = {},
 	readonly = false
 }: {
 	form: ProjectFormState;
+	step: number;
 	tagOptions: ProjectPublicTag[];
 	errors?: ProjectFormErrors;
 	readonly?: boolean;
@@ -37,72 +35,60 @@ let tagInput = $state('');
 let showTagDropdown = $state(false);
 let tagInputRef: HTMLInputElement | undefined = $state();
 let attachmentFileInput = $state<HTMLInputElement>();
-let pendingImageIndex = $state<number | null>(null);
 
 function updateAuthor(index: number, author: ProjectAuthorInputDto) {
 	form.authors[index] = author;
 }
 
 function removeAt(key: 'authors' | 'links' | 'attachments', index: number) {
-	if (key === 'attachments' && form.attachments[index]?.type === 'image') {
-		const imageCount = form.attachments.filter((attachment) => attachment.type === 'image').length;
-		if (imageCount === 1) return;
-	}
 	form[key].splice(index, 1);
 }
 
-function updateAttachmentType(index: number, type: ProjectAttachmentType) {
-	const current = form.attachments[index];
-	if (!current || current.type === type) return;
-	form.attachments[index] =
-		type === 'image'
-			? { type: 'image', upload_id: null, url: null }
-			: { type: 'external_video', url: '' };
-}
-
-function addImageAttachment() {
-	form.attachments.push({ type: 'image', upload_id: null, url: null, uploading: false });
-	pendingImageIndex = form.attachments.length - 1;
+function pickAttachmentFiles() {
 	attachmentFileInput?.click();
 }
 
-function pickAttachmentFile(index: number) {
-	pendingImageIndex = index;
-	attachmentFileInput?.click();
-}
-
-async function handleAttachmentFile(event: Event) {
+async function handleAttachmentFiles(event: Event) {
 	const input = event.currentTarget as HTMLInputElement;
-	const file = input.files?.[0];
+	const files = Array.from(input.files ?? []);
 	input.value = '';
-	const index = pendingImageIndex;
-	pendingImageIndex = null;
-	if (!file || index === null) return;
-	const row = form.attachments[index];
-	if (row?.type !== 'image') return;
-	if (!isSupportedImage(file)) {
-		showSnackbar({ message: 'Поддерживаются только изображения.', variant: 'error' });
-		return;
+	const pending: { row: Extract<ProjectFormAttachment, { type: 'image' }>; file: File }[] = [];
+	for (const file of files) {
+		if (form.attachments.length >= 20) break;
+		if (!isSupportedImage(file) || !isAcceptableImageSize(file)) {
+			showSnackbar({
+				message: `${file.name}: поддерживаются изображения до 25 МБ.`,
+				variant: 'error'
+			});
+			continue;
+		}
+		const row: Extract<ProjectFormAttachment, { type: 'image' }> = {
+			type: 'image',
+			upload_id: null,
+			url: URL.createObjectURL(file),
+			uploading: true
+		};
+		form.attachments.push(row);
+		pending.push({ row, file });
 	}
-	if (!isAcceptableImageSize(file)) {
-		showSnackbar({ message: 'Изображение должно быть меньше 25 МБ.', variant: 'error' });
-		return;
-	}
-	row.url = URL.createObjectURL(file);
-	row.upload_id = null;
-	row.uploading = true;
-	try {
-		const upload = await uploadProjectImage('attachment', file);
-		row.upload_id = upload.id;
-		row.url = upload.url;
-	} catch {
-		showSnackbar({
-			message: 'Не удалось загрузить изображение. Попробуйте ещё раз.',
-			variant: 'error'
-		});
-	} finally {
-		row.uploading = false;
-	}
+	await Promise.all(
+		pending.map(async ({ row, file }) => {
+			try {
+				const upload = await uploadProjectImage('attachment', file);
+				row.upload_id = upload.id;
+				row.url = upload.url;
+			} catch {
+				showSnackbar({
+					message: `Не удалось загрузить ${file.name}. Попробуйте ещё раз.`,
+					variant: 'error'
+				});
+				const index = form.attachments.indexOf(row);
+				if (index !== -1) removeAt('attachments', index);
+			} finally {
+				row.uploading = false;
+			}
+		})
+	);
 }
 
 function normalizeTag(value: string): string | null {
@@ -182,64 +168,72 @@ const filteredTagOptions = $derived(
 </script>
 
 <fieldset disabled={readonly}>
-  <section class="field-section">
-    <label for="project-title">Название <span>{form.title.length}/120</span></label>
-    <input id="project-title" bind:value={form.title} oninput={handleTitleInput} maxlength="120" required />
-    {#if errors.title}<p class="error">{errors.title}</p>{/if}
-  </section>
-
-  <section class="field-section">
-    <label for="project-slug">Публичный адрес <span>{form.slug.length}/120</span></label>
-    <input id="project-slug" bind:value={form.slug} oninput={() => (form.slugManuallyEdited = true)} onblur={normalizeSlugInput} maxlength="120" placeholder="my-project" />
-    <p class="muted">Публичная ссылка: /projects/{form.slug || '…'}</p>
-    {#if errors.slug}<p class="error">{errors.slug}</p>{/if}
-  </section>
-
-  <section class="field-section">
-    <label for="project-type">Тип</label>
-    <select id="project-type" bind:value={form.type} aria-label="Тип проекта">
-      {#each PROJECT_TYPE_OPTIONS as option (option.value)}
-        <option value={option.value}>{option.label}</option>
-      {/each}
-    </select>
-  </section>
-
-  <section class="field-section">
-    <span class="field-label">Баннер</span>
-    <ProjectImageField bind:value={form.banner} disabled={readonly} error={errors.banner} />
-  </section>
-
-  <section class="field-section">
-    <div class="label-row">
-      <label for="project-description">Описание <span>{form.description.length}/20 000</span></label>
-      <div class="tabs" role="tablist" aria-label="Режим описания">
-        <button
-          type="button"
-          class:active={descriptionMode === 'editor'}
-          onclick={() => (descriptionMode = 'editor')}
-        >Редактор</button>
-        <button
-          type="button"
-          class:active={descriptionMode === 'preview'}
-          onclick={() => (descriptionMode = 'preview')}
-        >Предпросмотр</button>
-      </div>
-    </div>
-    {#if descriptionMode === 'editor'}
-      <textarea id="project-description" bind:value={form.description} maxlength="20000" rows="12"></textarea>
-    {:else}
-      <div class="markdown-preview">
-        <MarkdownPreview source={form.description} />
-      </div>
-    {/if}
-    {#if errors.description}<p class="error">{errors.description}</p>{/if}
-  </section>
-
-  <div class="columns">
+  {#if step === 0}
     <section class="field-section">
-      <label for="release-date">Дата релиза</label>
-      <input id="release-date" type="date" bind:value={form.releaseDate} required />
-      {#if errors.releaseDate}<p class="error">{errors.releaseDate}</p>{/if}
+      <label for="project-title">Название <span>{form.title.length}/120</span></label>
+      <input id="project-title" bind:value={form.title} oninput={handleTitleInput} maxlength="120" required placeholder="Например: Мой игровой сервер" />
+      {#if errors.title}<p class="error">{errors.title}</p>{/if}
+    </section>
+
+    <section class="field-section">
+      <label for="project-slug">Публичный адрес <span>{form.slug.length}/120</span></label>
+      <input id="project-slug" bind:value={form.slug} oninput={() => (form.slugManuallyEdited = true)} onblur={normalizeSlugInput} maxlength="120" placeholder="my-project" />
+      <p class="muted">Публичная ссылка: /projects/{form.slug || '…'}</p>
+      {#if errors.slug}<p class="error">{errors.slug}</p>{/if}
+    </section>
+
+    <section class="field-section">
+      <div class="label-row">
+        <label for="project-description">Описание <span>{form.description.length}/20 000</span></label>
+        <div class="tabs" role="tablist" aria-label="Режим описания">
+          <button
+            type="button"
+            class:active={descriptionMode === 'editor'}
+            onclick={() => (descriptionMode = 'editor')}
+          >Редактор</button>
+          <button
+            type="button"
+            class:active={descriptionMode === 'preview'}
+            onclick={() => (descriptionMode = 'preview')}
+          >Предпросмотр</button>
+        </div>
+      </div>
+      {#if descriptionMode === 'editor'}
+        <textarea id="project-description" bind:value={form.description} maxlength="20000" rows="12" placeholder="Расскажите о вашем проекте: что это такое, в чём его особенность, какие у него цели и возможности…"></textarea>
+      {:else}
+        <div class="markdown-preview">
+          <MarkdownPreview source={form.description} />
+        </div>
+      {/if}
+      {#if errors.description}<p class="error">{errors.description}</p>{/if}
+    </section>
+
+    <div class="columns">
+      <section class="field-section">
+        <label for="release-date">Дата релиза</label>
+        <input id="release-date" type="date" bind:value={form.releaseDate} required />
+        {#if errors.releaseDate}<p class="error">{errors.releaseDate}</p>{/if}
+      </section>
+    </div>
+
+    <section class="field-section">
+      <span class="field-label">Баннер</span>
+      <ProjectImageField bind:value={form.banner} disabled={readonly} error={errors.banner} />
+      {#if errors.cover}<p class="error">{errors.cover}</p>{/if}
+    </section>
+
+    <aside class="tip">
+      <strong>Совет</strong>
+      <p>Хорошее описание помогает привлечь больше внимания к вашему проекту. Укажите ключевые особенности, скриншоты и планы развития.</p>
+    </aside>
+  {:else if step === 1}
+    <section class="field-section">
+      <label for="project-type">Тип</label>
+      <select id="project-type" bind:value={form.type} aria-label="Тип проекта">
+        {#each PROJECT_TYPE_OPTIONS as option (option.value)}
+          <option value={option.value}>{option.label}</option>
+        {/each}
+      </select>
     </section>
 
     <section class="field-section">
@@ -270,7 +264,7 @@ const filteredTagOptions = $derived(
       </div>
       {#if showTagDropdown && tagInput.trim() && filteredTagOptions.length > 0}
         <div class="tag-dropdown" role="listbox">
-			{#each filteredTagOptions as option (option.slug)}
+          {#each filteredTagOptions as option (option.slug)}
             <button
               type="button"
               class="tag-option"
@@ -282,151 +276,136 @@ const filteredTagOptions = $derived(
       {#if tagOptions.length === 0}<p class="muted">Справочник тегов недоступен.</p>{/if}
       {#if errors.tags}<p class="error">{errors.tags}</p>{/if}
     </section>
-  </div>
-
-  <section class="collection">
-    <div class="section-header">
-      <div><h2>Авторы</h2><span>{form.authors.length}/20</span></div>
-      <Button type="button" variant="outline" disabled={readonly || form.authors.length >= 20} onclick={() => form.authors.push({ type: 'text', name: '' })}>Добавить автора</Button>
-    </div>
-    {#each form.authors as author, index (`${index}-${author.type}`)}
-      <div class="collection-row author-row">
-        <select
-          value={author.type}
-          aria-label="Тип автора"
-          onchange={(event) => updateAuthor(index, event.currentTarget.value === 'discord' ? { type: 'discord', discord_user_id: '' } : { type: 'text', name: '' })}
-        >
-          <option value="text">Текст</option>
-          <option value="discord">Discord</option>
-        </select>
-        {#if author.type === 'discord'}
-          <input
-            aria-label="Discord ID"
-            inputmode="numeric"
-            placeholder="Discord user ID"
-            value={author.discord_user_id}
-            oninput={(event) => updateAuthor(index, { type: 'discord', discord_user_id: event.currentTarget.value })}
-          />
-        {:else}
-          <input
-            aria-label="Имя автора"
-            placeholder="Имя автора или команды"
-            value={author.name}
-            oninput={(event) => updateAuthor(index, { type: 'text', name: event.currentTarget.value })}
-          />
-        {/if}
-        <div class="row-actions">
-          <button type="button" aria-label="Переместить выше" disabled={readonly || index === 0} onclick={() => (form.authors = moveItem(form.authors, index, -1))}>↑</button>
-          <button type="button" aria-label="Переместить ниже" disabled={readonly || index === form.authors.length - 1} onclick={() => (form.authors = moveItem(form.authors, index, 1))}>↓</button>
-          <button type="button" aria-label="Удалить автора" onclick={() => removeAt('authors', index)}>×</button>
-        </div>
+  {:else if step === 2}
+    <section class="collection">
+      <div class="section-header">
+        <div><h2>Авторы</h2><span>{form.authors.length}/20</span></div>
+        <Button type="button" variant="outline" disabled={readonly || form.authors.length >= 20} onclick={() => form.authors.push({ type: 'text', name: '' })}>Добавить автора</Button>
       </div>
-    {/each}
-    {#if errors.authors}<p class="error">{errors.authors}</p>{/if}
-  </section>
-
-  <section class="collection">
-    <div class="section-header">
-      <div><h2>Ссылки</h2><span>{form.links.length}/5</span></div>
-      <Button type="button" variant="outline" disabled={readonly || form.links.length >= 5} onclick={() => form.links.push({ icon: 'IconGlobe', label: '', link: '' })}>Добавить ссылку</Button>
-    </div>
-    {#each form.links as link, index (index)}
-      <div class="collection-row link-row">
-        <IconPicker
-          label=""
-          value={link.icon || 'IconGlobe'}
-          onSelect={(value) => (link.icon = value)}
-        />
-        <input aria-label="Подпись" placeholder="Подпись" bind:value={link.label} />
-        <input aria-label="URL ссылки" type="url" placeholder="https://…" bind:value={link.link} />
-        <div class="row-actions">
-          <button type="button" aria-label="Переместить выше" disabled={readonly || index === 0} onclick={() => (form.links = moveItem(form.links, index, -1))}>↑</button>
-          <button type="button" aria-label="Переместить ниже" disabled={readonly || index === form.links.length - 1} onclick={() => (form.links = moveItem(form.links, index, 1))}>↓</button>
-          <button type="button" aria-label="Удалить ссылку" onclick={() => removeAt('links', index)}>×</button>
-        </div>
-      </div>
-    {/each}
-    {#if errors.links}<p class="error">{errors.links}</p>{/if}
-  </section>
-
-  <section class="collection">
-    <div class="section-header">
-      <div><h2>Вложения</h2><span>{form.attachments.length}/20</span></div>
-      <div class="section-actions">
-        <Button
-          type="button"
-          variant="outline"
-          disabled={readonly || form.attachments.length >= 20}
-          onclick={addImageAttachment}>Добавить изображение</Button
-        >
-        <Button
-          type="button"
-          variant="outline"
-          disabled={readonly || form.attachments.length >= 20}
-          onclick={() => form.attachments.push({ type: 'external_video', url: '' })}
-          >Добавить видео</Button
-        >
-      </div>
-    </div>
-    {#each form.attachments as attachment, index (`${index}-${attachment.type}`)}
-      <div class="attachment">
-        <div class="collection-row attachment-row">
-          {#if attachment.type === 'image' && form.attachments.findIndex((item) => item.type === 'image') === index}
-            <span class="cover-label">Обложка</span>
-          {/if}
+      {#each form.authors as author, index (`${index}-${author.type}`)}
+        <div class="collection-row author-row">
           <select
-            value={attachment.type}
-            aria-label="Тип вложения"
-            onchange={(event) => updateAttachmentType(index, event.currentTarget.value as ProjectAttachmentType)}
+            value={author.type}
+            aria-label="Тип автора"
+            onchange={(event) => updateAuthor(index, event.currentTarget.value === 'discord' ? { type: 'discord', discord_user_id: '' } : { type: 'text', name: '' })}
           >
-            <option value="image">Изображение</option>
-            <option value="external_video">Внешнее видео</option>
+            <option value="text">Текст</option>
+            <option value="discord">Discord</option>
           </select>
-          {#if attachment.type === 'image'}
-            <div class="attachment-file">
-              <span class="muted">
-                {attachment.uploading
-                  ? 'Загрузка…'
-                  : attachment.upload_id
-                    ? 'Изображение загружено'
-                    : 'Файл не выбран'}
-              </span>
-              <Button
-                type="button"
-                variant="outline"
-                disabled={readonly || attachment.uploading}
-                onclick={() => pickAttachmentFile(index)}>Выбрать файл</Button
-              >
-            </div>
+          {#if author.type === 'discord'}
+            <input
+              aria-label="Discord ID"
+              inputmode="numeric"
+              placeholder="Discord user ID"
+              value={author.discord_user_id}
+              oninput={(event) => updateAuthor(index, { type: 'discord', discord_user_id: event.currentTarget.value })}
+            />
           {:else}
-            <input aria-label="URL вложения" type="url" placeholder="https://…" bind:value={attachment.url} />
+            <input
+              aria-label="Имя автора"
+              placeholder="Имя автора или команды"
+              value={author.name}
+              oninput={(event) => updateAuthor(index, { type: 'text', name: event.currentTarget.value })}
+            />
           {/if}
           <div class="row-actions">
-            <button type="button" aria-label="Переместить выше" disabled={readonly || index === 0} onclick={() => (form.attachments = moveItem(form.attachments, index, -1))}>↑</button>
-            <button type="button" aria-label="Переместить ниже" disabled={readonly || index === form.attachments.length - 1} onclick={() => (form.attachments = moveItem(form.attachments, index, 1))}>↓</button>
-            <button type="button" aria-label="Удалить вложение" disabled={attachment.type === 'image' && form.attachments.filter((item) => item.type === 'image').length === 1} onclick={() => removeAt('attachments', index)}>×</button>
+            <button type="button" aria-label="Переместить выше" disabled={readonly || index === 0} onclick={() => (form.authors = moveItem(form.authors, index, -1))}>↑</button>
+            <button type="button" aria-label="Переместить ниже" disabled={readonly || index === form.authors.length - 1} onclick={() => (form.authors = moveItem(form.authors, index, 1))}>↓</button>
+            <button type="button" aria-label="Удалить автора" onclick={() => removeAt('authors', index)}>×</button>
           </div>
         </div>
-        {#if attachment.type === 'image' && attachment.url}
-          <img src={attachment.url} alt="Предпросмотр вложения" onerror={(event) => ((event.currentTarget as HTMLImageElement).hidden = true)} />
-        {:else if attachment.type === 'external_video' && attachment.url.startsWith('https://')}
-          {#if youtubeEmbedUrl(attachment.url)}
-            <iframe
-              src={youtubeEmbedUrl(attachment.url) ?? ''}
-              title="Предпросмотр видео"
-              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-              referrerpolicy="strict-origin-when-cross-origin"
-            ></iframe>
-          {:else}
-            <a href={attachment.url} target="_blank" rel="noopener noreferrer">Открыть внешнее видео</a>
-          {/if}
-        {/if}
+      {/each}
+      {#if errors.authors}<p class="error">{errors.authors}</p>{/if}
+    </section>
+  {:else if step === 3}
+    <section class="collection">
+      <div class="section-header">
+        <div><h2>Ссылки</h2><span>{form.links.length}/5</span></div>
+        <Button type="button" variant="outline" disabled={readonly || form.links.length >= 5} onclick={() => form.links.push({ icon: 'IconGlobe', label: '', link: '' })}>Добавить ссылку</Button>
       </div>
-    {/each}
-    <input bind:this={attachmentFileInput} type="file" accept="image/*" hidden onchange={handleAttachmentFile} />
-    {#if errors.attachments}<p class="error">{errors.attachments}</p>{/if}
-  </section>
+      {#each form.links as link, index (index)}
+        <div class="collection-row link-row">
+          <IconPicker
+            label=""
+            value={link.icon || 'IconGlobe'}
+            onSelect={(value) => (link.icon = value)}
+          />
+          <input aria-label="Подпись" placeholder="Подпись" bind:value={link.label} />
+          <input aria-label="URL ссылки" type="url" placeholder="https://…" bind:value={link.link} />
+          <div class="row-actions">
+            <button type="button" aria-label="Переместить выше" disabled={readonly || index === 0} onclick={() => (form.links = moveItem(form.links, index, -1))}>↑</button>
+            <button type="button" aria-label="Переместить ниже" disabled={readonly || index === form.links.length - 1} onclick={() => (form.links = moveItem(form.links, index, 1))}>↓</button>
+            <button type="button" aria-label="Удалить ссылку" onclick={() => removeAt('links', index)}>×</button>
+          </div>
+        </div>
+      {/each}
+      {#if errors.links}<p class="error">{errors.links}</p>{/if}
+    </section>
+  {:else if step === 4}
+    <section class="collection">
+      <div class="section-header">
+        <div><h2>Файлы</h2><span>{form.attachments.length}/20</span></div>
+        <div class="section-actions">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={readonly || form.attachments.length >= 20}
+            onclick={pickAttachmentFiles}>Загрузить изображения</Button
+          >
+          <Button
+            type="button"
+            variant="outline"
+            disabled={readonly || form.attachments.length >= 20}
+            onclick={() => form.attachments.push({ type: 'external_video', url: '' })}
+            >Добавить видео</Button
+          >
+        </div>
+      </div>
+      {#each form.attachments as attachment, index (`${index}-${attachment.type}`)}
+        <div class="attachment">
+          {#if attachment.type === 'image'}
+            <div class="attachment-file">
+              {#if attachment.url}
+                <img class="thumb" src={attachment.url} alt="Предпросмотр изображения" />
+              {/if}
+              <span class="muted">
+                {attachment.uploading ? 'Загрузка…' : 'Изображение загружено'}
+              </span>
+              <div class="row-actions">
+                <button type="button" aria-label="Переместить выше" disabled={readonly || index === 0} onclick={() => (form.attachments = moveItem(form.attachments, index, -1))}>↑</button>
+                <button type="button" aria-label="Переместить ниже" disabled={readonly || index === form.attachments.length - 1} onclick={() => (form.attachments = moveItem(form.attachments, index, 1))}>↓</button>
+                <button type="button" aria-label="Удалить вложение" onclick={() => removeAt('attachments', index)}>×</button>
+              </div>
+            </div>
+          {:else}
+            <div class="collection-row attachment-row">
+              <input aria-label="URL вложения" type="url" placeholder="https://…" bind:value={attachment.url} />
+              <div class="row-actions">
+                <button type="button" aria-label="Переместить выше" disabled={readonly || index === 0} onclick={() => (form.attachments = moveItem(form.attachments, index, -1))}>↑</button>
+                <button type="button" aria-label="Переместить ниже" disabled={readonly || index === form.attachments.length - 1} onclick={() => (form.attachments = moveItem(form.attachments, index, 1))}>↓</button>
+                <button type="button" aria-label="Удалить вложение" onclick={() => removeAt('attachments', index)}>×</button>
+              </div>
+            </div>
+            {#if attachment.url.startsWith('https://')}
+              {#if youtubeEmbedUrl(attachment.url)}
+                <iframe
+                  src={youtubeEmbedUrl(attachment.url) ?? ''}
+                  title="Предпросмотр видео"
+                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              {:else}
+                <a href={attachment.url} target="_blank" rel="noopener noreferrer">Открыть внешнее видео</a>
+              {/if}
+            {/if}
+          {/if}
+        </div>
+      {/each}
+      <input bind:this={attachmentFileInput} type="file" accept="image/*" multiple hidden onchange={handleAttachmentFiles} />
+      {#if errors.attachments}<p class="error">{errors.attachments}</p>{/if}
+    </section>
+  {/if}
 </fieldset>
 
 <style>
@@ -527,7 +506,25 @@ const filteredTagOptions = $derived(
   .columns {
     display: grid;
     gap: 1rem;
-    grid-template-columns: minmax(12rem, 0.65fr) minmax(18rem, 1.35fr);
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tip {
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .tip strong {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .tip p {
+    color: var(--color-text-secondary);
+    margin: 0;
   }
 
   .tags-input {
@@ -621,13 +618,6 @@ const filteredTagOptions = $derived(
     gap: 0.35rem;
   }
 
-  .attachment-file {
-    align-items: center;
-    display: flex;
-    gap: 0.5rem;
-    justify-content: space-between;
-  }
-
   h2 {
     font-size: 1.2rem;
     margin: 0;
@@ -643,6 +633,10 @@ const filteredTagOptions = $derived(
   .author-row,
   .attachment-row {
     grid-template-columns: 10rem minmax(12rem, 1fr) auto;
+  }
+
+  .attachment-row {
+    grid-template-columns: minmax(12rem, 1fr) auto;
   }
 
   .link-row {
@@ -672,7 +666,21 @@ const filteredTagOptions = $derived(
     padding: 0.75rem;
   }
 
-  .attachment img,
+  .attachment .thumb {
+    border: 1px solid #303238;
+    border-radius: 0.5rem;
+    height: 4.5rem;
+    object-fit: cover;
+    width: 7rem;
+  }
+
+  .attachment-file {
+    align-items: center;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+  }
+
   .attachment iframe {
     aspect-ratio: 16 / 9;
     border: 0;
@@ -680,7 +688,6 @@ const filteredTagOptions = $derived(
     display: block;
     margin-top: 0.75rem;
     max-width: 36rem;
-    object-fit: contain;
     width: 100%;
   }
 
