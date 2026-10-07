@@ -33,8 +33,8 @@ const editor: ProjectEditor = {
 	credits: {
 		owner_id: 'owner-1',
 		authors: [
-			{ type: 'discord', discord_user_id: '123456789012345678' },
-			{ type: 'text', name: 'Команда' }
+			{ type: 'discord', discord_user_id: '123456789012345678', role: 'Разработчик' },
+			{ type: 'text', name: 'Команда', role: 'Команда' }
 		]
 	},
 	resources: {
@@ -166,7 +166,11 @@ describe('project editor validation', () => {
 			name: String(index),
 			slug: null
 		}));
-		form.authors = Array.from({ length: 21 }, () => ({ type: 'text' as const, name: 'A' }));
+		form.authors = Array.from({ length: 21 }, () => ({
+			type: 'text' as const,
+			name: 'A',
+			role: 'Автор'
+		}));
 		form.links = Array.from({ length: 6 }, () => ({
 			icon: 'x',
 			label: 'X',
@@ -199,7 +203,7 @@ describe('project editor validation', () => {
 
 	test('rejects a numeric conversion artifact in Discord ID', () => {
 		const form = editorToForm(editor);
-		form.authors = [{ type: 'discord', discord_user_id: '123.5' }];
+		form.authors = [{ type: 'discord', discord_user_id: '123.5', role: 'Разработчик' }];
 		expect(validateProjectForm(form).authors).toBeDefined();
 	});
 
@@ -243,7 +247,7 @@ describe('project editor validation', () => {
 		form.description = 'Описание';
 		form.releaseDate = '2026-01-01';
 		form.tags = [{ name: 'Экшен', slug: 'action' }];
-		form.authors = [{ type: 'text', name: 'Команда' }];
+		form.authors = [{ type: 'text', name: 'Команда', role: 'Команда' }];
 		form.attachments = [{ type: 'image', upload_id: UPLOAD_ID, url: null }];
 
 		form.banner = { upload_id: null, url: 'blob:uploading' };

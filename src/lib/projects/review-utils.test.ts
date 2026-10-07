@@ -43,7 +43,7 @@ describe('project review helpers', () => {
 			tags: [{ slug: 'tag', name: 'Tag' }],
 			credits: {
 				owner_id: 'owner',
-				authors: [{ type: 'discord' as const, discord_user_id: '123' }]
+				authors: [{ type: 'discord' as const, discord_user_id: '123', role: 'Разработчик' }]
 			},
 			resources: {
 				links: [{ icon: 'IconGlobe', label: 'Site', link: 'https://example.com' }],

@@ -283,9 +283,20 @@ export type ProjectListResponseDto = {
 	offset: number;
 };
 
-export type ProjectAuthorDiscord = { type: 'discord'; discord_user_id: string };
-export type ProjectAuthorText = { type: 'text'; name: string };
+export type ProjectAuthorDiscord = {
+	type: 'discord';
+	discord_user_id: string;
+	role: string;
+};
+export type ProjectAuthorText = { type: 'text'; name: string; role: string };
 export type ProjectAuthor = ProjectAuthorDiscord | ProjectAuthorText;
+
+export type UserSearchResult = {
+	id: string;
+	username: string;
+	nickname: string | null;
+	avatarUrl: string;
+};
 
 export type ProjectListItemDto = {
 	id: string;
@@ -371,8 +382,8 @@ export type ProjectEditor = ProjectDetails & {
 };
 
 export type ProjectAuthorInputDto =
-	| { type: 'discord'; discord_user_id: string }
-	| { type: 'text'; name: string };
+	| { type: 'discord'; discord_user_id: string; role: string }
+	| { type: 'text'; name: string; role: string };
 
 export type ProjectLinkInputDto = { icon: string; label: string; link: string };
 

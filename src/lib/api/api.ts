@@ -23,6 +23,7 @@ import type {
 	ProjectEditor,
 	ProjectListQueryDto,
 	ProjectListResponseDto,
+	ProjectPopularTag,
 	ProjectPublicTag,
 	ProjectUpload,
 	ProjectUploadCreated,
@@ -144,6 +145,9 @@ export function createApi(options: ApiOptions) {
 		},
 		getUser(user: string) {
 			return request<User>(`/users/${user}`);
+		},
+		searchUsers(q: string) {
+			return request<UserSearchResult[]>(`/users/search?q=${encodeURIComponent(q)}`);
 		},
 		getUserProjects(user: string) {
 			return request<ProjectListResponseDto>(`/users/${user}/projects`);

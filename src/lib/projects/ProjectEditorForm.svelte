@@ -1,13 +1,23 @@
 <script lang="ts">
-import type { ProjectAuthorInputDto, ProjectPublicTag } from '$lib/api/api.type';
+import { createApi } from '$lib/api/api';
+import type {
+	ProjectAuthorInputDto,
+	ProjectPopularTag,
+	ProjectPublicTag,
+	UserSearchResult
+} from '$lib/api/api.type';
+import Avatar from '$lib/components/Avatar.svelte';
 import Button from '$lib/components/Button.svelte';
 import IconPicker from '$lib/components/IconPicker.svelte';
 import { showSnackbar } from '$lib/components/snackbar';
+import UserIdentity from '$lib/components/UserIdentity.svelte';
 
 import MarkdownPreview from './MarkdownPreview.svelte';
 import ProjectImageField from './ProjectImageField.svelte';
 import type { ProjectFormAttachment, ProjectFormErrors, ProjectFormState } from './project-editor';
 import {
+	AUTHOR_DEFAULT_ROLE,
+	AUTHOR_ROLE_OPTIONS,
 	moveItem,
 	normalizeProjectSlug,
 	slugifyProjectTitle,
@@ -20,12 +30,16 @@ let {
 	form = $bindable(),
 	step,
 	tagOptions,
+	tagsUnavailable = false,
+	popularTags = [],
 	errors = {},
 	readonly = false
 }: {
 	form: ProjectFormState;
 	step: number;
 	tagOptions: ProjectPublicTag[];
+	tagsUnavailable?: boolean;
+	popularTags?: ProjectPopularTag[];
 	errors?: ProjectFormErrors;
 	readonly?: boolean;
 } = $props();
@@ -35,9 +49,68 @@ let tagInput = $state('');
 let showTagDropdown = $state(false);
 let tagInputRef: HTMLInputElement | undefined = $state();
 let attachmentFileInput = $state<HTMLInputElement>();
+let authorQuery = $state('');
+let authorResults = $state<UserSearchResult[]>([]);
+let authorSearching = $state(false);
+let showAuthorDropdown = $state(false);
+let authorSearchTimer: ReturnType<typeof setTimeout> | undefined;
 
 function updateAuthor(index: number, author: ProjectAuthorInputDto) {
 	form.authors[index] = author;
+}
+
+function handleAuthorInput() {
+	const query = authorQuery.trim();
+	showAuthorDropdown = query.length > 0;
+	clearTimeout(authorSearchTimer);
+	if (query.length < 2) {
+		authorResults = [];
+		authorSearching = false;
+		return;
+	}
+	authorSearching = true;
+	authorSearchTimer = setTimeout(async () => {
+		try {
+			authorResults = await createApi({ fetch }).searchUsers(query);
+		} catch {
+			authorResults = [];
+		} finally {
+			authorSearching = false;
+		}
+	}, 250);
+}
+
+function isAuthorAdded(user: UserSearchResult): boolean {
+	return form.authors.some(
+		(author) => author.type === 'discord' && author.discord_user_id === user.id
+	);
+}
+
+function addDiscordAuthor(user: UserSearchResult) {
+	if (!isAuthorAdded(user)) {
+		form.authors.push({
+			type: 'discord',
+			discord_user_id: user.id,
+			role: AUTHOR_DEFAULT_ROLE
+		});
+	}
+	closeAuthorDropdown();
+}
+
+function addTextAuthor(role: string) {
+	const name = authorQuery.trim();
+	if (name) form.authors.push({ type: 'text', name, role });
+	closeAuthorDropdown();
+}
+
+function closeAuthorDropdown() {
+	authorQuery = '';
+	authorResults = [];
+	showAuthorDropdown = false;
+}
+
+function onAuthorInputBlur() {
+	setTimeout(() => (showAuthorDropdown = false), 200);
 }
 
 function removeAt(key: 'authors' | 'links' | 'attachments', index: number) {
@@ -66,7 +139,8 @@ async function handleAttachmentFiles(event: Event) {
 			type: 'image',
 			upload_id: null,
 			url: URL.createObjectURL(file),
-			uploading: true
+			uploading: true,
+			progress: 0
 		};
 		form.attachments.push(row);
 		pending.push({ row, file });
@@ -74,7 +148,10 @@ async function handleAttachmentFiles(event: Event) {
 	await Promise.all(
 		pending.map(async ({ row, file }) => {
 			try {
-				const upload = await uploadProjectImage('attachment', file);
+				const upload = await uploadProjectImage('attachment', file, (percent) => {
+					row.progress = percent;
+				});
+				row.progress = 100;
 				row.upload_id = upload.id;
 				row.url = upload.url;
 			} catch {
@@ -154,6 +231,13 @@ function onTagInputFocus() {
 	if (tagInput.trim()) showTagDropdown = true;
 }
 
+const popularSuggestions = $derived(
+	popularTags.filter(
+		(suggestion) =>
+			!form.tags.some((tag) => tag.name.toLowerCase() === suggestion.name.toLowerCase())
+	)
+);
+
 const filteredTagOptions = $derived(
 	tagInput.trim()
 		? tagOptions.filter(
@@ -178,7 +262,6 @@ const filteredTagOptions = $derived(
     <section class="field-section">
       <label for="project-slug">Публичный адрес <span>{form.slug.length}/120</span></label>
       <input id="project-slug" bind:value={form.slug} oninput={() => (form.slugManuallyEdited = true)} onblur={normalizeSlugInput} maxlength="120" placeholder="my-project" />
-      <p class="muted">Публичная ссылка: /projects/{form.slug || '…'}</p>
       {#if errors.slug}<p class="error">{errors.slug}</p>{/if}
     </section>
 
@@ -268,48 +351,122 @@ const filteredTagOptions = $derived(
           {/each}
         </div>
       {/if}
-      {#if tagOptions.length === 0}<p class="muted">Справочник тегов недоступен.</p>{/if}
+      {#if tagsUnavailable && tagOptions.length === 0}
+        <p class="muted">Справочник тегов недоступен.</p>
+      {/if}
+      {#if !readonly && popularSuggestions.length > 0}
+        <div class="popular-tags">
+          <span class="muted">Частые теги:</span>
+          {#each popularSuggestions as suggestion (suggestion.slug)}
+            <button
+              type="button"
+              class="popular-tag"
+              onclick={() => addTag(suggestion.name)}
+            >+ {suggestion.name}</button>
+          {/each}
+        </div>
+      {/if}
       {#if errors.tags}<p class="error">{errors.tags}</p>{/if}
     </section>
   {:else if step === 2}
     <section class="collection">
       <div class="section-header">
         <div><h2>Авторы</h2><span>{form.authors.length}/20</span></div>
-        <Button type="button" variant="outline" disabled={readonly || form.authors.length >= 20} onclick={() => form.authors.push({ type: 'text', name: '' })}>Добавить автора</Button>
       </div>
-      {#each form.authors as author, index (`${index}-${author.type}`)}
-        <div class="collection-row author-row">
-          <select
-            value={author.type}
-            aria-label="Тип автора"
-            onchange={(event) => updateAuthor(index, event.currentTarget.value === 'discord' ? { type: 'discord', discord_user_id: '' } : { type: 'text', name: '' })}
+      <p class="muted team-hint">Укажите людей и команды, которые участвовали в проекте.</p>
+
+      <div class="author-search">
+        <input
+          type="text"
+          placeholder="Добавить автора, команду, Discord ID"
+          bind:value={authorQuery}
+          oninput={handleAuthorInput}
+          onfocus={handleAuthorInput}
+          onblur={onAuthorInputBlur}
+          onkeydown={(event) => {
+            if (event.key === 'Escape') showAuthorDropdown = false;
+          }}
+          maxlength="120"
+        />
+        {#if showAuthorDropdown}
+          <!-- preventDefault на mousedown: не уводим фокус из инпута,
+               иначе blur успевает размонтировать дропдаун до клика -->
+          <div
+            class="author-dropdown"
+            role="listbox"
+            onmousedown={(event) => event.preventDefault()}
           >
-            <option value="text">Текст</option>
-            <option value="discord">Discord</option>
-          </select>
-          {#if author.type === 'discord'}
-            <input
-              aria-label="Discord ID"
-              inputmode="numeric"
-              placeholder="Discord user ID"
-              value={author.discord_user_id}
-              oninput={(event) => updateAuthor(index, { type: 'discord', discord_user_id: event.currentTarget.value })}
-            />
-          {:else}
-            <input
-              aria-label="Имя автора"
-              placeholder="Имя автора или команды"
-              value={author.name}
-              oninput={(event) => updateAuthor(index, { type: 'text', name: event.currentTarget.value })}
-            />
-          {/if}
-          <div class="row-actions">
-            <button type="button" aria-label="Переместить выше" disabled={readonly || index === 0} onclick={() => (form.authors = moveItem(form.authors, index, -1))}>↑</button>
-            <button type="button" aria-label="Переместить ниже" disabled={readonly || index === form.authors.length - 1} onclick={() => (form.authors = moveItem(form.authors, index, 1))}>↓</button>
-            <button type="button" aria-label="Удалить автора" onclick={() => removeAt('authors', index)}>×</button>
+            {#if authorSearching}
+              <p class="muted dropdown-pad">Поиск…</p>
+            {:else if authorQuery.trim().length >= 2 && authorResults.length > 0}
+              <p class="dropdown-section">Пользователи RGD</p>
+              {#each authorResults as user (user.id)}
+                <div class="dropdown-row">
+                  <Avatar src={user.avatarUrl} name={user.nickname ?? user.username} />
+                  <span class="who">
+                    <strong>{user.nickname ?? user.username}</strong>
+                    <small>{user.username} · {user.id}</small>
+                  </span>
+                  {#if isAuthorAdded(user)}
+                    <span class="muted">Добавлен</span>
+                  {:else}
+                    <Button type="button" onclick={() => addDiscordAuthor(user)}>Добавить</Button>
+                  {/if}
+                </div>
+              {/each}
+            {:else if authorQuery.trim().length >= 2}
+              <p class="muted dropdown-pad">Пользователи RGD не найдены.</p>
+            {/if}
+            {#if authorQuery.trim().length > 0}
+              <p class="dropdown-section">Команды / Группы</p>
+              <div class="dropdown-row">
+                <span class="who">
+                  <strong>{authorQuery}</strong>
+                  <small>Добавить как название команды</small>
+                </span>
+                <Button type="button" variant="outline" onclick={() => addTextAuthor('Команда')}>+</Button>
+              </div>
+              <div class="dropdown-row">
+                <span class="who">
+                  <strong>{authorQuery}</strong>
+                  <small>Добавить имя как имя автора — текст, без профиля</small>
+                </span>
+                <Button type="button" variant="outline" onclick={() => addTextAuthor('Автор')}>+</Button>
+              </div>
+            {/if}
           </div>
-        </div>
-      {/each}
+        {/if}
+      </div>
+
+      {#if form.authors.length > 0}
+        <p class="field-label added-label">Уже добавленные</p>
+        {#each form.authors as author, index (`${index}-${author.type}`)}
+          <div class="collection-row author-row">
+            {#if author.type === 'discord'}
+              <UserIdentity id={author.discord_user_id} stacked />
+            {:else}
+              <span class="author-identity">
+                <Avatar name={author.name || 'Без названия'} />
+                <span class="who">
+                  <strong>{author.name || 'Без названия'}</strong>
+                  <small>{author.role}</small>
+                </span>
+              </span>
+            {/if}
+            <select
+              aria-label="Роль автора"
+              value={author.role}
+              disabled={readonly}
+              onchange={(event) => updateAuthor(index, { ...author, role: event.currentTarget.value })}
+            >
+              {#each AUTHOR_ROLE_OPTIONS as role (role)}
+                <option value={role}>{role}</option>
+              {/each}
+            </select>
+            <button type="button" class="row-remove" aria-label="Удалить автора" onclick={() => removeAt('authors', index)}>×</button>
+          </div>
+        {/each}
+      {/if}
       {#if errors.authors}<p class="error">{errors.authors}</p>{/if}
     </section>
   {:else if step === 3}
@@ -363,8 +520,13 @@ const filteredTagOptions = $derived(
               {#if attachment.url}
                 <img class="thumb" src={attachment.url} alt="Предпросмотр изображения" />
               {/if}
-              <span class="muted">
-                {attachment.uploading ? 'Загрузка…' : 'Изображение загружено'}
+              <span class="attachment-status">
+                {#if attachment.uploading}
+                  <span class="muted">Загрузка… {attachment.progress ?? 0}%</span>
+                  <span class="progress"><i style:width={`${attachment.progress ?? 0}%`}></i></span>
+                {:else}
+                  <span class="muted">Изображение загружено</span>
+                {/if}
               </span>
               <div class="row-actions">
                 <button type="button" aria-label="Переместить выше" disabled={readonly || index === 0} onclick={() => (form.attachments = moveItem(form.attachments, index, -1))}>↑</button>
@@ -595,6 +757,157 @@ const filteredTagOptions = $derived(
     gap: 0.35rem;
   }
 
+  .team-hint {
+    font-size: 0.8125rem;
+    margin: -0.75rem 0 0.75rem;
+  }
+
+  .author-search {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .author-dropdown {
+    background: var(--color-bg-surface);
+    border: 1px solid #303238;
+    border-radius: 0.5rem;
+    margin-top: 0.25rem;
+    max-height: 320px;
+    overflow-y: auto;
+    position: absolute;
+    width: 100%;
+    z-index: 20;
+  }
+
+  .dropdown-pad {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .dropdown-section {
+    border-top: 1px solid #303238;
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    margin: 0;
+    padding: 0.5rem 0.75rem 0.25rem;
+    text-transform: uppercase;
+  }
+
+  .dropdown-section:first-child {
+    border-top: 0;
+  }
+
+  .dropdown-row {
+    align-items: center;
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.45rem 0.75rem;
+  }
+
+  .dropdown-row:hover {
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  }
+
+  .who {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .who strong {
+    font-size: 0.875rem;
+  }
+
+  .who small {
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+  }
+
+  .added-label {
+    margin-top: 0.25rem;
+  }
+
+  .author-row {
+    align-items: center;
+    background: color-mix(in srgb, var(--color-bg-surface) 55%, transparent);
+    border-radius: 0.5rem;
+    display: grid;
+    grid-template-columns: minmax(10rem, 1fr) auto auto;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0.65rem;
+  }
+
+  .author-row select {
+    padding-right: 1.75rem;
+    width: auto;
+  }
+
+  .author-identity {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .row-remove {
+    background: transparent;
+    border: 1px solid #3a3c43;
+    border-radius: 0.4rem;
+    color: var(--color-text);
+    cursor: pointer;
+    padding: 0.35rem 0.55rem;
+  }
+
+  .popular-tags {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+  }
+
+  .popular-tag {
+    background: transparent;
+    border: 1px solid #3a3c43;
+    border-radius: 999px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8125rem;
+    padding: 0.2rem 0.55rem;
+  }
+
+  .popular-tag:hover {
+    border-color: var(--color-primary);
+    color: var(--color-text);
+  }
+
+  .attachment-status {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .progress {
+    background: color-mix(in srgb, var(--color-text-secondary) 25%, transparent);
+    border-radius: 999px;
+    display: block;
+    height: 0.3rem;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .progress i {
+    background: var(--color-primary);
+    display: block;
+    height: 100%;
+    transition: width 0.15s ease-out;
+  }
+
   h2 {
     font-size: 1.2rem;
     margin: 0;
@@ -607,7 +920,6 @@ const filteredTagOptions = $derived(
     margin-bottom: 0.5rem;
   }
 
-  .author-row,
   .attachment-row {
     grid-template-columns: 10rem minmax(12rem, 1fr) auto;
   }

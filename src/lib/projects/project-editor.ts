@@ -114,6 +114,16 @@ const STEP_FIELDS: string[][] = [
 
 const DEFAULT_LINK_ICON = 'IconGlobe';
 
+export const AUTHOR_ROLE_OPTIONS = [
+	'Владелец',
+	'Разработчик',
+	'Художник',
+	'Команда',
+	'Автор'
+] as const;
+
+export const AUTHOR_DEFAULT_ROLE: string = 'Разработчик';
+
 function normalizeLinkIcon(value: string): string {
 	const trimmed = value.trim();
 	if (!trimmed) return DEFAULT_LINK_ICON;
@@ -163,7 +173,10 @@ export function editorToForm(editor: ProjectEditor): ProjectFormState {
 		releaseDate: editor.metadata.release_date ?? '',
 		type: editor.metadata.type,
 		tags: editor.tags.map((tag) => ({ name: tag.name, slug: tag.slug })),
-		authors: editor.credits.authors.map((author) => ({ ...author })),
+		authors: editor.credits.authors.map((author) => ({
+			...author,
+			role: author.role ?? AUTHOR_DEFAULT_ROLE
+		})),
 		links: editor.resources.links.map((link) => ({ ...link, icon: normalizeLinkIcon(link.icon) })),
 		banner: imageToForm(editor.banner_upload_id ?? null, editor.banner_url),
 		attachments: editor.resources.attachments.map(attachmentToForm)
@@ -194,8 +207,12 @@ export function formToPayload(form: ProjectFormState): CreateProjectDto {
 		tags: form.tags.map((tag) => tag.name),
 		authors: form.authors.map((author) =>
 			author.type === 'discord'
-				? { type: 'discord', discord_user_id: String(author.discord_user_id).trim() }
-				: { type: 'text', name: author.name.trim() }
+				? {
+						type: 'discord',
+						discord_user_id: String(author.discord_user_id).trim(),
+						role: author.role ?? AUTHOR_DEFAULT_ROLE
+					}
+				: { type: 'text', name: author.name.trim(), role: author.role ?? AUTHOR_DEFAULT_ROLE }
 		),
 		links: form.links.map((link) => ({
 			icon: normalizeLinkIcon(link.icon),
