@@ -17,6 +17,7 @@ let {
 
 let fileInput = $state<HTMLInputElement>();
 let uploading = $state(false);
+let progress = $state(0);
 let localError = $state<string | null>(null);
 
 async function handleFile(event: Event) {
@@ -35,8 +36,10 @@ async function handleFile(event: Event) {
 	}
 	value = { upload_id: null, url: URL.createObjectURL(file) };
 	uploading = true;
+	progress = 0;
 	try {
-		const upload = await uploadProjectImage('banner', file);
+		const upload = await uploadProjectImage('banner', file, (percent) => (progress = percent));
+		progress = 100;
 		value = { upload_id: upload.id, url: upload.url };
 	} catch {
 		showSnackbar({
@@ -52,7 +55,10 @@ async function handleFile(event: Event) {
 <div class="image-field">
 	{#if value?.url}
 		<img src={value.url} alt="Предпросмотр баннера" />
-		{#if uploading}<span class="uploading">Загрузка…</span>{/if}
+		{#if uploading}
+			<span class="progress"><i style:width={`${progress}%`}></i></span>
+			<span class="uploading">Загрузка… {progress}%</span>
+		{/if}
 		{#if !disabled && !uploading}
 			<div class="image-actions">
 				<Button type="button" variant="outline" onclick={() => fileInput?.click()}>Заменить</Button>
@@ -66,7 +72,10 @@ async function handleFile(event: Event) {
 			disabled={disabled || uploading}
 			onclick={() => fileInput?.click()}
 		>
-			{uploading ? 'Загрузка…' : 'Загрузить баннер'}
+			{uploading ? `Загрузка… ${progress}%` : 'Загрузить баннер'}
+			{#if uploading}
+				<span class="progress"><i style:width={`${progress}%`}></i></span>
+			{/if}
 		</button>
 	{/if}
 	<input bind:this={fileInput} type="file" accept="image/*" hidden onchange={handleFile} />
@@ -90,6 +99,28 @@ async function handleFile(event: Event) {
 		font-size: 0.8125rem;
 		margin-top: 0.35rem;
 	}
+
+	.progress {
+		background: color-mix(in srgb, var(--color-text-secondary) 25%, transparent);
+		border-radius: 999px;
+		display: block;
+		height: 0.3rem;
+		margin-top: 0.45rem;
+		overflow: hidden;
+		width: 100%;
+	}
+
+	.progress i {
+		background: var(--color-primary);
+		display: block;
+		height: 100%;
+		transition: width 0.15s ease-out;
+	}
+
+	.dropzone {
+		position: relative;
+	}
+
 
 	.image-actions {
 		display: flex;

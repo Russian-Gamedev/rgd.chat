@@ -16,7 +16,8 @@ export function isAcceptableImageSize(file: File): boolean {
 /** Загружает изображение проекта в S3: presign → PUT → подтверждение. */
 export async function uploadProjectImage(
 	kind: ProjectUploadKind,
-	file: File
+	file: File,
+	onProgress?: (percent: number) => void
 ): Promise<ProjectUpload> {
 	const api = createApi({ fetch });
 	return uploadViaPresign(
@@ -29,6 +30,7 @@ export async function uploadProjectImage(
 			});
 			return { id: upload.id, url: upload.url };
 		},
-		({ id }) => api.completeProjectUpload(id)
+		({ id }) => api.completeProjectUpload(id),
+		onProgress
 	);
 }

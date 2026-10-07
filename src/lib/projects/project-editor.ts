@@ -21,7 +21,13 @@ export type ProjectFormImage = {
 };
 
 export type ProjectFormAttachment =
-	| ({ type: 'image'; upload_id: string | null; url: string | null } & { uploading?: boolean })
+	| {
+			type: 'image';
+			upload_id: string | null;
+			url: string | null;
+			uploading?: boolean;
+			progress?: number;
+	  }
 	| { type: 'external_video'; url: string };
 
 export type ProjectFormState = {
