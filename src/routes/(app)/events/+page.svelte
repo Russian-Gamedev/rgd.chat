@@ -115,6 +115,7 @@ const filteredEventsList = $derived(
           <th>Пользователь</th>
           <th>Событие</th>
           <th>Сообщение</th>
+          <th>Срабатываний</th>
         </tr>
       </thead>
       <tbody>
@@ -138,6 +139,7 @@ const filteredEventsList = $derived(
             </td>
             <td class="event-cell">{eventNames[item.event] ?? item.event}</td>
             <td>{item.message}</td>
+            <td class="count-cell">{item.triggered_count}</td>
           </tr>
         {/each}
       </tbody>
@@ -264,6 +266,12 @@ const filteredEventsList = $derived(
 
   .event-cell {
     white-space: nowrap;
+  }
+
+  .count-cell {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-secondary);
   }
 
   tbody tr:hover {

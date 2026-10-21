@@ -126,6 +126,7 @@ export type GuildEventListItem = {
 	event: GuildEventName;
 	message: string;
 	attachments: string[] | null;
+	triggered_count: number;
 	author: GuildEventAuthor;
 };
 
