@@ -19,19 +19,34 @@ let { open, onClose }: AddEventModalProps = $props();
 let eventName = $state<GuildEventName>('member_join');
 let message = $state('');
 let messageEl = $state<HTMLTextAreaElement>();
+let attachments = $state('');
 let paramValues = $state<Record<string, string>>({});
 let errorMessage = $state('');
 let closeError = $state('');
 let isSubmitting = $state(false);
 let shakeToken = $state(0);
 
-const isDirty = $derived(message.trim().length > 0);
+const MAX_ATTACHMENTS = 10;
+const attachmentList = $derived(
+	attachments
+		.split('\n')
+		.map((line) => line.trim())
+		.filter((line) => line.length > 0)
+);
+const invalidAttachments = $derived(
+	attachmentList.filter((url) => !/^https?:\/\//i.test(url))
+);
+const isDirty = $derived(message.trim().length > 0 || attachments.trim().length > 0);
 const templateParams = $derived(extractTemplateParams(message));
-const preview = $derived(renderTemplate(message, paramValues));
+const preview = $derived.by(() => {
+	const base = renderTemplate(message, paramValues) || message;
+	return attachmentList.length > 0 ? `${base}\n${attachmentList[0]}` : base;
+});
 
 function resetForm() {
 	eventName = 'member_join';
 	message = '';
+	attachments = '';
 	paramValues = {};
 	errorMessage = '';
 	closeError = '';
@@ -80,8 +95,21 @@ async function handleSubmit(event: SubmitEvent) {
 	errorMessage = '';
 	isSubmitting = true;
 
+	if (attachmentList.length > MAX_ATTACHMENTS) {
+		errorMessage = `Максимум ${MAX_ATTACHMENTS} вложений.`;
+		shakeToken += 1;
+		isSubmitting = false;
+		return;
+	}
+	if (invalidAttachments.length > 0) {
+		errorMessage = 'Каждая ссылка должна начинаться с http:// или https://.';
+		shakeToken += 1;
+		isSubmitting = false;
+		return;
+	}
+
 	try {
-		const result = await addEvent(eventName, message.trim());
+		const result = await addEvent(eventName, message.trim(), attachmentList);
 		showSnackbar({
 			message: `Событие добавлено. Баланс: ${Number(result.balance_after).toLocaleString('ru-RU')}`,
 			variant: 'success'
@@ -147,6 +175,16 @@ $effect(() => {
       </div>
     </div>
 
+    <label class="field">
+      <span>Вложения <em class="optional">необязательно</em></span>
+      <textarea
+        bind:value={attachments}
+        rows="2"
+        placeholder="Ссылки на изображения, по одной в строке — бот прикрепит случайную к сообщению"
+        disabled={isSubmitting}
+      ></textarea>
+    </label>
+
     <details class="preview">
       <summary>Предпросмотр</summary>
       <div class="preview-body">
@@ -171,7 +209,7 @@ $effect(() => {
             предпросмотра
           </p>
         {/if}
-        <p class="preview-box">{preview || message}</p>
+        <p class="preview-box">{preview}</p>
       </div>
     </details>
 
@@ -216,6 +254,13 @@ $effect(() => {
     gap: 8px;
     font-size: 14px;
     font-weight: 700;
+  }
+
+  .optional {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--color-text-secondary);
   }
 
   select,

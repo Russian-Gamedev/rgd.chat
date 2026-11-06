@@ -116,6 +116,7 @@ const filteredEventsList = $derived(
           <th>Событие</th>
           <th>Сообщение</th>
           <th>Срабатываний</th>
+          <th>Вероятность</th>
         </tr>
       </thead>
       <tbody>
@@ -140,6 +141,12 @@ const filteredEventsList = $derived(
             <td class="event-cell">{eventNames[item.event] ?? item.event}</td>
             <td>{item.message}</td>
             <td class="count-cell">{item.triggered_count}</td>
+            <td
+              class="count-cell"
+              title="Шанс, что бот выберет этот шаблон при следующем срабатывании события"
+            >
+              {item.probability.toFixed(2)}
+            </td>
           </tr>
         {/each}
       </tbody>

@@ -104,10 +104,10 @@ export function createApi(options: ApiOptions) {
 		getEventsList() {
 			return request<GuildEventListItem[]>('/events/list');
 		},
-		addEvent(event: GuildEventName, message: string) {
+		addEvent(event: GuildEventName, message: string, attachments?: string[]) {
 			return request<AddEventResponse>('/events', {
 				method: 'POST',
-				body: JSON.stringify({ event, message }),
+				body: JSON.stringify({ event, message, attachments }),
 				headers: { 'Content-Type': 'application/json' }
 			});
 		},

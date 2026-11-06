@@ -127,6 +127,7 @@ export type GuildEventListItem = {
 	message: string;
 	attachments: string[] | null;
 	triggered_count: number;
+	probability: number;
 	author: GuildEventAuthor;
 };
 
@@ -134,6 +135,7 @@ export type AddEventResponse = {
 	id: string;
 	event: GuildEventName;
 	message: string;
+	attachments: string[] | null;
 	balance_after: string;
 };
 
