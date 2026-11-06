@@ -145,7 +145,7 @@ const filteredEventsList = $derived(
               class="count-cell"
               title="Шанс, что бот выберет этот шаблон при следующем срабатывании события"
             >
-              {item.probability.toFixed(2)}
+              {(item.probability * 100).toFixed(2)}%
             </td>
           </tr>
         {/each}
