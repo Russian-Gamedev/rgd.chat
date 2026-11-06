@@ -33,9 +33,7 @@ const attachmentList = $derived(
 		.map((line) => line.trim())
 		.filter((line) => line.length > 0)
 );
-const invalidAttachments = $derived(
-	attachmentList.filter((url) => !/^https?:\/\//i.test(url))
-);
+const invalidAttachments = $derived(attachmentList.filter((url) => !/^https?:\/\//i.test(url)));
 const isDirty = $derived(message.trim().length > 0 || attachments.trim().length > 0);
 const templateParams = $derived(extractTemplateParams(message));
 const preview = $derived.by(() => {
