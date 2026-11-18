@@ -1,13 +1,12 @@
 <script lang="ts">
-import type { MotdListItem } from '$lib/api/api.type';
-import { IconHash } from '$lib/assets/icons';
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-import Button from '$lib/components/Button.svelte';
-import Link from '$lib/components/Link.svelte';
-import Select, { type SelectOption } from '$lib/components/Select.svelte';
-
 import type { PageProps } from './$types';
 import AddMotdModal from './AddMotdModal.svelte';
+import type { MotdListItem } from '#lib/api/api.type';
+import { IconHash } from '#lib/assets/icons/index';
+import Breadcrumb from '#lib/components/Breadcrumb.svelte';
+import Button from '#lib/components/Button.svelte';
+import Link from '#lib/components/Link.svelte';
+import Select, { type SelectOption } from '#lib/components/Select.svelte';
 
 let { data }: PageProps = $props();
 

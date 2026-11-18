@@ -1,9 +1,9 @@
 <script lang="ts">
 import type { Component } from 'svelte';
 
-import * as icons from '$lib/assets/icons';
-import Button from '$lib/components/Button.svelte';
-import { Popout, type PopoutApi } from '$lib/components/popout';
+import * as icons from '#lib/assets/icons/index';
+import Button from '#lib/components/Button.svelte';
+import { Popout, type PopoutApi } from '#lib/components/popout/index';
 
 type IconPickerProps = {
 	value?: string;

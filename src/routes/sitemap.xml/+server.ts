@@ -1,7 +1,6 @@
-import { createServerApi } from '$lib/server/api';
-import { SITE_URL } from '$lib/site-config';
-
 import type { RequestHandler } from './$types';
+import { createServerApi } from '#lib/server/api';
+import { SITE_URL } from '#lib/site-config';
 
 export const GET: RequestHandler = async (event) => {
 	const api = createServerApi(event);

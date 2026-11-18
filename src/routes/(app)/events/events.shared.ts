@@ -1,4 +1,4 @@
-import type { GuildEventName } from '$lib/api/api.type';
+import type { GuildEventName } from '#lib/api/api.type';
 
 export const eventNames: Record<GuildEventName, string> = {
 	member_first_join: 'Первое вступление',
@@ -23,3 +23,22 @@ export const eventParams: Record<GuildEventName, string[]> = {
 export function isGuildEventName(value: string): value is GuildEventName {
 	return value in eventNames;
 }
+
+/** Собирает сниппет вида `${name}` без literal-плейсхолдера в строке. */
+const token = (body: string) => `\${${body}}`;
+
+/** Динамические токены, доступные в шаблонах любых событий. */
+export const dynamicTokens: { snippet: string; hint: string }[] = [
+	{
+		snippet: token('active'),
+		hint: 'Случайный участник с ролью «активный»'
+	},
+	{
+		snippet: token('irandom,1,10'),
+		hint: 'Случайное целое число от 1 до 10 (границы любые)'
+	},
+	{
+		snippet: token('choose,вариант 1,вариант 2'),
+		hint: 'Один из перечисленных вариантов через запятую'
+	}
+];

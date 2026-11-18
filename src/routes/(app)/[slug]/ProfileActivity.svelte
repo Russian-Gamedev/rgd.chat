@@ -1,12 +1,11 @@
 <script lang="ts">
-import { createApi } from '$lib/api/api';
-import type { User, UserActivity } from '$lib/api/api.type';
-import ActivityGraph from '$lib/components/ActivityGraph.svelte';
-import { showSnackbar } from '$lib/components/snackbar';
-import Tertiary from '$lib/components/Tertiary.svelte';
-import { formatNumber, formatVoiceDuration } from '$lib/utils/format';
-
 import { updateProfile } from './EditProfileModal.api';
+import { createApi } from '#lib/api/api';
+import type { User, UserActivity } from '#lib/api/api.type';
+import ActivityGraph from '#lib/components/ActivityGraph.svelte';
+import { showSnackbar } from '#lib/components/snackbar/index';
+import Tertiary from '#lib/components/Tertiary.svelte';
+import { formatNumber, formatVoiceDuration } from '#lib/utils/format';
 
 type ProfileActivityProps = {
 	user: User;

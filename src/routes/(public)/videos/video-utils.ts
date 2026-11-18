@@ -1,7 +1,6 @@
-import type { Video } from '$lib/api/api.type';
-
 import type { VideoCard } from './youtube';
 import { getYoutubeVideoId } from './youtube';
+import type { Video } from '#lib/api/api.type';
 
 export function uniqueById(videos: Video[]): Video[] {
 	const seenIds = new Set<number>();

@@ -6,22 +6,24 @@ import { onNavigate } from '$app/navigation';
 import '../styles/globals.css';
 
 import { page } from '$app/state';
-import DiscordComponentEmbed from '$lib/components/DiscordComponentEmbed.svelte';
-import SnackbarViewport from '$lib/components/snackbar/SnackbarViewport.svelte';
-import { buildPageEmbed } from '$lib/discord/component-embed';
+
+import type { LayoutProps } from './$types';
+import Navbar from './navbar.svelte';
+import DiscordComponentEmbed from '#lib/components/DiscordComponentEmbed.svelte';
+import SnackbarViewport from '#lib/components/snackbar/SnackbarViewport.svelte';
+import { buildPageEmbed } from '#lib/discord/component-embed';
 import {
 	SITE_DESCRIPTION,
 	SITE_LOGO,
 	SITE_NAME,
 	SITE_SOCIAL_LINKS,
 	SITE_URL
-} from '$lib/site-config';
-import { startPageViewTransition } from '$lib/view-transition';
-
-import type { LayoutProps } from './$types';
-import Navbar from './navbar.svelte';
+} from '#lib/site-config';
+import { startPageViewTransition } from '#lib/view-transition';
 
 onNavigate((navigation) => {
+	if (navigation.shallow && navigation.type === 'goto') return;
+
 	return startPageViewTransition(navigation);
 });
 

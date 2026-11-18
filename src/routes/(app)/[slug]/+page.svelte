@@ -1,12 +1,11 @@
 <script lang="ts">
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-
 import type { PageProps } from './$types';
 import EditProfileModal from './EditProfileModal.svelte';
 import ProfileActivity from './ProfileActivity.svelte';
 import ProfileHeader from './ProfileHeader.svelte';
 import ProfileLinks from './ProfileLinks.svelte';
 import ProfileSection from './ProfileSection.svelte';
+import Breadcrumb from '#lib/components/Breadcrumb.svelte';
 
 let { data }: PageProps = $props();
 

@@ -12,7 +12,7 @@ import {
 
 import type { Snippet } from 'svelte';
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 type PopoutMode = 'hover' | 'click' | 'always' | 'manual';
 type PopoutRole = 'tooltip' | 'dialog' | 'menu' | 'none';
@@ -205,12 +205,7 @@ async function updatePosition() {
 	}
 
 	const { x, y } = nextPosition.middlewareData.arrow;
-	const staticSide = {
-		top: 'bottom',
-		right: 'left',
-		bottom: 'top',
-		left: 'right'
-	}[actualSide];
+	const staticSide = { top: 'bottom', right: 'left', bottom: 'top', left: 'right' }[actualSide];
 
 	Object.assign(tailElement.style, {
 		left: x != null ? `${x}px` : '',

@@ -1,13 +1,12 @@
 <script lang="ts">
-import type { GuildEventName } from '$lib/api/api.type';
-import Button from '$lib/components/Button.svelte';
-import Modal from '$lib/components/Modal.svelte';
-import { showSnackbar } from '$lib/components/snackbar';
-import { COINS_TOP } from '$lib/site-config';
-
 import { addEvent } from './AddEventModal.api';
-import { eventNames, eventParams, isGuildEventName } from './events.shared';
-import { extractTemplateParams, renderTemplate } from './template';
+import { dynamicTokens, eventNames, eventParams, isGuildEventName } from './events.shared';
+import { extractTemplateParams, renderTemplate, validateTemplate } from './template';
+import type { GuildEventName } from '#lib/api/api.type';
+import Button from '#lib/components/Button.svelte';
+import Modal from '#lib/components/Modal.svelte';
+import { showSnackbar } from '#lib/components/snackbar/index';
+import { COINS_TOP } from '#lib/site-config';
 
 type AddEventModalProps = {
 	open: boolean;
@@ -70,8 +69,7 @@ function handleEventChange(event: Event) {
 	}
 }
 
-function insertParam(name: string) {
-	const snippet = `\${${name}}`;
+function insertSnippet(snippet: string) {
 	const el = messageEl;
 	const start = el?.selectionStart ?? message.length;
 	const end = el?.selectionEnd ?? start;
@@ -92,6 +90,14 @@ async function handleSubmit(event: SubmitEvent) {
 
 	errorMessage = '';
 	isSubmitting = true;
+
+	const problems = validateTemplate(message.trim(), eventParams[eventName]);
+	if (problems.length > 0) {
+		errorMessage = problems.join('; ');
+		shakeToken += 1;
+		isSubmitting = false;
+		return;
+	}
 
 	if (attachmentList.length > MAX_ATTACHMENTS) {
 		errorMessage = `Максимум ${MAX_ATTACHMENTS} вложений.`;
@@ -163,11 +169,22 @@ $effect(() => {
           <button
             type="button"
             class="param-insert"
-            onclick={() => insertParam(param)}
+            onclick={() => insertSnippet(`\${${param}}`)}
             disabled={isSubmitting}
             title={`Вставить \${${param}} в позицию курсора`}
           >
             {'${' + param + '}'}
+          </button>
+        {/each}
+        {#each dynamicTokens as token (token.snippet)}
+          <button
+            type="button"
+            class="param-insert"
+            onclick={() => insertSnippet(token.snippet)}
+            disabled={isSubmitting}
+            title={token.hint}
+          >
+            {token.snippet}
           </button>
         {/each}
       </div>

@@ -1,12 +1,6 @@
 <script lang="ts">
 import { untrack } from 'svelte';
 
-import { createApi } from '$lib/api/api';
-import Button from '$lib/components/Button.svelte';
-import Modal from '$lib/components/Modal.svelte';
-import { showSnackbar } from '$lib/components/snackbar';
-import TagInput from '$lib/components/TagInput.svelte';
-
 import { importGolderMediaFromDiscord, uploadGolderMedia } from './UploadModal.api';
 import {
 	GOLDER_MAX_TAGS,
@@ -18,6 +12,11 @@ import {
 	isSupportedFile,
 	nameFromFile
 } from './UploadModal.validation';
+import { createApi } from '#lib/api/api';
+import Button from '#lib/components/Button.svelte';
+import Modal from '#lib/components/Modal.svelte';
+import { showSnackbar } from '#lib/components/snackbar/index';
+import TagInput from '#lib/components/TagInput.svelte';
 
 type UploadModalProps = {
 	open: boolean;

@@ -1,14 +1,13 @@
 <script lang="ts">
-import { IconJam, IconVK, IconYoutube } from '$lib/assets/icons';
-import ExternalLink from '$lib/assets/icons/external-link.svelte';
-import ActivityGraph from '$lib/components/ActivityGraph.svelte';
-import BadgeCounter from '$lib/components/BadgeCounter.svelte';
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-import Button from '$lib/components/Button.svelte';
-import Tertiary from '$lib/components/Tertiary.svelte';
-import { SHOW_COMMUNITY_STATS } from '$lib/site-config';
-
 import type { PageProps } from './$types';
+import ExternalLink from '#lib/assets/icons/external-link.svelte';
+import { IconJam, IconVK, IconYoutube } from '#lib/assets/icons/index';
+import ActivityGraph from '#lib/components/ActivityGraph.svelte';
+import BadgeCounter from '#lib/components/BadgeCounter.svelte';
+import Breadcrumb from '#lib/components/Breadcrumb.svelte';
+import Button from '#lib/components/Button.svelte';
+import Tertiary from '#lib/components/Tertiary.svelte';
+import { SHOW_COMMUNITY_STATS } from '#lib/site-config';
 
 let { data }: PageProps = $props();
 

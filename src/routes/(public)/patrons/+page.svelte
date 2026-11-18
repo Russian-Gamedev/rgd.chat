@@ -1,14 +1,13 @@
 <script lang="ts">
 import { onMount } from 'svelte';
 
-import type { Donation, DonationsPage } from '$lib/api/api.type';
-import patronsBanner from '$lib/assets/backgrounds/patrons-banner.webp';
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-import SkeletonImage from '$lib/components/SkeletonImage.svelte';
-import Tertiary from '$lib/components/Tertiary.svelte';
-import { createInfiniteScrollObserver } from '$lib/utils/infinite-scroll';
-
 import type { PageProps } from './$types';
+import type { Donation, DonationsPage } from '#lib/api/api.type';
+import patronsBanner from '#lib/assets/backgrounds/patrons-banner.webp';
+import Breadcrumb from '#lib/components/Breadcrumb.svelte';
+import SkeletonImage from '#lib/components/SkeletonImage.svelte';
+import Tertiary from '#lib/components/Tertiary.svelte';
+import { createInfiniteScrollObserver } from '#lib/utils/infinite-scroll';
 
 let { data }: PageProps = $props();
 

@@ -2,16 +2,15 @@ import { definePageMetaTags } from 'svelte-meta-tags';
 
 import { redirect } from '@sveltejs/kit';
 
-import { createServerApi } from '$lib/server/api';
-
 import type { PageServerLoad } from './$types';
+import { createServerApi } from '#lib/server/api';
 
 export const load: PageServerLoad = async ({ parent, request, fetch, depends }) => {
 	depends('events:list');
 
 	const { auth } = await parent();
 	if (!auth) {
-		throw redirect(302, import.meta.env.VITE_AUTH_URL || '/');
+		throw redirect(302, import.meta.env.VITE_AUTH_URL || '/', { external: true });
 	}
 
 	const title = 'События';

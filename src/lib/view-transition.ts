@@ -1,4 +1,4 @@
-import type { OnNavigate } from '@sveltejs/kit';
+import type { OnNavigate } from '$app/navigation';
 
 export function shouldUseViewTransition(navigation: OnNavigate): boolean {
 	if (typeof document === 'undefined') return false;

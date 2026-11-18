@@ -1,13 +1,12 @@
 <script lang="ts">
-import { createApi } from '$lib/api/api';
-import type { GolderMedia } from '$lib/api/api.type';
-import { IconVideo } from '$lib/assets/icons';
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-import Button from '$lib/components/Button.svelte';
-import Input from '$lib/components/Input.svelte';
-
 import type { PageProps } from './$types';
 import UploadModal from './UploadModal.svelte';
+import { createApi } from '#lib/api/api';
+import type { GolderMedia } from '#lib/api/api.type';
+import { IconVideo } from '#lib/assets/icons/index';
+import Breadcrumb from '#lib/components/Breadcrumb.svelte';
+import Button from '#lib/components/Button.svelte';
+import Input from '#lib/components/Input.svelte';
 
 const PAGE_LIMIT = 20;
 

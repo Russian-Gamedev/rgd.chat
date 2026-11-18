@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { Snippet } from 'svelte';
 
-import Tertiary from '$lib/components/Tertiary.svelte';
+import Tertiary from '#lib/components/Tertiary.svelte';
 
 type ProfileSectionProps = {
 	id: string;

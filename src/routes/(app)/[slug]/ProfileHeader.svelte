@@ -1,8 +1,8 @@
 <script lang="ts">
-import type { User } from '$lib/api/api.type';
-import { IconLogout } from '$lib/assets/icons';
-import { logout } from '$lib/auth/auth.actions';
-import Badge from '$lib/components/Badge.svelte';
+import type { User } from '#lib/api/api.type';
+import { IconLogout } from '#lib/assets/icons/index';
+import { logout } from '#lib/auth/auth.actions';
+import Badge from '#lib/components/Badge.svelte';
 
 type ProfileHeaderProps = {
 	user: User;

@@ -1,6 +1,7 @@
 <script>
 import { page } from '$app/state';
-import NotFoundImage from '$lib/assets/clown_by_Jacob.png';
+
+import NotFoundImage from '#lib/assets/clown_by_Jacob.png';
 </script>
 
 <svelte:head>

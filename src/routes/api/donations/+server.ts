@@ -1,5 +1,3 @@
-import { json } from '@sveltejs/kit';
-
 import type { RequestHandler } from './$types';
 
 const DONATIONS_URL = 'https://thanks.rgd.chat/api/donations';
@@ -12,5 +10,5 @@ export const GET: RequestHandler = async ({ fetch, url }) => {
 
 	const response = await fetch(`${DONATIONS_URL}?page=${page}&per_page=${perPage}`);
 
-	return json(await response.json(), { status: response.status });
+	return Response.json(await response.json(), { status: response.status });
 };

@@ -1,6 +1,6 @@
 import { defineBaseMetaTags } from 'svelte-meta-tags';
 
-import { SITE_DESCRIPTION, SITE_URL } from '$lib/site-config';
+import { SITE_DESCRIPTION, SITE_URL } from '#lib/site-config';
 
 export const load = ({ url, data }) => {
 	const title = 'Russian Gamedev — Discord сообщество';

@@ -1,7 +1,6 @@
-import { createServerApi } from '$lib/server/api';
-import { SHOW_COMMUNITY_STATS } from '$lib/site-config';
-
 import type { PageServerLoad } from './$types';
+import { createServerApi } from '#lib/server/api';
+import { SHOW_COMMUNITY_STATS } from '#lib/site-config';
 
 export const load: PageServerLoad = async ({ depends, request, fetch }) => {
 	depends('members:stats');

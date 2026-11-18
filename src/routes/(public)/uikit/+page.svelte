@@ -1,12 +1,12 @@
 <script lang="ts">
-import * as icons from '$lib/assets/icons';
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-import Button from '$lib/components/Button.svelte';
-import IconPicker from '$lib/components/IconPicker.svelte';
-import Input from '$lib/components/Input.svelte';
-import { Popout, type PopoutApi } from '$lib/components/popout';
-import Select, { type SelectOption } from '$lib/components/Select.svelte';
-import Tertiary from '$lib/components/Tertiary.svelte';
+import * as icons from '#lib/assets/icons/index';
+import Breadcrumb from '#lib/components/Breadcrumb.svelte';
+import Button from '#lib/components/Button.svelte';
+import IconPicker from '#lib/components/IconPicker.svelte';
+import Input from '#lib/components/Input.svelte';
+import { Popout, type PopoutApi } from '#lib/components/popout/index';
+import Select, { type SelectOption } from '#lib/components/Select.svelte';
+import Tertiary from '#lib/components/Tertiary.svelte';
 
 const iconEntries = Object.entries(icons).sort(([a], [b]) => a.localeCompare(b));
 
