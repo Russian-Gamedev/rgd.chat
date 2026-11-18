@@ -1,4 +1,4 @@
-import type { Permission, User } from '$lib/api/api.type';
+import type { Permission, User } from '#lib/api/api.type';
 
 export function hasPermission(
 	auth: User | null | undefined,

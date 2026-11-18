@@ -3,7 +3,7 @@ import type { Snippet } from 'svelte';
 import { tick } from 'svelte';
 import type { TransitionConfig } from 'svelte/transition';
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 type ModalProps = {
 	open: boolean;

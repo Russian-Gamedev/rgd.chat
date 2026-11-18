@@ -1,9 +1,8 @@
 <script lang="ts">
 import type { SvelteHTMLElements } from 'svelte/elements';
 
-import { COINS_TOP } from '$lib/site-config';
-
 import Badge from './Badge.svelte';
+import { COINS_TOP } from '#lib/site-config';
 
 interface CoinsBadgeProps {
 	balance: string | number;

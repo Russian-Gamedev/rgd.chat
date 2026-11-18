@@ -1,10 +1,9 @@
 <script lang="ts">
-import { type GolderMedia } from '$lib/api/api.type';
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-import Button from '$lib/components/Button.svelte';
-import { showSnackbar } from '$lib/components/snackbar';
-
 import type { PageProps } from './$types';
+import { type GolderMedia } from '#lib/api/api.type';
+import Breadcrumb from '#lib/components/Breadcrumb.svelte';
+import Button from '#lib/components/Button.svelte';
+import { showSnackbar } from '#lib/components/snackbar/index';
 
 let { data }: PageProps = $props();
 

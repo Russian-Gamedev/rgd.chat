@@ -1,8 +1,7 @@
 import { definePageMetaTags } from 'svelte-meta-tags';
 
-import { createServerApi } from '$lib/server/api';
-
 import type { PageServerLoad } from './$types';
+import { createServerApi } from '#lib/server/api';
 
 export const load: PageServerLoad = async ({ depends, request, fetch }) => {
 	depends('videos:list');

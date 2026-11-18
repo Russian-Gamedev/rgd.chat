@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { DiscordComponentEmbedPayload } from '$lib/discord/component-embed';
+import type { DiscordComponentEmbedPayload } from '#lib/discord/component-embed';
 
 let { payload }: { payload: DiscordComponentEmbedPayload } = $props();
 

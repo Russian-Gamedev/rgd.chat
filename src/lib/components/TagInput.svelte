@@ -1,5 +1,5 @@
 <script lang="ts">
-import { createApi } from '$lib/api/api';
+import { createApi } from '#lib/api/api';
 
 type TagInputProps = {
 	value?: string[];

@@ -1,17 +1,16 @@
 <script lang="ts">
 import { onMount } from 'svelte';
 
-import { createApi } from '$lib/api/api';
-import type { VideosPage } from '$lib/api/api.type';
-import { IconArrowUp } from '$lib/assets/icons';
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-import Link from '$lib/components/Link.svelte';
-import SkeletonImage from '$lib/components/SkeletonImage.svelte';
-import { createInfiniteScrollObserver } from '$lib/utils/infinite-scroll';
-
 import type { PageProps } from './$types';
 import { formatAbsoluteDate, formatRelativeDateTime } from './format-date';
 import { toVideoCards, uniqueById } from './video-utils';
+import { createApi } from '#lib/api/api';
+import type { VideosPage } from '#lib/api/api.type';
+import { IconArrowUp } from '#lib/assets/icons/index';
+import Breadcrumb from '#lib/components/Breadcrumb.svelte';
+import Link from '#lib/components/Link.svelte';
+import SkeletonImage from '#lib/components/SkeletonImage.svelte';
+import { createInfiniteScrollObserver } from '#lib/utils/infinite-scroll';
 
 let { data }: PageProps = $props();
 

@@ -2,7 +2,7 @@
 import type { Component } from 'svelte';
 import type { SvelteHTMLElements } from 'svelte/elements';
 
-import { IconExternalLink } from '$lib/assets/icons';
+import { IconExternalLink } from '#lib/assets/icons/index';
 
 type LinkProps = {
 	href: string;

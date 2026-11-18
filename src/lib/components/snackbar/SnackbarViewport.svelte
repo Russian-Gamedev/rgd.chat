@@ -11,7 +11,7 @@ import { tick } from 'svelte';
 import { flip as flipAnimation } from 'svelte/animate';
 import type { TransitionConfig } from 'svelte/transition';
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 import SnackbarItem from './SnackbarItem.svelte';
 import { dismissSnackbar, snackbars } from './snackbar.store.svelte';

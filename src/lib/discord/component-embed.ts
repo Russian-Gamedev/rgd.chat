@@ -1,6 +1,6 @@
-import type { User, UserActivity } from '$lib/api/api.type';
-import { DISCORD_INVITE_URL, SITE_LOGO } from '$lib/site-config';
-import { formatNumber, formatVoiceDuration } from '$lib/utils/format';
+import type { User, UserActivity } from '#lib/api/api.type';
+import { DISCORD_INVITE_URL, SITE_LOGO } from '#lib/site-config';
+import { formatNumber, formatVoiceDuration } from '#lib/utils/format';
 
 /**
  * Discord component embeds — кастомные превью ссылок для Discord.

@@ -2,11 +2,10 @@ import { definePageMetaTags } from 'svelte-meta-tags';
 
 import { error } from '@sveltejs/kit';
 
-import { buildProfileEmbed } from '$lib/discord/component-embed';
-import { createServerApi } from '$lib/server/api';
-import { SITE_URL } from '$lib/site-config';
-
 import type { PageServerLoad } from './$types';
+import { buildProfileEmbed } from '#lib/discord/component-embed';
+import { createServerApi } from '#lib/server/api';
+import { SITE_URL } from '#lib/site-config';
 
 export const load: PageServerLoad = async ({ params, depends, parent, request, fetch }) => {
 	depends('user:profile');

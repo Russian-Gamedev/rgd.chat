@@ -1,9 +1,9 @@
 <script lang="ts">
 import type { Snippet } from 'svelte';
 
-import { IconChevronDown } from '$lib/assets/icons';
-import Button from '$lib/components/Button.svelte';
-import { Popout, type PopoutApi } from '$lib/components/popout';
+import { IconChevronDown } from '#lib/assets/icons/index';
+import Button from '#lib/components/Button.svelte';
+import { Popout, type PopoutApi } from '#lib/components/popout/index';
 
 export type SelectOption = {
 	value: string;

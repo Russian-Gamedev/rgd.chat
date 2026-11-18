@@ -2,14 +2,13 @@ import { definePageMetaTags } from 'svelte-meta-tags';
 
 import { error, redirect } from '@sveltejs/kit';
 
-import { createServerApi } from '$lib/server/api';
-
 import type { PageServerLoad } from './$types';
+import { createServerApi } from '#lib/server/api';
 
 export const load: PageServerLoad = async ({ params, request, fetch, parent }) => {
 	const { auth } = await parent();
 	if (!auth) {
-		throw redirect(302, import.meta.env.VITE_AUTH_URL || '/');
+		throw redirect(302, import.meta.env.VITE_AUTH_URL || '/', { external: true });
 	}
 
 	const api = createServerApi({ request, fetch });

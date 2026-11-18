@@ -1,11 +1,10 @@
 <script lang="ts">
-import Button from '$lib/components/Button.svelte';
-import Modal from '$lib/components/Modal.svelte';
-import { showSnackbar } from '$lib/components/snackbar';
-import { COINS_TOP } from '$lib/site-config';
-
 import { addMotd } from './AddMotdModal.api';
 import { isEmptyMotdContent, normalizeMotdContent } from './AddMotdModal.validation';
+import Button from '#lib/components/Button.svelte';
+import Modal from '#lib/components/Modal.svelte';
+import { showSnackbar } from '#lib/components/snackbar/index';
+import { COINS_TOP } from '#lib/site-config';
 
 type AddMotdModalProps = {
 	open: boolean;

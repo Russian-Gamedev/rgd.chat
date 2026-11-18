@@ -1,4 +1,4 @@
-import type { Video } from '$lib/api/api.type';
+import type { Video } from '#lib/api/api.type';
 
 export type VideoCard = {
 	key: string;

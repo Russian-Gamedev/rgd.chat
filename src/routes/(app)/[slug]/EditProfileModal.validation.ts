@@ -1,5 +1,5 @@
-import type { ProfileLink, UpdateProfilePayload } from '$lib/api/api.type';
-import * as icons from '$lib/assets/icons';
+import type { ProfileLink, UpdateProfilePayload } from '#lib/api/api.type';
+import * as icons from '#lib/assets/icons/index';
 
 export type EditableProfileLink = ProfileLink & {
 	id: number;

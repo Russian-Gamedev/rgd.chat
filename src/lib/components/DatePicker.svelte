@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { HTMLInputAttributes } from 'svelte/elements';
 
-import { IconCalendar } from '$lib/assets/icons';
+import { IconCalendar } from '#lib/assets/icons/index';
 
 type DatePickerProps = Omit<HTMLInputAttributes, 'type' | 'value'> & {
 	label: string;

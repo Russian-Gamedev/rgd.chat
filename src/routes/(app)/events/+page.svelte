@@ -1,13 +1,12 @@
 <script lang="ts">
-import type { GuildEventAuthor } from '$lib/api/api.type';
-import { IconCalendar } from '$lib/assets/icons';
-import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-import Button from '$lib/components/Button.svelte';
-import Select, { type SelectOption } from '$lib/components/Select.svelte';
-
 import type { PageProps } from './$types';
 import AddEventModal from './AddEventModal.svelte';
 import { eventNames } from './events.shared';
+import type { GuildEventAuthor } from '#lib/api/api.type';
+import { IconCalendar } from '#lib/assets/icons/index';
+import Breadcrumb from '#lib/components/Breadcrumb.svelte';
+import Button from '#lib/components/Button.svelte';
+import Select, { type SelectOption } from '#lib/components/Select.svelte';
 
 let { data }: PageProps = $props();
 

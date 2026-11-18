@@ -1,8 +1,6 @@
-import { env } from '$env/dynamic/private';
+import { API_ORIGIN } from '$app/env/private';
 
 import type { RequestHandler } from './$types';
-
-const API_ORIGIN = env.API_ORIGIN ?? 'https://bot.rgd.chat';
 
 const HOP_BY_HOP_HEADERS = new Set([
 	'connection',

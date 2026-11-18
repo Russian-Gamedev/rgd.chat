@@ -1,8 +1,7 @@
 <script lang="ts">
-import type { ProfileLink } from '$lib/api/api.type';
-import * as Icons from '$lib/assets/icons';
-
 import ProfileSection from './ProfileSection.svelte';
+import type { ProfileLink } from '#lib/api/api.type';
+import * as Icons from '#lib/assets/icons/index';
 
 type ProfileLinksProps = {
 	links: ProfileLink[];

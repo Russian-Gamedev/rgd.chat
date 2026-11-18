@@ -2,7 +2,8 @@
 import { onMount } from 'svelte';
 
 import { page } from '$app/state';
-import type { User } from '$lib/api/api.type';
+
+import type { User } from '#lib/api/api.type';
 import {
 	IconArrowUp,
 	IconCalendar,
@@ -15,9 +16,9 @@ import {
 	IconJoystick,
 	IconRgd,
 	IconVideo
-} from '$lib/assets/icons';
-import Button from '$lib/components/Button.svelte';
-import CoinsBadge from '$lib/components/CoinsBadge.svelte';
+} from '#lib/assets/icons/index';
+import Button from '#lib/components/Button.svelte';
+import CoinsBadge from '#lib/components/CoinsBadge.svelte';
 
 let isCollapsed = $state(false);
 

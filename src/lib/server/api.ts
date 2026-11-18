@@ -1,7 +1,6 @@
-import { env } from '$env/dynamic/private';
-import { createApi } from '$lib/api/api';
+import { API_ORIGIN } from '$app/env/private';
 
-const API_ORIGIN = env.API_ORIGIN ?? 'https://bot.rgd.chat';
+import { createApi } from '#lib/api/api';
 
 export function createServerApi(event: { fetch: typeof fetch; request: Request }) {
 	const cookie = event.request.headers.get('cookie');

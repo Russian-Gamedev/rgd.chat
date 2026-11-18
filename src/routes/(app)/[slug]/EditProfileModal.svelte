@@ -1,12 +1,4 @@
 <script lang="ts">
-import type { ProfileLink, User } from '$lib/api/api.type';
-import Button from '$lib/components/Button.svelte';
-import DatePicker from '$lib/components/DatePicker.svelte';
-import IconPicker from '$lib/components/IconPicker.svelte';
-import Input from '$lib/components/Input.svelte';
-import Modal from '$lib/components/Modal.svelte';
-import { showSnackbar } from '$lib/components/snackbar';
-
 import { updateProfile } from './EditProfileModal.api';
 import {
 	buildProfilePayload,
@@ -15,6 +7,13 @@ import {
 	MAX_LINKS,
 	normalizeIconKey
 } from './EditProfileModal.validation';
+import type { ProfileLink, User } from '#lib/api/api.type';
+import Button from '#lib/components/Button.svelte';
+import DatePicker from '#lib/components/DatePicker.svelte';
+import IconPicker from '#lib/components/IconPicker.svelte';
+import Input from '#lib/components/Input.svelte';
+import Modal from '#lib/components/Modal.svelte';
+import { showSnackbar } from '#lib/components/snackbar/index';
 
 type EditProfileModalProps = {
 	open: boolean;

@@ -1,6 +1,5 @@
-import { createServerApi } from '$lib/server/api';
-
 import type { LayoutServerLoad } from './$types';
+import { createServerApi } from '#lib/server/api';
 
 export const load: LayoutServerLoad = async ({ depends, request, fetch }) => {
 	depends('auth:me');

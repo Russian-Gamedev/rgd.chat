@@ -1,5 +1,6 @@
 import { goto, invalidate } from '$app/navigation';
-import { createApi } from '$lib/api/api';
+
+import { createApi } from '#lib/api/api';
 
 export async function logout() {
 	const api = createApi({ fetch });

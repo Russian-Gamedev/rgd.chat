@@ -1,9 +1,8 @@
 <script lang="ts">
 import type { SvelteHTMLElements } from 'svelte/elements';
 
-import { formatNumber } from '$lib/utils/format';
-
 import Badge from './Badge.svelte';
+import { formatNumber } from '#lib/utils/format';
 
 interface BadgeProps {
 	label: string;

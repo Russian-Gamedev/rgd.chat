@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { ActivityDay } from '$lib/api/api.type';
-import { formatDateFull, formatVoiceDuration } from '$lib/utils/format';
+import type { ActivityDay } from '#lib/api/api.type';
+import { formatDateFull, formatVoiceDuration } from '#lib/utils/format';
 
 type ActivityGraphProps = {
 	days: ActivityDay[];
