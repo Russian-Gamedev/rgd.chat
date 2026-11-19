@@ -7,7 +7,7 @@ import BadgeCounter from '#lib/components/BadgeCounter.svelte';
 import Breadcrumb from '#lib/components/Breadcrumb.svelte';
 import Button from '#lib/components/Button.svelte';
 import Tertiary from '#lib/components/Tertiary.svelte';
-import { SHOW_COMMUNITY_STATS } from '#lib/site-config';
+import { DISCORD_INVITE_URL, SHOW_COMMUNITY_STATS } from '#lib/site-config';
 
 let { data }: PageProps = $props();
 
@@ -56,7 +56,7 @@ const cards = [
   <Button
     as="a"
     class="join-button"
-    href="https://join.rgd.chat"
+    href={DISCORD_INVITE_URL}
     target="_blank"
     rel="noopener noreferrer"
     data-rybbit-event="join_discord"
